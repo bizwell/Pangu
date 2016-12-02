@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.joindata.inf.common</groupId>
+		<artifactId>root</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>fastdfs-support</artifactId>
+	<packaging>jar</packaging>
+
+	<name>FastDFS 分布式文件系统支持</name>
+	<url>http://www.joindata.com</url>
+
+	<dependencies>
+
+		<!-- SpringBoot -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<!-- 支持 Web 文件上传 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+
+		<!-- Disconf 支持 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>disconf-support</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!-- Netty 网络传输 -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.6.Final</version>
+		</dependency>
+
+		<!-- Servlet 包 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+
+	</dependencies>
+
+</project>

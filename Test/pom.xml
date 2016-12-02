@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.joindata.inf.common</groupId>
+		<artifactId>root</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>Test</artifactId>
+	<name>Test</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>web-bootable</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!-- 支持 FastDFS -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>fastdfs-support</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!-- 支持 MyBatis -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>mybatis-support</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!-- 监控 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+	</dependencies>
+</project>

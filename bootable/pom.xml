@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.joindata.inf.common</groupId>
+		<artifactId>root</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>bootable</artifactId>
+	<packaging>jar</packaging>
+
+	<name>可启动的应用</name>
+	<url>http://www.joindata.com</url>
+
+	<dependencies>
+		<!-- 工具包 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>util</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

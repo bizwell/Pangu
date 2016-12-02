@@ -15,8 +15,9 @@ build
 db.ini
 deploy_key_rsa
 
-#java
+# Java
 *.class
+*.classpath
 *.project
 *.settings
 .project
@@ -24,3 +25,6 @@ target/
 .gitignore
 *.gitignore
 bin
+
+# Don't want see the fuckin' file again!
+disconf/

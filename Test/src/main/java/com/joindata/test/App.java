@@ -1,7 +1,7 @@
 package com.joindata.test;
 
-import com.joindata.inf.boot.Bootstrap;
 import com.joindata.inf.boot.annotation.JoindataApp;
+import com.joindata.inf.boot.web.Bootstrap;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
 import com.joindata.inf.common.support.fastdfs.EnableFastDfs;
 import com.joindata.inf.common.support.mybatis.EnableMyBatis;

@@ -30,8 +30,6 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.AliasFor;
 
-import com.joindata.inf.common.basic.annotation.BindConfigHub;
-
 /**
  * 定义一个嘉银数据的应用<br />
  * <i>把 @SpringBootConfiguration 改吧改吧就成了</i>

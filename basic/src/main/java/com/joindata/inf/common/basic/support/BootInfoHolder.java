@@ -23,9 +23,6 @@ public class BootInfoHolder
 
     private static final Map<String, Object> bootInfoMap = new HashMap<>();
 
-    /** 公共基础组件顶级包名 */
-    public static final String INF_COMMON_PACKAGE = "com.joindata.inf.common";
-
     /**
      * 设置启动信息
      * 

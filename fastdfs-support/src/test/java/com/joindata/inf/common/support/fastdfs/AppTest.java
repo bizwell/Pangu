@@ -16,7 +16,7 @@ public class AppTest extends TestCase
      */
     public AppTest(String testName)
     {
-        super("Fxxk");
+        super(testName);
     }
 
     /**
@@ -33,6 +33,5 @@ public class AppTest extends TestCase
     public void testApp()
     {
         assertTrue(true);
-        
     }
 }

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>fastdfs-support</artifactId>
@@ -16,35 +16,32 @@
 
 	<dependencies>
 
-		<!-- SpringBoot -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-
-		<!-- 支持 Web 文件上传 -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.3.2</version>
-		</dependency>
+		<!-- SpringBoot <dependency> <groupId>org.springframework.boot</groupId> 
+			<artifactId>spring-boot-starter</artifactId> </dependency> -->
 
 		<!-- Disconf 支持 -->
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>
 			<artifactId>disconf-support</artifactId>
-			<version>1.0.0</version>
+			<version>${pangu.version}</version>
+		</dependency>
+
+		<!-- 支持 Web 文件上传 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+
+		<!-- 文件上传插件 -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
 		</dependency>
 
 		<!-- Netty 网络传输 -->
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
-			<version>4.1.6.Final</version>
 		</dependency>
 
 		<!-- Servlet 包 -->

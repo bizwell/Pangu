@@ -1,11 +1,10 @@
 package com.joindata.inf.common.support.fastdfs.bootconfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
 import com.joindata.inf.common.support.fastdfs.support.component.web.FastDfsMultipartResolver;
@@ -17,16 +16,10 @@ import com.joindata.inf.common.support.fastdfs.support.component.web.FastDfsMult
  * @date 2016年12月2日 下午5:29:39
  */
 @Configuration
-public class WebMvcConfig extends SpringBootServletInitializer
+public class WebMvcConfig extends DelegatingWebMvcConfiguration
 {
     @Autowired
     private FastdfsClient client;
-
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder)
-    {
-        return builder.sources(WebMvcConfig.class);
-    }
 
     @Bean
     public CharacterEncodingFilter initializeCharacterEncodingFilter()
@@ -47,4 +40,5 @@ public class WebMvcConfig extends SpringBootServletInitializer
         resolver.setMaxUploadSize(50 * 1024 * 1024);// 上传文件大小 50M 50*1024*1024
         return resolver;
     }
+
 }

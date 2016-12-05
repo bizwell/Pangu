@@ -10,6 +10,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 import com.joindata.inf.common.basic.annotation.BindConfigHub;
+import com.joindata.inf.common.basic.annotation.WebConfig;
+import com.joindata.inf.common.support.fastdfs.bootconfig.WebMvcConfig;
 
 /**
  * 启用 FastDFS
@@ -23,6 +25,7 @@ import com.joindata.inf.common.basic.annotation.BindConfigHub;
 @Inherited
 @Import(ConfigHub.class)
 @BindConfigHub(ConfigHub.class)
+@WebConfig(WebMvcConfig.class)
 public @interface EnableFastDfs
 {
 }

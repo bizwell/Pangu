@@ -37,6 +37,16 @@ import org.springframework.context.annotation.Configuration;
 @Documented
 @Inherited
 @Configuration
-public @interface JoindataApp
+public @interface JoindataWebApp
 {
+    /** 端口号，默认 8080 */
+    int value() default 8080;
+
+    /** 用什么样的 Web 容器，默认是 Jetty（目前你也没得选 →_→） */
+    Server container() default Server.JETTY;
+
+    public enum Server
+    {
+        JETTY
+    }
 }

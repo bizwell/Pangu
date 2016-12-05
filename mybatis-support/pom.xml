@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mybatis-support</artifactId>
@@ -20,9 +20,9 @@
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>
 			<artifactId>disconf-support</artifactId>
-			<version>1.0.0</version>
+			<version>${pangu.version}</version>
 		</dependency>
-		
+
 		<!-- MySQL 驱动 -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -43,21 +43,18 @@
 
 		<!-- MyBatis -->
 		<dependency>
-			<groupId>org.mybatis.spring.boot</groupId>
-			<artifactId>mybatis-spring-boot-starter</artifactId>
-			<version>1.1.1</version>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
-			<version>3.4.1</version>
 		</dependency>
 
 		<!-- Druid 连接池 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
-			<version>1.0.27</version>
 		</dependency>
 
 	</dependencies>

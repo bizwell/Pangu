@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>Test</artifactId>
 	<name>Test</name>
@@ -18,28 +18,23 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>
-			<artifactId>web-bootable</artifactId>
-			<version>1.0.0</version>
+			<artifactId>bootable</artifactId>
+			<version>${pangu.version}</version>
 		</dependency>
 
 		<!-- 支持 FastDFS -->
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>
 			<artifactId>fastdfs-support</artifactId>
-			<version>1.0.0</version>
+			<version>${pangu.version}</version>
 		</dependency>
 
 		<!-- 支持 MyBatis -->
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>
 			<artifactId>mybatis-support</artifactId>
-			<version>1.0.0</version>
+			<version>${pangu.version}</version>
 		</dependency>
 
-		<!-- 监控 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
 	</dependencies>
 </project>

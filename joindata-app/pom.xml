@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.joindata.inf.common</groupId>
+		<artifactId>root</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.joindata</groupId>
+	<artifactId>joindata-app</artifactId>
+	<packaging>pom</packaging>
+
+	<name>嘉银数据应用</name>
+	<url>http://www.joindata.com</url>
+
+	<properties>
+		<pangu.version>1.0.0-SNAPSHOT</pangu.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- 基础包定义 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>basic</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 可启动应用 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>bootable</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 支持 Disconf -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>disconf-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 支持 FastDFS -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>fastdfs-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 支持 MyBatis -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>mybatis-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 支持 Swagger -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>swagger-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- 可启动应用 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>bootable</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

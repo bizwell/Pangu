@@ -33,7 +33,7 @@ public class Bootstrap
      * 
      * @param args 启动参数，实际上并没有什么软用，不要传
      */
-    public static final void boot(String... args)
+    public static final ApplicationContext boot(String... args)
     {
         StackTraceElement stack[] = Thread.currentThread().getStackTrace();
         for(StackTraceElement ste: stack)
@@ -48,18 +48,15 @@ public class Bootstrap
                     {
                         configureBootInfo(bootClz);
                         checkEnv();
-                        bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).value());
-
-                        System.err.println("应用已启动, PID: " + SystemUtil.getProcessId());
-                        return;
+                        
+                        return bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).value());
                     }
                     else if(bootClz.getAnnotation(JoindataApp.class) != null)
                     {
                         configureBootInfo(bootClz);
                         checkEnv();
-                        boot(bootClz);
-                        System.err.println("应用已启动, PID: " + SystemUtil.getProcessId());
-                        return;
+                       
+                        return boot(bootClz);
                     }
                 }
                 catch(ClassNotFoundException e)
@@ -89,6 +86,7 @@ public class Bootstrap
             System.err.println("错误：启动错误 >> 启动时发生意外错误：" + e.getMessage());
             System.exit(0);
         }
+        return null;
     }
 
     /**
@@ -105,6 +103,8 @@ public class Bootstrap
         context.scan(bootClz.getPackage().getName());
         context.refresh();
         context.start();
+        
+        System.err.println("应用已启动, PID: " + SystemUtil.getProcessId());
 
         return context;
     }
@@ -162,6 +162,8 @@ public class Bootstrap
 
         context.refresh();
         context.start();
+        
+        System.err.println("应用已启动, PID: " + SystemUtil.getProcessId());
 
         return context;
     }
@@ -169,7 +171,7 @@ public class Bootstrap
     /**
      * 设置启动信息，以供其他组件使用
      */
-    private static void configureBootInfo(Class<?> bootClz)
+    public static void configureBootInfo(Class<?> bootClz)
     {
         // 告诉大家启动类是哪个
         BootInfoHolder.setBootClass(bootClz);

@@ -1,13 +1,13 @@
 package com.joindata.inf.common.support.fastdfs.support.component.web;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.apache.commons.fileupload.FileItem;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
-import com.joindata.inf.common.support.fastdfs.dependency.client.FileId;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata.Builder;
 
@@ -29,20 +29,24 @@ public class FastDfsMultipartFile extends CommonsMultipartFile
         this.client = client;
     }
 
-    /**
-     * 将文件保存到远程服务器
-     * 
-     * @return 远程保存路径（可认为是文件 ID)
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
-    public String save() throws InterruptedException, ExecutionException
+    @Override
+    public void transferTo(File dest) throws IOException, IllegalStateException
     {
-        Builder metaBuilder = FileMetadata.newBuilder();
-        metaBuilder.put("fileName", super.getOriginalFilename());
+        if(dest == null)
+        {
+            throw new FileNotFoundException("保存路径不能为 null");
+        }
 
-        CompletableFuture<FileId> fileId = client.upload(super.getOriginalFilename(), super.getBytes(), metaBuilder.build());
-
-        return fileId.get().toString();
+        if(dest instanceof FastDfsFile)
+        {
+            Builder metaBuilder = FileMetadata.newBuilder();
+            metaBuilder.put("fileName", super.getOriginalFilename());
+            ((FastDfsFile)dest).setUploadFuture(client.upload(dest.getPath(), super.getBytes(), metaBuilder.build()));
+        }
+        else
+        {
+            super.transferTo(dest);
+        }
     }
+
 }

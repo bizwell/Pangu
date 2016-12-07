@@ -56,6 +56,7 @@
 		<druid.version>1.0.27</druid.version>
 		<swagger.version>2.6.1</swagger.version>
 		<jackson.version>2.8.5</jackson.version>
+		<elasticsearch.version>5.0.1</elasticsearch.version>
 	</properties>
 
 	<dependencyManagement>
@@ -388,6 +389,12 @@
 				<version>${jackson.version}</version>
 			</dependency>
 
+			<!-- ElasticSearch 客户端 -->
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>transport</artifactId>
+				<version>${elasticsearch.version}</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
@@ -442,10 +449,11 @@
 		<module>disconf-support</module>
 		<module>mybatis-support</module>
 		<module>fastdfs-support</module>
-		<module>bootable</module>
-		<module>Test</module>
 		<module>swagger-support</module>
+		<module>elasticsearch-support</module>
+		<module>bootable</module>
 		<module>joindata-app</module>
+		<module>Test</module>
 	</modules>
 
 </project>

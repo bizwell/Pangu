@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.swagger;
+package com.joindata.inf.common.support.elasticsearch;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -12,10 +12,10 @@ import org.springframework.context.annotation.Import;
 import com.joindata.inf.common.basic.annotation.BindConfigHub;
 
 /**
- * 启用 Swagger
+ * 启用 ElasticSearch
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date 2016年12月6日 13:48:34
+ * @date 2016年12月7日 下午1:53:14
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -23,23 +23,8 @@ import com.joindata.inf.common.basic.annotation.BindConfigHub;
 @Inherited
 @Import({ConfigHub.class})
 @BindConfigHub(ConfigHub.class)
-public @interface EnableSwagger
+public @interface EnableElasticSearch
 {
-    /** 扫描的包名 */
-    public String scanPackages() default "";
-
-    /** 文档标题 */
-    public String title() default "";
-
-    /** 文档标题 */
-    public String value() default "接口测试";
-
-    /** 维护人姓名 */
-    public String author() default "";
-
-    /** 维护人 Email */
-    public String email() default "";
-
-    /** 版本，默认 1.0.0 */
-    public String version() default "1.0.0";
+    /** 要扫描的顶级包，默认是当前包 */
+    String[] value() default {};
 }

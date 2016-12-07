@@ -64,6 +64,13 @@
 				<version>${pangu.version}</version>
 			</dependency>
 
+			<!-- 支持 ElasticSearch -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>elasticsearch-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

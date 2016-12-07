@@ -47,7 +47,7 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter
         {
             ApiInfoBuilder builder = new ApiInfoBuilder();
 
-            builder.title(enableSwagger.name());
+            builder.title(enableSwagger.title() + enableSwagger.value());
 
             if(!StringUtil.isBlank(enableSwagger.author() + enableSwagger.email()))
             {
@@ -59,7 +59,7 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter
             docklet.apiInfo(builder.build());
         }
 
-        String packageName = enableSwagger.value();
+        String packageName = enableSwagger.scanPackages();
         if(StringUtil.isBlank(packageName))
         {
             packageName = BootInfoHolder.getBootClass().getPackage().getName();

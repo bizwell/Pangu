@@ -2,6 +2,7 @@ package com.joindata.inf.boot;
 
 import java.lang.annotation.Annotation;
 
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -11,13 +12,15 @@ import org.springframework.web.servlet.DispatcherServlet;
 import com.joindata.inf.boot.annotation.JoindataApp;
 import com.joindata.inf.boot.annotation.JoindataWebApp;
 import com.joindata.inf.boot.bootconfig.WebMvcConfig;
+import com.joindata.inf.boot.mechanism.JoindataAnnotationBeanNameGenerator;
 import com.joindata.inf.boot.webserver.JettyServerFactory;
-import com.joindata.inf.common.basic.annotation.BindConfigHub;
+import com.joindata.inf.common.basic.annotation.JoindataComponent;
 import com.joindata.inf.common.basic.annotation.WebConfig;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
-import com.joindata.inf.common.util.basic.StringUtil;
+import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.SystemUtil;
+import com.joindata.inf.common.util.support.LogManager;
 
 /**
  * 启动器提供者
@@ -27,6 +30,8 @@ import com.joindata.inf.common.util.basic.SystemUtil;
  */
 public class Bootstrap
 {
+    private static final Logger log = LogManager.getLogger();
+
     /**
      * 启动应用，<strong>启动后容器将继续运行</strong><br />
      * <i>会在堆栈中自动寻找调用的启动类，放心地调用即可</i>
@@ -35,57 +40,39 @@ public class Bootstrap
      */
     public static final ApplicationContext boot(String... args)
     {
-        StackTraceElement stack[] = Thread.currentThread().getStackTrace();
-        for(StackTraceElement ste: stack)
-        {
-            if(!StringUtil.isEquals(ste.getClassName(), "java.lang.Thread") && !StringUtil.isEquals(ste.getClassName(), Bootstrap.class.getName()))
-            {
-                try
-                {
-                    Class<?> bootClz = Class.forName(ste.getClassName());
-
-                    if(bootClz.getAnnotation(JoindataWebApp.class) != null)
-                    {
-                        configureBootInfo(bootClz);
-                        checkEnv();
-                        
-                        return bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).value());
-                    }
-                    else if(bootClz.getAnnotation(JoindataApp.class) != null)
-                    {
-                        configureBootInfo(bootClz);
-                        checkEnv();
-                       
-                        return boot(bootClz);
-                    }
-                }
-                catch(ClassNotFoundException e)
-                {
-                    e.printStackTrace();
-                    throw new RuntimeException("错误: 很神奇地找不到启动类，(ーー゛)");
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                    System.err.println("错误: 启动错误 >> 启动时发生意外错误：" + e.getMessage());
-                    System.exit(0);
-                }
-            }
-        }
-
-        System.err.println("错误：缺少配置 >> 启动类中没有 @JoindataApp 或 @JoindataWebApp 注解，不知道你要启动什么样的应用 O__O \"…");
-        System.exit(0);
+        Class<?> bootClz = ClassUtil.getCaller();
 
         try
         {
-            Thread.currentThread().join();
+            // 如果是 Web 应用，启动 Web
+            if(bootClz.getAnnotation(JoindataWebApp.class) != null)
+            {
+                configureBootInfo(bootClz);
+                checkEnv();
+
+                return bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).value());
+            }
+            // 启动应用
+            else if(bootClz.getAnnotation(JoindataApp.class) != null)
+            {
+                configureBootInfo(bootClz);
+                checkEnv();
+
+                return boot(bootClz);
+            }
+            // 没有标注，就报错
+            else
+            {
+                log.error("缺少配置 >> 启动类中没有 @JoindataApp 或 @JoindataWebApp 注解，不知道你要启动什么样的应用 O__O \"…");
+                System.exit(0);
+            }
         }
-        catch(InterruptedException e)
+        catch(Exception e)
         {
-            e.printStackTrace();
-            System.err.println("错误：启动错误 >> 启动时发生意外错误：" + e.getMessage());
+            log.error("错误: 启动错误 >> 启动时发生意外错误：" + e.getMessage(), e);
             System.exit(0);
         }
+
         return null;
     }
 
@@ -99,12 +86,23 @@ public class Bootstrap
     private static final ApplicationContext boot(Class<?> bootClz, String... args)
     {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.setBeanNameGenerator(new JoindataAnnotationBeanNameGenerator());
+
+        // 扫描 ConfigHub 的包
+        for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
+        {
+            context.scan(configHubClz.getPackage().getName());
+        }
+
+        // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
         context.register(bootClz);
+        // 扫描启动类的包
         context.scan(bootClz.getPackage().getName());
+
         context.refresh();
         context.start();
-        
-        System.err.println("应用已启动, PID: " + SystemUtil.getProcessId());
+
+        log.info("应用已启动, PID: " + SystemUtil.getProcessId());
 
         return context;
     }
@@ -120,6 +118,7 @@ public class Bootstrap
     private static final ApplicationContext bootWeb(Class<?> bootClz, int port, String... args) throws Exception
     {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.setBeanNameGenerator(new JoindataAnnotationBeanNameGenerator());
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
 
@@ -129,15 +128,9 @@ public class Bootstrap
             JettyServerFactory.newServer(port, context, webAppContext).start();
         }
 
-        // 注册公共 WebMvc 配置
-        context.register(WebMvcConfig.class);
-
-        // 注册启动类
-        context.register(bootClz);
-
-        // 注册支持组件的 Web 配置
         for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
         {
+            // 注册支持组件的 Web 配置
             if(configHubClz.getAnnotation(WebConfig.class) != null)
             {
                 Class<?>[] webConfigClzes = configHubClz.getAnnotation(WebConfig.class).value();
@@ -156,14 +149,23 @@ public class Bootstrap
                     context.register(webConfigClz);
                 }
             }
+
+            // 扫描 ConfigHub 包中的组件
+            context.scan(configHubClz.getPackage().getName());
         }
 
         context.scan(bootClz.getPackage().getName());
 
+        // 注册公共 WebMvc 配置
+        context.register(WebMvcConfig.class);
+
+        // 注册启动类
+        context.register(bootClz);
+
         context.refresh();
         context.start();
-        
-        System.err.println("应用已启动, PID: " + SystemUtil.getProcessId());
+
+        log.info("Web 应用已启动, PID: " + SystemUtil.getProcessId() + ", Port: " + port);
 
         return context;
     }
@@ -179,20 +181,22 @@ public class Bootstrap
         Annotation[] annos = bootClz.getAnnotations();
         for(Annotation anno: annos)
         {
-            BindConfigHub bindAnno = anno.annotationType().getAnnotation(BindConfigHub.class);
-            if(bindAnno == null)
+            JoindataComponent jc = anno.annotationType().getAnnotation(JoindataComponent.class);
+            if(jc == null)
             {
                 continue;
             }
 
-            BootInfoHolder.addConfigHub(bindAnno.value());
+            BootInfoHolder.addConfigHub(jc.value());
         }
     }
 
     /**
      * 检查环境是否干净整洁
+     * 
+     * @throws Exception 发生任何错误，抛出该异常
      */
-    private static void checkEnv()
+    private static void checkEnv() throws Exception
     {
         for(AbstractConfigHub configHub: BootInfoHolder.getConfigHubs())
         {

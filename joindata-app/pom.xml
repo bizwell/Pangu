@@ -71,6 +71,13 @@
 				<version>${pangu.version}</version>
 			</dependency>
 
+			<!-- 支持 Redis -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>redis-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

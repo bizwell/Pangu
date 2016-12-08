@@ -7,9 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Import;
-
-import com.joindata.inf.common.basic.annotation.BindConfigHub;
+import com.joindata.inf.common.basic.annotation.JoindataComponent;
 
 /**
  * 启用 MyBatis
@@ -21,8 +19,7 @@ import com.joindata.inf.common.basic.annotation.BindConfigHub;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import({ConfigHub.class})
-@BindConfigHub(ConfigHub.class)
+@JoindataComponent(ConfigHub.class)
 public @interface EnableMyBatis
 {
     /** 要扫描的顶级包，默认是当前包 */

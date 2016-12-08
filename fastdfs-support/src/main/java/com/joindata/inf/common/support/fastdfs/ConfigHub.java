@@ -1,10 +1,8 @@
 package com.joindata.inf.common.support.fastdfs;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.joindata.inf.common.basic.annotation.JoindataConfigHub;
 import com.joindata.inf.common.basic.annotation.WebConfig;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
@@ -17,9 +15,7 @@ import com.joindata.inf.common.support.fastdfs.bootconfig.WebMvcConfig;
  * @author 宋翔<songxiang@joindata.com>
  * @date 2016年12月2日 下午5:30:49
  */
-@JoindataConfigHub
 @Configuration
-@ComponentScan
 @EnableDisconf
 @Import(FastDfsConfig.class)
 @WebConfig(WebMvcConfig.class)

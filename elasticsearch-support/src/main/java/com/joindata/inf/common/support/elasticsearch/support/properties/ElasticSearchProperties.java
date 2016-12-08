@@ -5,10 +5,11 @@ import org.springframework.stereotype.Service;
 
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
+import com.joindata.inf.common.support.elasticsearch.support.Cst;
 
 @Service
 @Scope("singleton")
-@DisconfFile(filename = "es.properties")
+@DisconfFile(filename = Cst.ES_PROPERTIES)
 public class ElasticSearchProperties
 {
     private String hosts;

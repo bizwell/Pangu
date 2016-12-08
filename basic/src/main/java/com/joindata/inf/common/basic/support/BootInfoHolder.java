@@ -1,5 +1,6 @@
 package com.joindata.inf.common.basic.support;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -81,6 +82,18 @@ public class BootInfoHolder
     public static Class<?> getBootClass()
     {
         return BOOT_CLASS;
+    }
+
+    /**
+     * 获取启动类是否有某个注解<br />
+     * <i>不懂就<strong>不要瞎调</strong></i><br />
+     * <i>这个方法主要用于检查组件依赖</i>
+     * 
+     * @return 启动类 Class
+     */
+    public static boolean hasBootAnno(Class<? extends Annotation> annoClz)
+    {
+        return BOOT_CLASS.getAnnotation(annoClz) == null;
     }
 
     /**

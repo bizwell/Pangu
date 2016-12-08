@@ -8,10 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 被标记的类会被认为是 Web 相关的配置
+ * 标注哪些是 Web 配置
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date 2016年12月5日 下午1:17:08
+ * @date 2016年12月8日 上午11:26:45
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -19,6 +19,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface WebConfig
 {
-    /** 标记 Web 配置的配置类 */
+    /** 标注 Web 配置类 */
     Class<?>[] value() default {};
 }

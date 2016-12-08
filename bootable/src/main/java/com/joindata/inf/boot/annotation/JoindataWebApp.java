@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 定义一个嘉银数据的应用<br />
+ * 定义这是嘉银数据的应用<br />
  * <i>把 @SpringBootConfiguration 改吧改吧就成了</i>
  * 
  * @author 宋翔<songxiang@joindata.com>

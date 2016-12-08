@@ -16,6 +16,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import com.joindata.inf.boot.mechanism.Jetty2Log4j2Bridge;
+
 /**
  * Jetty 配置
  * 
@@ -102,6 +104,8 @@ public class JettyServerFactory
     public static Server newServer(int port, ApplicationContext context, Handler... handlers)
     {
         Server server = new Server(port);
+
+        org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4j2Bridge("JettyLogger"));
 
         // 这里用 HandlerList，可以使 handler 短路，有 handler 处理过就不再处理，而不至于所有去处理所有 handler
         HandlerList handlerList = new HandlerList();

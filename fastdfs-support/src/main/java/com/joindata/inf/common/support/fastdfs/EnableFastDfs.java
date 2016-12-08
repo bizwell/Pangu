@@ -7,11 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Import;
-
-import com.joindata.inf.common.basic.annotation.BindConfigHub;
-import com.joindata.inf.common.basic.annotation.WebConfig;
-import com.joindata.inf.common.support.fastdfs.bootconfig.WebMvcConfig;
+import com.joindata.inf.common.basic.annotation.JoindataComponent;
 
 /**
  * 启用 FastDFS
@@ -23,9 +19,7 @@ import com.joindata.inf.common.support.fastdfs.bootconfig.WebMvcConfig;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(ConfigHub.class)
-@BindConfigHub(ConfigHub.class)
-@WebConfig(WebMvcConfig.class)
+@JoindataComponent(ConfigHub.class)
 public @interface EnableFastDfs
 {
 }

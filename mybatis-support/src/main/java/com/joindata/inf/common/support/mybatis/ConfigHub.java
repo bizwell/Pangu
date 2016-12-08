@@ -1,11 +1,9 @@
 package com.joindata.inf.common.support.mybatis;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.joindata.inf.common.basic.annotation.JoindataConfigHub;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
 import com.joindata.inf.common.support.mybatis.bootconfig.CustomMapperScannerRegistrar;
@@ -17,9 +15,7 @@ import com.joindata.inf.common.support.mybatis.bootconfig.MyBatisConfig;
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date 2016年12月2日 下午5:32:55
  */
-@JoindataConfigHub
 @Configuration
-@ComponentScan
 @EnableDisconf
 @Import({MyBatisConfig.class, CustomMapperScannerRegistrar.class})
 @EnableTransactionManagement

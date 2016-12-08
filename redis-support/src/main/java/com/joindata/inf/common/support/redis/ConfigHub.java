@@ -1,21 +1,21 @@
-package com.joindata.inf.common.support.elasticsearch;
+package com.joindata.inf.common.support.redis;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
-import com.joindata.inf.common.support.elasticsearch.bootconfig.ElasticSearchConfig;
+import com.joindata.inf.common.support.redis.bootconfig.RedisConfig;
 
 /**
- * ElasticSearch 支持配置器
+ * Redis 支持配置器
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date 2016年12月7日 下午1:53:33
+ * @date 2016年12月7日 下午4:29:51
  */
 @Configuration
 @EnableDisconf
-@Import({ElasticSearchConfig.class})
+@Import({RedisConfig.class})
 public class ConfigHub extends AbstractConfigHub
 {
     @Override

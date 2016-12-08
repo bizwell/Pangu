@@ -18,16 +18,8 @@ public abstract class AbstractConfigHub
      */
     protected abstract void check() throws SystemException;
 
-    public void executeCheck()
+    public void executeCheck() throws Exception
     {
-        try
-        {
-            check();
-        }
-        catch(SystemException e)
-        {
-            System.err.println("错误：环境检查 >> " + e.getMessage());
-            System.exit(0);
-        }
+        check();
     }
 }

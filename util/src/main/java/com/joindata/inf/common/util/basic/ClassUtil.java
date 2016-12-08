@@ -124,6 +124,32 @@ public class ClassUtil
     }
 
     /**
+     * 获取调用者的 Class
+     * 
+     * @return 调用者的 Class
+     */
+    public static Class<?> getCaller()
+    {
+        StackTraceElement stack[] = Thread.currentThread().getStackTrace();
+        boolean used = false;
+        for(StackTraceElement ste: stack)
+        {
+            if(used == false && !StringUtil.isEquals(ste.getClassName(), "java.lang.Thread") && !StringUtil.isEquals(ste.getClassName(), ClassUtil.class.getName()))
+            {
+                used = true;
+                continue;
+            }
+
+            if(used)
+            {
+                return ClassUtil.parseClass(ste.getClassName());
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * 获取指定包下面和子孙包下面所有类的 Class
      * 
      * @param packageName 包名

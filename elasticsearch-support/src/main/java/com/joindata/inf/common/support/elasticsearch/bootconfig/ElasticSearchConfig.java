@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.joindata.inf.common.basic.errors.SystemError;
+import com.joindata.inf.common.basic.exceptions.SystemException;
 import com.joindata.inf.common.support.elasticsearch.component.ElasticSearchClient;
 import com.joindata.inf.common.support.elasticsearch.support.properties.ElasticSearchProperties;
 
@@ -27,9 +29,15 @@ public class ElasticSearchConfig
     @Bean
     public ElasticSearchClient elasticsearchClient()
     {
+        if(properties == null)
+        {
+            throw new SystemException(SystemError.DEPEND_RESOURCE_NOT_READY, "没有取得 ElasticSearch 的配置");
+        }
+        
         Settings settings = Settings.builder().put("cluster.name", properties.getClusterName()).build();
 
         ElasticSearchClient client = new ElasticSearchClient(settings);
+        
 
         String[] hosts = properties.getHosts().split(",");
 

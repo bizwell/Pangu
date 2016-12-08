@@ -26,7 +26,8 @@
 		<fastjson.version>1.2.21</fastjson.version>
 		<javassist.version>3.20.0-GA</javassist.version>
 		<log4j2.version>2.6.2</log4j2.version>
-		<logback.version>1.1.7</logback.version>
+		<commons-logging.version>1.2</commons-logging.version>
+		<slf4j.version>1.7.21</slf4j.version>
 		<jetty.version>9.3.14.v20161028</jetty.version>
 		<joda-time.version>2.9.5</joda-time.version>
 		<joda-money.version>0.12</joda-money.version>
@@ -56,7 +57,9 @@
 		<druid.version>1.0.27</druid.version>
 		<swagger.version>2.6.1</swagger.version>
 		<jackson.version>2.8.5</jackson.version>
-		<elasticsearch.version>5.0.1</elasticsearch.version>
+		<elasticsearch.version>5.0.2</elasticsearch.version>
+		<jedis.version>2.9.0</jedis.version>
+		<zookeeper.version>3.4.9</zookeeper.version>
 	</properties>
 
 	<dependencyManagement>
@@ -137,7 +140,26 @@
 				<artifactId>log4j-core</artifactId>
 				<version>${log4j2.version}</version>
 			</dependency>
+			<!-- 桥接：告诉Slf4j使用Log4j2 -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<!-- 桥接：告诉commons logging使用Log4j2 -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-jcl</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
 
+			<!-- Apache Commons Logging -->
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>${commons-logging.version}</version>
+			</dependency>
+			
 			<!-- FastJSON -->
 			<dependency>
 				<groupId>com.alibaba</groupId>
@@ -314,6 +336,12 @@
 				<groupId>com.baidu.disconf</groupId>
 				<artifactId>disconf-client</artifactId>
 				<version>${disconf.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.zookeeper</groupId>
+						<artifactId>zookeeper</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!-- Netty 网络传输 -->
@@ -394,8 +422,49 @@
 				<groupId>org.elasticsearch.client</groupId>
 				<artifactId>transport</artifactId>
 				<version>${elasticsearch.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.elasticsearch.plugin</groupId>
+						<artifactId>transport-netty3-client</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
+			<!-- Redis 客户端 -->
+			<dependency>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>${jedis.version}</version>
+			</dependency>
+
+			<!-- Zookeeper -->
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper</artifactId>
+				<version>${zookeeper.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -416,13 +485,19 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-jcl</artifactId>
+		</dependency>
 
 	</dependencies>
 
 	<build>
 		<plugins>
-			<!-- <plugin> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-maven-plugin</artifactId> 
-				</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -451,9 +526,9 @@
 		<module>fastdfs-support</module>
 		<module>swagger-support</module>
 		<module>elasticsearch-support</module>
+		<module>redis-support</module>
 		<module>bootable</module>
 		<module>joindata-app</module>
-		<module>Test</module>
 	</modules>
 
 </project>

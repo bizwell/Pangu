@@ -2,7 +2,6 @@ package com.joindata.inf.boot;
 
 import java.lang.annotation.Annotation;
 
-import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -20,7 +19,7 @@ import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.SystemUtil;
-import com.joindata.inf.common.util.support.LogManager;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * 启动器提供者
@@ -30,7 +29,7 @@ import com.joindata.inf.common.util.support.LogManager;
  */
 public class Bootstrap
 {
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = Logger.get();
 
     /**
      * 启动应用，<strong>启动后容器将继续运行</strong><br />
@@ -63,13 +62,13 @@ public class Bootstrap
             // 没有标注，就报错
             else
             {
-                log.error("缺少配置 >> 启动类中没有 @JoindataApp 或 @JoindataWebApp 注解，不知道你要启动什么样的应用 O__O \"…");
+                log.fatal("缺少配置 >> 启动类中没有 @JoindataApp 或 @JoindataWebApp 注解，不知道你要启动什么样的应用 O__O \"…");
                 System.exit(0);
             }
         }
         catch(Exception e)
         {
-            log.error("错误: 启动错误 >> 启动时发生意外错误：" + e.getMessage(), e);
+            log.fatal("错误: 启动错误 >> 启动时发生意外错误: {}" + e.getMessage(), e);
             System.exit(0);
         }
 

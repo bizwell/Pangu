@@ -9,6 +9,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.mybatis.EnableMyBatis;
 import com.joindata.inf.common.util.basic.ArrayUtil;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * 把官方的 MapperScannerRegister 重载了一下，以支持 @EnableMyBatis 注解
@@ -18,6 +19,8 @@ import com.joindata.inf.common.util.basic.ArrayUtil;
  */
 public class CustomMapperScannerRegistrar extends MapperScannerRegistrar
 {
+    private static final Logger log = Logger.get();
+
     private ResourceLoader resourceLoader;
 
     /*
@@ -34,6 +37,8 @@ public class CustomMapperScannerRegistrar extends MapperScannerRegistrar
         {
             scanner.setResourceLoader(resourceLoader);
         }
+
+        log.info("MyBatis 扫描包为: " + Util.getScanPackage());
 
         scanner.registerFilters();
         scanner.doScan(Util.getScanPackage());

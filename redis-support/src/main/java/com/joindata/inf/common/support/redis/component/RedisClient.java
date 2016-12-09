@@ -46,7 +46,6 @@ public class RedisClient
      */
     public String getString(String key)
     {
-
         String ret = jedis.get(key);
 
         return ret;
@@ -59,10 +58,8 @@ public class RedisClient
      */
     public void delete(String key)
     {
-
         jedis.del(key);
         jedis.del(StringUtil.toBytes(key));
-
     }
 
     /**
@@ -73,18 +70,7 @@ public class RedisClient
      */
     public void put(String key, Serializable obj)
     {
-
-        try
-        {
-            jedis.set(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
-        }
-        catch(IOException e)
-        {
-            // TODO 处理异常
-            e.printStackTrace();
-            return;
-        }
-
+        jedis.set(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
     }
 
     /**
@@ -104,16 +90,7 @@ public class RedisClient
             return null;
         }
 
-        try
-        {
-            return BeanUtil.deserializeObject(objByte, clz);
-        }
-        catch(IOException e)
-        {
-            // TODO 处理异常
-            e.printStackTrace();
-            return null;
-        }
+        return BeanUtil.deserializeObject(objByte, clz);
     }
 
     /**
@@ -288,7 +265,6 @@ public class RedisClient
      */
     public void prependObjectToList(String key, List<? extends Serializable> values)
     {
-
         if(StringUtil.isBlank(key) || CollectionUtil.isNullOrEmpty(values))
         {
             return;
@@ -300,18 +276,8 @@ public class RedisClient
 
         for(Serializable value: values)
         {
-            try
-            {
-                jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
-            }
-            catch(IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                continue;
-            }
+            jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
         }
-
     }
 
     /**
@@ -323,7 +289,6 @@ public class RedisClient
      */
     public void prependObjectToList(String key, Serializable... values)
     {
-
         if(StringUtil.isBlank(key) || values == null)
         {
             return;
@@ -334,16 +299,7 @@ public class RedisClient
         int size = values.length;
         for(int i = size - 1; i >= 0; i--)
         {
-            try
-            {
-                jedis.rpush(keyBytes, BeanUtil.serializeObject(values[i]));
-            }
-            catch(IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                continue;
-            }
+            jedis.rpush(keyBytes, BeanUtil.serializeObject(values[i]));
         }
 
     }
@@ -367,16 +323,7 @@ public class RedisClient
 
         for(Serializable value: values)
         {
-            try
-            {
-                jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
-            }
-            catch(IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                continue;
-            }
+            jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
         }
 
     }
@@ -400,16 +347,7 @@ public class RedisClient
 
         for(Serializable value: values)
         {
-            try
-            {
-                jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
-            }
-            catch(IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                continue;
-            }
+            jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
         }
 
     }
@@ -444,16 +382,7 @@ public class RedisClient
                     return null;
                 }
 
-                try
-                {
-                    list.add(BeanUtil.deserializeObject(bs, clz));
-                }
-                catch(IOException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    continue;
-                }
+                list.add(BeanUtil.deserializeObject(bs, clz));
             }
         }
 
@@ -488,16 +417,7 @@ public class RedisClient
                     return null;
                 }
 
-                try
-                {
-                    list.add(BeanUtil.deserializeObject(bs, clz));
-                }
-                catch(IOException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    continue;
-                }
+                list.add(BeanUtil.deserializeObject(bs, clz));
             }
         }
 
@@ -530,16 +450,7 @@ public class RedisClient
                 {
                     return null;
                 }
-                try
-                {
-                    list.add(BeanUtil.deserializeObject(bs, clz));
-                }
-                catch(IOException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    continue;
-                }
+                list.add(BeanUtil.deserializeObject(bs, clz));
             }
         }
 
@@ -668,15 +579,7 @@ public class RedisClient
         while(iter.hasNext())
         {
             String name = iter.next();
-            try
-            {
-                bytesMap.put(name.getBytes(), BeanUtil.serializeObject(map.get(name)));
-            }
-            catch(IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            bytesMap.put(name.getBytes(), BeanUtil.serializeObject(map.get(name)));
         }
 
         jedis.hmset(StringUtil.toBytes(key), bytesMap);
@@ -717,15 +620,7 @@ public class RedisClient
                 continue;
             }
 
-            try
-            {
-                list.add(BeanUtil.deserializeObject(bytes, clz));
-            }
-            catch(IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            list.add(BeanUtil.deserializeObject(bytes, clz));
         }
 
         return list;
@@ -765,15 +660,7 @@ public class RedisClient
                 continue;
             }
 
-            try
-            {
-                map.put(StringUtil.toString(entryBytes), BeanUtil.deserializeObject(valueBytes, clz));
-            }
-            catch(IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            map.put(StringUtil.toString(entryBytes), BeanUtil.deserializeObject(valueBytes, clz));
         }
 
         return map;
@@ -795,23 +682,14 @@ public class RedisClient
             return null;
         }
 
-        try
-        {
-            byte bytes[] = jedis.hget(StringUtil.toBytes(key), entry.getBytes());
+        byte bytes[] = jedis.hget(StringUtil.toBytes(key), entry.getBytes());
 
-            if(bytes == null)
-            {
-                return null;
-            }
-
-            return BeanUtil.deserializeObject(bytes, clz);
-        }
-        catch(IOException e)
+        if(bytes == null)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             return null;
         }
+
+        return BeanUtil.deserializeObject(bytes, clz);
     }
 
     /**

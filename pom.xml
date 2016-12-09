@@ -55,7 +55,8 @@
 		<mybatis.version>3.4.1</mybatis.version>
 		<mybatis-spring.version>1.3.0</mybatis-spring.version>
 		<druid.version>1.0.27</druid.version>
-		<swagger.version>2.6.1</swagger.version>
+		<springfox.version>2.6.1</springfox.version>
+		<swagger.version>1.5.10</swagger.version>
 		<jackson.version>2.8.5</jackson.version>
 		<elasticsearch.version>5.0.2</elasticsearch.version>
 		<jedis.version>2.9.0</jedis.version>
@@ -159,7 +160,7 @@
 				<artifactId>commons-logging</artifactId>
 				<version>${commons-logging.version}</version>
 			</dependency>
-			
+
 			<!-- FastJSON -->
 			<dependency>
 				<groupId>com.alibaba</groupId>
@@ -397,11 +398,18 @@
 			<dependency>
 				<groupId>io.springfox</groupId>
 				<artifactId>springfox-swagger2</artifactId>
-				<version>${swagger.version}</version>
+				<version>${springfox.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.springfox</groupId>
 				<artifactId>springfox-swagger-ui</artifactId>
+				<version>${springfox.version}</version>
+			</dependency>
+
+			<!-- Swagger 注解需要引入 -->
+			<dependency>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-annotations</artifactId>
 				<version>${swagger.version}</version>
 			</dependency>
 

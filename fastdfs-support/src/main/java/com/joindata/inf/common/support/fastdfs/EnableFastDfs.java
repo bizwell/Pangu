@@ -19,7 +19,7 @@ import com.joindata.inf.common.basic.annotation.JoindataComponent;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(ConfigHub.class)
+@JoindataComponent(bind = ConfigHub.class, name = "FastDFS - 分布式文件系统客户端")
 public @interface EnableFastDfs
 {
 }

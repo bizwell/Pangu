@@ -13,18 +13,21 @@ import com.joindata.inf.common.util.basic.CollectionUtil;
  */
 public class Logger
 {
+    /** 存储 Logger 的 Map，保证 Logger 不会被创建多个实例 */
     private static final Map<Class<?>, Logger> LogMap = CollectionUtil.newMap();
 
+    /** Log4j 的日志记录器，最终调用的是这个 */
     private org.apache.logging.log4j.Logger logger;
 
+    /** 禁止使用 new 来创建 */
     private Logger(Class<?> clz)
     {
-        logger = org.apache.logging.log4j.LogManager.getLogger();
+        logger = org.apache.logging.log4j.LogManager.getLogger(clz);
     }
 
     /**
      * 获取当前类的日志记录器<br />
-     * <i>可以在类的任何位置调用本方法，当前类的 Logger 会被创建为单例对象，不会每调用一次创建一次。但还是建议将其定义在类的开头作为该类的公共常量使用，如：</i><br />
+     * <i>可以在类的任何位置调用本方法，当前类的 Logger 会被创建为单例对象，不会每调用一次创建一次。但还是建议将其定义在类的开头作为该类的公共常量使用，如：</i>
      * 
      * <pre>
      * private static final Logger log = Logger.get();
@@ -32,7 +35,7 @@ public class Logger
      * 
      * @return 日志记录器
      */
-    public static final Logger get()
+    public synchronized static final Logger get()
     {
         Class<?> clz = ClassUtil.getCaller();
         if(!LogMap.containsKey(clz))

@@ -13,11 +13,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.joindata.inf.common.util.log.Logger;
 
 @Configuration
 @EnableWebMvc
 public class WebMvcConfig extends WebMvcConfigurerAdapter
 {
+    private static final Logger log = Logger.get();
+
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters)
     {
@@ -36,6 +39,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
         messageConverter.setSupportedMediaTypes(mediaTypeList);
 
         converters.add(messageConverter);
+
+        log.debug("注册 HTTP 消息转换器: {}" + messageConverter.toString());
     }
 
 }

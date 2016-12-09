@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
 import com.joindata.inf.common.support.fastdfs.support.component.web.FastDfsMultipartResolver;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * 配置 WebMvc 使 Spring 支持自定义的 FastDfsMultipartFile
@@ -18,6 +19,8 @@ import com.joindata.inf.common.support.fastdfs.support.component.web.FastDfsMult
 @Configuration
 public class WebMvcConfig extends DelegatingWebMvcConfiguration
 {
+    private static final Logger log = Logger.get();
+
     @Autowired
     private FastdfsClient client;
 
@@ -33,11 +36,20 @@ public class WebMvcConfig extends DelegatingWebMvcConfiguration
     @Bean(name = "multipartResolver")
     public FastDfsMultipartResolver multipartResolver()
     {
+        // TODO 后续将这些参数设为可外部配置的
+        String defaultEncoding = "UTF-8";
+        boolean lazyResolve = true;
+        int maxInMemory = 40960;
+        long maxUploadSize = 50 * 1024 * 1024;
+
         FastDfsMultipartResolver resolver = new FastDfsMultipartResolver(client);
-        resolver.setDefaultEncoding("UTF-8");
-        resolver.setResolveLazily(true);// resolveLazily属性启用是为了推迟文件解析
-        resolver.setMaxInMemorySize(40960);
-        resolver.setMaxUploadSize(50 * 1024 * 1024);// 上传文件大小 50M 50*1024*1024
+        resolver.setDefaultEncoding(defaultEncoding);
+        resolver.setResolveLazily(lazyResolve);
+        resolver.setMaxInMemorySize(maxInMemory);
+        resolver.setMaxUploadSize(maxUploadSize);
+
+        log.info("注册 FastDFS 文件上传解析器, 内存缓冲大小: {}, 文件大小限制: {}", maxInMemory, maxUploadSize);
+
         return resolver;
     }
 

@@ -16,7 +16,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.joindata.inf.boot.mechanism.Jetty2Log4j2Bridge;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * Jetty 配置
@@ -26,6 +26,8 @@ import com.joindata.inf.boot.mechanism.Jetty2Log4j2Bridge;
  */
 public class JettyServerFactory
 {
+    private static final Logger log = Logger.get();
+
     /**
      * 生成 WebAppContext 动态资源处理器
      * 
@@ -35,17 +37,23 @@ public class JettyServerFactory
      */
     public static WebAppContext makeAppContext(ClassLoader classLoader, DispatcherServlet servlet)
     {
+        log.info("配置 AppContext - 开始");
+
         // 基本信息
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setClassLoader(classLoader);
         webAppContext.setParentLoaderPriority(true);
-        webAppContext.setResourceBase("/");
+        webAppContext.setResourceBase("");
         webAppContext.setContextPath("/");
+
+        log.info("配置: WebAppContext = {}, ResourceBase = {}", webAppContext.getResourceBase(), webAppContext.getContextPath());
 
         // SpringMVC 转发器
         ServletHolder holder = new ServletHolder(servlet);
         holder.setName("dispatcher-servlet");
         webAppContext.addServlet(holder, "/");
+
+        log.info("注册 Servlet: {} -> {}", "/", servlet.getClass());
 
         // 字符编码过滤器
         {
@@ -55,6 +63,8 @@ public class JettyServerFactory
 
             FilterHolder encodingFilterHolder = new FilterHolder(encodingFilter);
             webAppContext.addFilter(encodingFilterHolder, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.REQUEST));
+
+            log.info("注册字符编码过滤器: {}, encoding = {}, InitParameters = {}", encodingFilter.getClass().getName(), encodingFilter.getEncoding(), encodingFilterHolder.getInitParameters());
         }
 
         // 隐藏方法过滤器，如果客户端不支持 PUT/DELETE 等方法，将会用到这个
@@ -63,7 +73,11 @@ public class JettyServerFactory
             hiddenHttpMethodFilter.setServletContext(servlet.getServletContext());
             FilterHolder hiddenHttpMethodFilterHolder = new FilterHolder(hiddenHttpMethodFilter);
             webAppContext.addFilter(hiddenHttpMethodFilterHolder, "/*", EnumSet.allOf(DispatcherType.class));
+
+            log.info("注册隐藏方法过滤器: {}, servlet = {}, InitParameters = {}", hiddenHttpMethodFilter.getClass().getName(), servlet.getClass().getName(), hiddenHttpMethodFilterHolder.getInitParameters());
         }
+
+        log.info("配置 AppContext - 完成");
         return webAppContext;
     }
 
@@ -103,14 +117,19 @@ public class JettyServerFactory
      */
     public static Server newServer(int port, ApplicationContext context, Handler... handlers)
     {
+        log.info("配置 Server - 开始");
         Server server = new Server(port);
-
-        org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4j2Bridge("JettyLogger"));
 
         // 这里用 HandlerList，可以使 handler 短路，有 handler 处理过就不再处理，而不至于所有去处理所有 handler
         HandlerList handlerList = new HandlerList();
-        handlerList.setHandlers(handlers);
+        for(Handler handler: handlers)
+        {
+            handlerList.addHandler(handler);
+            log.info("注册 Handler: {}", handler.getClass());
+        }
         server.setHandler(handlerList);
+
+        log.info("配置 Server - 完成");
 
         return server;
     }

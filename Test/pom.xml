@@ -35,5 +35,11 @@
 			<artifactId>swagger-support</artifactId>
 		</dependency>
 
+		<!-- 支持 Redis -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>redis-support</artifactId>
+		</dependency>
+
 	</dependencies>
 </project>

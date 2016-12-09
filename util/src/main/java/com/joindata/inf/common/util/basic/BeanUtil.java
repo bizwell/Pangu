@@ -148,9 +148,8 @@ public class BeanUtil
      * 
      * @param obj 要序列化的对象
      * @param out 输出流
-     * @throws IOException
      */
-    public static final void serializeObject(Serializable obj, OutputStream out) throws IOException
+    public static final void serializeObject(Serializable obj, OutputStream out)
     {
         SerializationUtils.serialize(obj, out);
     }
@@ -174,7 +173,7 @@ public class BeanUtil
      * @return 字节数组
      * @throws IOException
      */
-    public static final byte[] serializeObject(Serializable obj) throws IOException
+    public static final byte[] serializeObject(Serializable obj)
     {
         return SerializationUtils.serialize(obj);
     }
@@ -184,9 +183,8 @@ public class BeanUtil
      * 
      * @param bytes 对象序列化后的字节数组
      * @return 还原后的对象
-     * @throws IOException
      */
-    public static final <T extends Serializable> T deserializeObject(byte[] bytes) throws IOException
+    public static final <T extends Serializable> T deserializeObject(byte[] bytes)
     {
         return SerializationUtils.deserialize(bytes);
     }
@@ -197,9 +195,8 @@ public class BeanUtil
      * @param bytes 对象序列化后的字节数组
      * @param clz 还原对象的 Class <i>!!!!!!纳闷，为什么这个可以不传</i>
      * @return 还原后的对象
-     * @throws IOException
      */
-    public static final <T extends Serializable> T deserializeObject(byte[] bytes, Class<T> clz) throws IOException
+    public static final <T extends Serializable> T deserializeObject(byte[] bytes, Class<T> clz)
     {
         return SerializationUtils.deserialize(bytes);
     }

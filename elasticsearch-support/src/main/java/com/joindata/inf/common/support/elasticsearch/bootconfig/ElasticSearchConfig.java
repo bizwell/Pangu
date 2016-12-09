@@ -13,6 +13,7 @@ import com.joindata.inf.common.basic.errors.SystemError;
 import com.joindata.inf.common.basic.exceptions.SystemException;
 import com.joindata.inf.common.support.elasticsearch.component.ElasticSearchClient;
 import com.joindata.inf.common.support.elasticsearch.support.properties.ElasticSearchProperties;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * ElasticSearch 客户端配置
@@ -23,6 +24,8 @@ import com.joindata.inf.common.support.elasticsearch.support.properties.ElasticS
 @Configuration
 public class ElasticSearchConfig
 {
+    private static final Logger log = Logger.get();
+
     @Autowired
     private ElasticSearchProperties properties;
 
@@ -33,11 +36,10 @@ public class ElasticSearchConfig
         {
             throw new SystemException(SystemError.DEPEND_RESOURCE_NOT_READY, "没有取得 ElasticSearch 的配置");
         }
-        
+
         Settings settings = Settings.builder().put("cluster.name", properties.getClusterName()).build();
 
         ElasticSearchClient client = new ElasticSearchClient(settings);
-        
 
         String[] hosts = properties.getHosts().split(",");
 
@@ -51,8 +53,10 @@ public class ElasticSearchConfig
         }
         catch(UnknownHostException e)
         {
-            throw new RuntimeException("地址不对：" + e.getMessage());
+            throw new SystemException(SystemError.DEPEND_RESOURCE_CANNOT_READY, "地址不对：" + e.getMessage());
         }
+
+        log.info("ElasticSearch 连接主机: {}, 集群名称: {}", properties.getHosts(), properties.getClusterName());
 
         return client;
     }

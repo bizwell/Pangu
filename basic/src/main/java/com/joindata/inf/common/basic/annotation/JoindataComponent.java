@@ -22,5 +22,8 @@ import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 public @interface JoindataComponent
 {
     /** 指定绑定的配置器 */
-    Class<? extends AbstractConfigHub> value();
+    Class<? extends AbstractConfigHub> bind();
+
+    /** 组件名 */
+    String name();
 }

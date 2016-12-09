@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileId;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * FastDFS 文件
@@ -14,6 +15,8 @@ import com.joindata.inf.common.support.fastdfs.dependency.client.FileId;
  */
 public class FastDfsFile extends File
 {
+    private static final Logger log = Logger.get();
+
     private static final long serialVersionUID = -8873842185535273355L;
 
     /** 上传后文件 ID */
@@ -27,6 +30,7 @@ public class FastDfsFile extends File
     public FastDfsFile(String pathname)
     {
         super(pathname);
+        log.info("定义 FastDFS 文件, 远程路径: {}", pathname);
     }
 
     void setUploadFuture(CompletableFuture<FileId> fileIdFuture)

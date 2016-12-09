@@ -11,6 +11,7 @@ import com.joindata.inf.common.support.redis.component.RedisClient;
 import com.joindata.inf.common.support.redis.support.RedisProperties;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
+import com.joindata.inf.common.util.log.Logger;
 
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
@@ -18,6 +19,8 @@ import redis.clients.jedis.JedisCluster;
 @Configuration
 public class RedisConfig
 {
+    private static final Logger log = Logger.get();
+
     @Autowired
     private RedisProperties properties;
 
@@ -42,6 +45,8 @@ public class RedisConfig
         }
 
         JedisCluster jedisCluster = new JedisCluster(hostSet, config);
+
+        log.info("Redis 连接地址: {}, 最大活动连接数: {}, 最大空闲数: {}", properties.getHost(), properties.getMaxActive(), properties.getMaxIdle());
 
         return new RedisClient(jedisCluster);
     }

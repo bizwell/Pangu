@@ -19,7 +19,7 @@ import com.joindata.inf.common.basic.annotation.JoindataComponent;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(ConfigHub.class)
+@JoindataComponent(bind = ConfigHub.class, name = "Redis - 分布式键值对存储客户端")
 public @interface EnableRedis
 {
 }

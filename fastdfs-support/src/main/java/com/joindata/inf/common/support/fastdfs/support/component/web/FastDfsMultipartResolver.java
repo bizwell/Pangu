@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * 自定义的文件上传解析器，支持 FastDFS
@@ -26,7 +25,7 @@ import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
  */
 public class FastDfsMultipartResolver extends CommonsMultipartResolver
 {
-    private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger log = Logger.get();
 
     private FastdfsClient client;
 
@@ -76,10 +75,7 @@ public class FastDfsMultipartResolver extends CommonsMultipartResolver
                     }
                     catch(UnsupportedEncodingException ex)
                     {
-                        if(logger.isWarnEnabled())
-                        {
-                            logger.warn("Could not decode multipart item '" + fileItem.getFieldName() + "' with encoding '" + partEncoding + "': using platform default");
-                        }
+                        log.warn("Could not decode multipart item '" + fileItem.getFieldName() + "' with encoding '" + partEncoding + "': using platform default");
                         value = fileItem.getString();
                     }
                 }
@@ -106,10 +102,7 @@ public class FastDfsMultipartResolver extends CommonsMultipartResolver
                 // multipart file field
                 FastDfsMultipartFile file = new FastDfsMultipartFile(fileItem, client);
                 multipartFiles.add(file.getName(), file);
-                if(logger.isDebugEnabled())
-                {
-                    logger.debug("Found multipart file [" + file.getName() + "] of size " + file.getSize() + " bytes with original filename [" + file.getOriginalFilename() + "], stored " + file.getStorageDescription());
-                }
+                log.debug("Found multipart file [" + file.getName() + "] of size " + file.getSize() + " bytes with original filename [" + file.getOriginalFilename() + "], stored " + file.getStorageDescription());
             }
         }
         return new MultipartParsingResult(multipartFiles, multipartParameters, multipartParameterContentTypes);
@@ -134,10 +127,7 @@ public class FastDfsMultipartResolver extends CommonsMultipartResolver
                 {
                     FastDfsMultipartFile cmf = (FastDfsMultipartFile)file;
                     cmf.getFileItem().delete();
-                    if(logger.isDebugEnabled())
-                    {
-                        logger.debug("Cleaning up multipart file [" + cmf.getName() + "] with original filename [" + cmf.getOriginalFilename() + "], stored " + cmf.getStorageDescription());
-                    }
+                    log.debug("Cleaning up multipart file [" + cmf.getName() + "] with original filename [" + cmf.getOriginalFilename() + "], stored " + cmf.getStorageDescription());
                 }
             }
         }

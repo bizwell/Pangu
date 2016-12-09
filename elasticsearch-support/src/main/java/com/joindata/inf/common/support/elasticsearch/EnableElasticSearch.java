@@ -19,7 +19,7 @@ import com.joindata.inf.common.basic.annotation.JoindataComponent;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(ConfigHub.class)
+@JoindataComponent(bind = ConfigHub.class, name = "ElasticSearch - 搜索引擎客户端")
 public @interface EnableElasticSearch
 {
     /** 要扫描的顶级包，默认是当前包 */

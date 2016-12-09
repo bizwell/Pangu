@@ -10,6 +10,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata.Builder;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * FastDFS 的 MultipartFile 实现
@@ -19,6 +20,8 @@ import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata.Bu
  */
 public class FastDfsMultipartFile extends CommonsMultipartFile
 {
+    private static final Logger log = Logger.get();
+
     private static final long serialVersionUID = -5839543693444498974L;
 
     private FastdfsClient client;
@@ -34,17 +37,22 @@ public class FastDfsMultipartFile extends CommonsMultipartFile
     {
         if(dest == null)
         {
+            log.error("上传失败，上传目标为 null");
             throw new FileNotFoundException("保存路径不能为 null");
         }
 
         if(dest instanceof FastDfsFile)
         {
+            log.info("上传文件到服务器, 文件名 : {}, 上传到: {}", super.getOriginalFilename(), dest.getPath());
+
             Builder metaBuilder = FileMetadata.newBuilder();
             metaBuilder.put("fileName", super.getOriginalFilename());
             ((FastDfsFile)dest).setUploadFuture(client.upload(dest.getPath(), super.getBytes(), metaBuilder.build()));
         }
         else
         {
+            log.info("保存文件到本地, 文件名 : {}, 保存到: {}", super.getOriginalFilename(), dest.getPath());
+
             super.transferTo(dest);
         }
     }

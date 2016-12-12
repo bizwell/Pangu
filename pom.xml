@@ -19,10 +19,15 @@
 	<properties>
 		<pangu.version>1.0.0-SNAPSHOT</pangu.version>
 		<spring.version>4.3.4.RELEASE</spring.version>
+		<javadoc.version>2.10.4</javadoc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+		<dependency-plugin.version>2.10</dependency-plugin.version>
+		<jar-plugin.version>3.0.2</jar-plugin.version>
+		<assembly-plugin.version>3.0.0</assembly-plugin.version>
+		<compiler-plugin.version>3.6.0</compiler-plugin.version>
 		<servlet.version>3.1.0</servlet.version>
-		<httpclient.version>4.5.1</httpclient.version>
 		<fastjson.version>1.2.21</fastjson.version>
 		<javassist.version>3.20.0-GA</javassist.version>
 		<log4j2.version>2.6.2</log4j2.version>
@@ -215,13 +220,6 @@
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commons-io.version}</version>
-			</dependency>
-
-			<!-- Apache HTTP 多媒体处理客户端 -->
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpmime</artifactId>
-				<version>${httpclient.version}</version>
 			</dependency>
 
 			<!-- Apache 的 CSV 解析工具 -->
@@ -505,25 +503,128 @@
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- 依赖包打包插件 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${dependency-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>copy-dependencies</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>copy-dependencies</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${project.build.directory}/lib</outputDirectory>
+								<overWriteReleases>false</overWriteReleases>
+								<overWriteSnapshots>false</overWriteSnapshots>
+								<overWriteIfNewer>true</overWriteIfNewer>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- JAR 包打包插件 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${jar-plugin.version}</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+								<classpathPrefix>lib/</classpathPrefix>
+								<mainClass>${app.mainclass}</mainClass>
+								<useUniqueVersions>false</useUniqueVersions>
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+
+				<!-- 依赖和程序包都组装在一起作为大的 JAR 包 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>${assembly-plugin.version}</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<mainClass>${app.mainclass}</mainClass>
+								<addClasspath>true</addClasspath>
+								<classpathPrefix>lib/</classpathPrefix>
+								<useUniqueVersions>false</useUniqueVersions>
+							</manifest>
+						</archive>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+					</configuration>
+					<executions>
+						<execution>
+							<id>make-assembly</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
+			<!-- 编译器设置 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>${compiler-plugin.version}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
+
+			<!-- 文档插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${javadoc.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<charset>${project.build.sourceEncoding}</charset>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<docencoding>${project.build.sourceEncoding}</docencoding>
+					<doctitle>${project.artifactId} ${project.version}: API doc</doctitle>
+					<additionalparam>-Xdoclint:none</additionalparam>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
+
 		<resources>
+
+			<!-- resource 文件夹也要在编译时加入 -->
 			<resource>
 				<directory>src/main/resource</directory>
 				<includes>
 					<include>**/*</include>
 				</includes>
 			</resource>
+
 		</resources>
+
 	</build>
 
 	<modules>

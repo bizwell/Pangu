@@ -7,14 +7,16 @@
 		<groupId>com.joindata</groupId>
 		<artifactId>joindata-app</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
+		<relativePath />
 	</parent>
 	<artifactId>Test</artifactId>
 	<name>Test</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<app.mainclass>com.joindata.test.App</app.mainclass>
 	</properties>
+
 	<dependencies>
 
 		<!-- 支持 FastDFS -->
@@ -42,4 +44,5 @@
 		</dependency>
 
 	</dependencies>
+
 </project>

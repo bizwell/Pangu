@@ -9,9 +9,9 @@
 	</parent>
 
 	<artifactId>bootable</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
-	<name>可启动的应用</name>
+	<name>可启动特性</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>
@@ -52,5 +52,17 @@
 		</dependency>
 
 	</dependencies>
+
+	<build>
+		<resources>
+			<!-- 打包时包括依赖 -->
+			<resource>
+				<directory>${project.build.directory}/</directory>
+				<includes>
+					<include>**/dependency/*</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
 
 </project>

@@ -82,11 +82,30 @@
 	</dependencyManagement>
 
 	<dependencies>
+
 		<!-- 可启动应用 -->
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>
 			<artifactId>bootable</artifactId>
 		</dependency>
+
 	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- 依赖包打包插件 -->
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<!-- JAR 包打包插件 -->
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

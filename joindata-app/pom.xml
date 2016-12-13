@@ -99,11 +99,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 			</plugin>
-			<!-- JAR 包打包插件 -->
 			<plugin>
-				<inherited>true</inherited>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
+				<groupId>com.joindata</groupId>
+				<artifactId>joindata-app-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

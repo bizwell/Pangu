@@ -611,6 +611,12 @@
 					</archive>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>com.joindata</groupId>
+				<artifactId>joindata-app-plugin</artifactId>
+				<version>${pangu.version}</version>
+			</plugin>
 		</plugins>
 
 		<resources>
@@ -638,6 +644,7 @@
 		<module>redis-support</module>
 		<module>bootable</module>
 		<module>joindata-app</module>
+		<module>joindata-app-plugin</module>
 	</modules>
 
 </project>

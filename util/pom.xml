@@ -157,6 +157,12 @@
 			<artifactId>hutool</artifactId>
 		</dependency>
 
+		<!-- Class 文件查找器 -->
+		<dependency>
+			<groupId>com.offbytwo.class-finder</groupId>
+			<artifactId>class-finder</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>

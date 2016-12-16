@@ -1,5 +1,6 @@
 package com.joindata.inf.common.util.basic;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -7,16 +8,22 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import com.joindata.inf.common.util.basic.entities.MethodArgReflectInfo;
 import com.joindata.inf.common.util.basic.entities.MethodReflectInfo;
+import com.joindata.inf.common.util.log.Logger;
+import com.offbytwo.class_finder.ClassFinder;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -34,6 +41,8 @@ import javassist.bytecode.MethodInfo;
  */
 public class ClassUtil
 {
+    private static final Logger log = Logger.get();
+
     /**
      * 获取对象的 Field 列表，并赋予可访问性
      * 
@@ -344,6 +353,50 @@ public class ClassUtil
     }
 
     /**
+     * 扫描指定 Class 集合中所有在类或接口上面有指定注解的类或接口
+     * 
+     * @param classes 要扫描的类集合
+     * @param annoClz 匹配的注解
+     * @param excludeAnnoClz 排除的注解
+     * @return 有该注解的类或接口
+     */
+    @SafeVarargs
+    public static Set<Class<?>> scanTypeAnnotations(Set<Class<?>> classSet, Class<? extends Annotation> annoClz, Class<? extends Annotation>... excludeAnnoClz)
+    {
+        Set<Class<?>> set = CollectionUtil.newHashSet();
+        for(Class<?> clz: classSet)
+        {
+            if(clz.isAnnotationPresent(annoClz))
+            {
+                // 找要排除的注解
+                boolean excluded = false;
+                if(excludeAnnoClz != null)
+                {
+                    for(Class<? extends Annotation> excludeItem: excludeAnnoClz)
+                    {
+                        if(clz.isAnnotationPresent(excludeItem))
+                        {
+                            excluded = true;
+                            break;
+                        }
+                    }
+                }
+
+                // 如果有排除的注解就不返回
+                if(excluded)
+                {
+                    continue;
+                }
+
+                // 剩下的都是符合要求的精英
+                set.add(clz);
+            }
+        }
+
+        return set;
+    }
+
+    /**
      * 在一个类或接口里面根据注解筛选出符合要求的方法
      * 
      * @param clz 要扫描的类的 Class
@@ -461,6 +514,44 @@ public class ClassUtil
     }
 
     /**
+     * 从目录中取到所有的类<br />
+     * 找到的类会被加载，但不会初始化
+     * 
+     * @param file 目录，将扫描该目录下所有文件
+     * @return 查找到的类的集合，不会返回 null
+     * @throws MalformedURLException
+     */
+    public static Set<Class<?>> findClasses(File file) throws MalformedURLException
+    {
+        if(file == null || !file.exists())
+        {
+            return CollectionUtil.newHashSet();
+        }
+
+        Set<Class<?>> set = CollectionUtil.newHashSet();
+
+        URLClassLoader loader = new URLClassLoader(new URL[]{file.toURI().toURL()}, ClassUtil.getClassLoader());
+
+        List<String> list = new ClassFinder().getClassesInDirectory(file);
+        for(String item: list)
+        {
+            String className = StringUtil.replaceAll(item, "\\", ".").substring(1);
+            Class<?> clz = ClassUtil.parseClass(loader, className);
+            set.add(clz);
+        }
+        try
+        {
+            loader.close();
+        }
+        catch(IOException e)
+        {
+            log.error("关闭类加载器时发生 IO 异常: {}", e.getMessage(), e);
+        }
+
+        return set;
+    }
+
+    /**
      * 将 Class 名解析为 Class
      * 
      * @param clzName Class 全名
@@ -493,7 +584,54 @@ public class ClassUtil
                 }
                 catch(ClassNotFoundException e)
                 {
-                    e.printStackTrace();
+                    try
+                    {
+                        return ClassUtils.getClass(clzName);
+                    }
+                    catch(ClassNotFoundException e1)
+                    {
+                        log.error("找不到该类: {}", clzName, e1);
+                        return null;
+                    }
+                }
+        }
+    }
+
+    /**
+     * 将 Class 名解析为 Class
+     * 
+     * @param loader 指定必须从这个 ClassLoader 中找类
+     * @param clzName Class 全名
+     * @return Class 对象，如果找不到，返回 null
+     */
+    public static Class<?> parseClass(ClassLoader loader, String clzName)
+    {
+        switch(clzName)
+        {
+            case "boolean":
+                return boolean.class;
+            case "int":
+                return int.class;
+            case "long":
+                return long.class;
+            case "short":
+                return short.class;
+            case "double":
+                return double.class;
+            case "void":
+                return void.class;
+            case "float":
+                return float.class;
+            case "byte":
+                return byte.class;
+            default:
+                try
+                {
+                    return ClassUtils.getClass(loader, clzName);
+                }
+                catch(ClassNotFoundException e)
+                {
+                    log.error("找不到该类: {}", clzName, e);
                     return null;
                 }
         }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF">
+	<appenders>
+		<Console name="DefaultConsole" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} - %msg%n" />
+		</Console>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} - %msg%n" />
+		</Console>
+	</appenders>
+	<loggers>
+		<root level="INFO">
+			<appender-ref ref="DefaultConsole" />
+		</root>
+		<logger name="org.springframework.web.servlet" additivity="false" level="INFO">
+			<appender-ref ref="Console" />
+		</logger>
+		<logger name="com.baidu.disconf.core.common.zookeeper.inner.ConnectionWatcher" additivity="false" level="INFO">
+			<appender-ref ref="Console"/>
+		</logger>
+		<logger name="com.joindata" additivity="false" level="DEBUG">
+			<appender-ref ref="Console"/>
+		</logger>
+	</loggers>
+</configuration>

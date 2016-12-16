@@ -1,9 +1,14 @@
 package com.joindata.inf.common.util.log;
 
+import java.io.IOException;
 import java.util.Map;
+
+import org.apache.log4j.PropertyConfigurator;
 
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
+import com.joindata.inf.common.util.basic.PropertiesUtil;
+import com.joindata.inf.common.util.basic.ResourceUtil;
 
 /**
  * 日志记录器
@@ -37,6 +42,27 @@ public class Logger
      */
     public synchronized static final Logger get()
     {
+        try
+        {
+            if(ResourceUtil.isResourceInJar("log4j2.xml"))
+            {
+                PropertyConfigurator.configure(PropertiesUtil.loadProperties(ClassUtil.getRootResourceAsStream("log4j2.xml")));
+            }
+            else if(ResourceUtil.isResourceInJar("log-config.xml"))
+            {
+                PropertyConfigurator.configure(PropertiesUtil.loadProperties(ClassUtil.getRootResourceAsStream("log-config.xml")));
+            }
+            else if(ResourceUtil.isResourceInJar("log.xml"))
+            {
+                PropertyConfigurator.configure(PropertiesUtil.loadProperties(ClassUtil.getRootResourceAsStream("log-config.xml")));
+            }
+        }
+        catch(IOException e)
+        {
+            System.err.println("没有配置 LOG4J2 的配置文件在工程目录下，将无法正常打印日志");
+            System.out.println("可以配置 log4j2.xml、 log-config.xml 或 log.xml 在工程编译根目录下");
+        }
+
         Class<?> clz = ClassUtil.getCaller();
         if(!LogMap.containsKey(clz))
         {

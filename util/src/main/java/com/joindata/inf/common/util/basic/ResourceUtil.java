@@ -34,12 +34,10 @@ public class ResourceUtil
         }
         catch(FileNotFoundException e)
         {
-            e.printStackTrace();
             return false;
         }
         catch(IOException e)
         {
-            e.printStackTrace();
             return false;
         }
     }

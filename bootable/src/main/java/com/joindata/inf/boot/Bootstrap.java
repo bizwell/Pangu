@@ -60,6 +60,9 @@ public class Bootstrap
                 checkEnv();
 
                 context = bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).value());
+
+                log.info("应用已启动, PID: {}{}", SystemUtil.getProcessId(), ", Web 端口号: " + Bootstrap.port);
+
             }
             // 启动应用
             else if(bootClz.getAnnotation(JoindataApp.class) != null)
@@ -70,6 +73,8 @@ public class Bootstrap
                 checkEnv();
 
                 context = boot(bootClz);
+
+                log.info("应用已启动, PID: {}", SystemUtil.getProcessId());
             }
             // 没有标注，就报错
             else
@@ -83,8 +88,6 @@ public class Bootstrap
             log.fatal("启动失败, 发生意外错误: {}", e.getMessage(), e);
             System.exit(0);
         }
-
-        log.info("应用已启动, PID: {}{}", SystemUtil.getProcessId(), ", Web 端口号: " + Bootstrap.port);
 
         return context;
     }
@@ -102,7 +105,11 @@ public class Bootstrap
 
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
         context.setBeanNameGenerator(new JoindataAnnotationBeanNameGenerator());
-
+        
+        // 注册容器关闭句柄
+        log.info("注册容器关闭句柄...");
+        context.registerShutdownHook();
+        
         // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
         log.info("注册启动类: {}", bootClz.getName());
         context.register(bootClz);
@@ -164,7 +171,11 @@ public class Bootstrap
             // 记录端口号
             Bootstrap.port = ((ServerConnector)server.getConnectors()[0]).getLocalPort();
         }
-
+        
+        // 注册容器关闭句柄
+        log.info("注册容器关闭句柄...");
+        context.registerShutdownHook();
+        
         // 注册启动类
         log.info("注册启动类: {}", bootClz.getName());
         context.register(bootClz);

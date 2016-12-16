@@ -53,6 +53,7 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<javax-mail.version>1.5.0-b01</javax-mail.version>
 		<hutool.version>2.15.19</hutool.version>
+		<class-finder.version>1.0.0</class-finder.version>
 		<aspectj.version>1.8.9</aspectj.version>
 		<disconf.version>2.6.36</disconf.version>
 		<netty.version>4.1.6.Final</netty.version>
@@ -318,6 +319,13 @@
 				<version>${hutool.version}</version>
 			</dependency>
 
+			<!-- Class 文件查找器 -->
+			<dependency>
+				<groupId>com.offbytwo.class-finder</groupId>
+				<artifactId>class-finder</artifactId>
+				<version>${class-finder.version}</version>
+			</dependency>
+
 			<!-- AspectJ -->
 			<dependency>
 				<groupId>org.aspectj</groupId>
@@ -503,78 +511,6 @@
 	</dependencies>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<!-- 依赖包打包插件 -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>${dependency-plugin.version}</version>
-					<executions>
-						<execution>
-							<id>copy-dependencies</id>
-							<phase>prepare-package</phase>
-							<goals>
-								<goal>copy-dependencies</goal>
-							</goals>
-							<configuration>
-								<outputDirectory>${project.build.directory}/lib</outputDirectory>
-								<overWriteReleases>false</overWriteReleases>
-								<overWriteSnapshots>false</overWriteSnapshots>
-								<overWriteIfNewer>true</overWriteIfNewer>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-
-				<!-- JAR 包打包插件 -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>${jar-plugin.version}</version>
-					<configuration>
-						<archive>
-							<manifest>
-								<addClasspath>true</addClasspath>
-								<classpathPrefix>lib/</classpathPrefix>
-								<mainClass>${app.mainclass}</mainClass>
-								<useUniqueVersions>false</useUniqueVersions>
-							</manifest>
-						</archive>
-					</configuration>
-				</plugin>
-
-				<!-- 依赖和程序包都组装在一起作为大的 JAR 包 -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>${assembly-plugin.version}</version>
-					<configuration>
-						<archive>
-							<manifest>
-								<mainClass>${app.mainclass}</mainClass>
-								<addClasspath>true</addClasspath>
-								<classpathPrefix>lib/</classpathPrefix>
-								<useUniqueVersions>false</useUniqueVersions>
-							</manifest>
-						</archive>
-						<descriptorRefs>
-							<descriptorRef>jar-with-dependencies</descriptorRef>
-						</descriptorRefs>
-					</configuration>
-					<executions>
-						<execution>
-							<id>make-assembly</id>
-							<phase>package</phase>
-							<goals>
-								<goal>single</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-
 		<plugins>
 			<!-- 编译器设置 -->
 			<plugin>
@@ -584,6 +520,7 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<goal>jar</goal>
 				</configuration>
 			</plugin>
 
@@ -594,7 +531,7 @@
 				<version>${javadoc.version}</version>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<phase>deploy</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
@@ -610,12 +547,6 @@
 						<addMavenDescriptor>false</addMavenDescriptor>
 					</archive>
 				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>com.joindata</groupId>
-				<artifactId>joindata-app-plugin</artifactId>
-				<version>${pangu.version}</version>
 			</plugin>
 		</plugins>
 

@@ -19,6 +19,8 @@
 	<properties>
 		<pangu.version>1.0.0-SNAPSHOT</pangu.version>
 		<spring.version>4.3.4.RELEASE</spring.version>
+		<spring-security.version>4.2.0.RELEASE</spring-security.version>
+		<spring-security-cas.version>3.0.8.RELEASE</spring-security-cas.version>
 		<javadoc.version>2.10.4</javadoc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -120,6 +122,25 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-tx</artifactId>
 				<version>${spring.version}</version>
+			</dependency>
+
+			<!-- Spring Security 配置支持 -->
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${spring-security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+				<version>${spring-security.version}</version>
+			</dependency>
+
+			<!-- Spring CAS 支持 -->
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-cas-client</artifactId>
+				<version>${spring-security-cas.version}</version>
 			</dependency>
 
 			<!-- MyBatis -->
@@ -490,6 +511,12 @@
 			<artifactId>spring-core</artifactId>
 		</dependency>
 
+		<!-- Servlet API 也是必须的 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+
 		<!-- log4j -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -576,6 +603,7 @@
 		<module>bootable</module>
 		<module>joindata-app</module>
 		<module>joindata-app-plugin</module>
+		<module>sso-support</module>
 	</modules>
 
 </project>

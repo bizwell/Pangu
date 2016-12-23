@@ -24,6 +24,8 @@ public class BootInfoHolder
 
     private static final Map<String, Object> bootInfoMap = new HashMap<>();
 
+    private static String APP_ID = "";
+
     /**
      * 设置启动信息
      * 
@@ -82,6 +84,26 @@ public class BootInfoHolder
     public static Class<?> getBootClass()
     {
         return BOOT_CLASS;
+    }
+
+    /**
+     * 设置 AppId
+     * 
+     * @param appId AppId
+     */
+    public static void setAppId(String appId)
+    {
+        APP_ID = appId;
+    }
+
+    /**
+     * 获取 APP_ID
+     * 
+     * @return AppID
+     */
+    public static String getAppId()
+    {
+        return APP_ID;
     }
 
     /**

@@ -29,6 +29,16 @@ public class RedisClient
     }
 
     /**
+     * 获取JedisCluster 对象
+     * 
+     * @return JedisCluster 对象
+     */
+    public JedisCluster getJedisCluster()
+    {
+        return jedis;
+    }
+
+    /**
      * 设置字符串
      * 
      * @param key 键

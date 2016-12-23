@@ -1,4 +1,4 @@
-package com.joindata.inf.common.basic.annotation;
+package com.joindata.inf.common.support.session;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,19 +7,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.servlet.Filter;
+import com.joindata.inf.common.basic.annotation.JoindataComponent;
 
 /**
- * 标注过滤器
+ * 启用 HTTP 会话支持
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date Dec 19, 2016 6:13:46 PM
+ * @date Dec 19, 2016 5:58:09 PM
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface WebFilter
+@JoindataComponent(bind = ConfigHub.class, name = "SESSION - HTTP 会话支持")
+public @interface EnableSession
 {
-    Class<? extends Filter>[] value();
 }

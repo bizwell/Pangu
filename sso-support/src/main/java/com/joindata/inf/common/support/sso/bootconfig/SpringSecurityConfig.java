@@ -4,6 +4,8 @@ import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
@@ -14,11 +16,12 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -26,7 +29,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.sso.EnableSso;
 import com.joindata.inf.common.support.sso.properties.CasProperties;
-import com.joindata.inf.common.support.sso.stereotype.SsoInterceptor;
+import com.joindata.inf.common.support.sso.stereotype.GrantQueryService;
+import com.joindata.inf.common.support.sso.stereotype.UserAuthInfoQueryService;
+import com.joindata.inf.common.support.sso.support.CustomAccessDecisionManager;
+import com.joindata.inf.common.support.sso.support.CustomSecurityInterceptor;
+import com.joindata.inf.common.support.sso.support.CustomSecurityMetadataSource;
 
 /**
  * Spring Security 的 CAS 配置
@@ -36,7 +43,7 @@ import com.joindata.inf.common.support.sso.stereotype.SsoInterceptor;
  */
 @Configuration
 @EnableWebSecurity
-public class SpringSecurityCasConfig extends WebSecurityConfigurerAdapter
+public class SpringSecurityConfig extends WebSecurityConfigurerAdapter
 {
     @Autowired
     private CasProperties properties;
@@ -68,11 +75,8 @@ public class SpringSecurityCasConfig extends WebSecurityConfigurerAdapter
         // CAS 异常处理
         http.exceptionHandling().authenticationEntryPoint(casAuthenticationEntryPoint());
 
-        // 自定义拦截器
-        for(Class<? extends SsoInterceptor> clz: Util.getInterceptor())
-        {
-            http.addFilterBefore(super.getApplicationContext().getBean(clz), FilterSecurityInterceptor.class);
-        }
+        // 权限处理
+        http.addFilterBefore(customSecurityInterceptor(), FilterSecurityInterceptor.class);
 
         // 登出设置
         LogoutConfigurer<HttpSecurity> handler = http.logout();
@@ -84,6 +88,16 @@ public class SpringSecurityCasConfig extends WebSecurityConfigurerAdapter
         http.authorizeRequests().anyRequest().authenticated();
 
         // TODO 以后增加自定义配置 http.rememberMe();
+    }
+
+    /** 自定义的权限拦截器 */
+    @Bean
+    public CustomSecurityInterceptor customSecurityInterceptor()
+    {
+        SecurityMetadataSource metadataSource = new CustomSecurityMetadataSource(super.getApplicationContext().getBean(Util.getGrantQuery()));
+        AccessDecisionManager manager = new CustomAccessDecisionManager();
+        CustomSecurityInterceptor interceptor = new CustomSecurityInterceptor(metadataSource, manager);
+        return interceptor;
     }
 
     /**
@@ -121,7 +135,7 @@ public class SpringSecurityCasConfig extends WebSecurityConfigurerAdapter
         provider.setTicketValidator(new Cas20ServiceTicketValidator(properties.getCasServerUrlPrefix()));
 
         // 设置用户信息保存服务
-        provider.setAuthenticationUserDetailsService(new UserDetailsByNameServiceWrapper<>(super.getApplicationContext().getBean(Util.getUserDetailService())));
+        provider.setAuthenticationUserDetailsService(new UserDetailsByNameServiceWrapper<>(super.getApplicationContext().getBean(Util.getUserAuthQueryService())));
 
         return provider;
     }
@@ -146,9 +160,14 @@ public class SpringSecurityCasConfig extends WebSecurityConfigurerAdapter
         // 认证管理器，用默认的
         filter.setAuthenticationManager(authenticationManager());
         return filter;
-
     }
-
+    
+    @Bean
+    public ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy()
+    {
+        ConcurrentSessionControlAuthenticationStrategy strategy = new ConcurrentSessionControlAuthenticationStrategy()
+    }
+    
     /**
      * 工具类
      * 
@@ -170,27 +189,28 @@ public class SpringSecurityCasConfig extends WebSecurityConfigurerAdapter
         }
 
         /**
-         * 获取用户详情处理服务
+         * 获取用户认证信息查询服务 Class
          * 
-         * @return 用户详情处理服务
+         * @return 用户认证信息查询服务 Class
          */
-        public static final Class<? extends UserDetailsService> getUserDetailService()
+        public static final Class<? extends UserAuthInfoQueryService> getUserAuthQueryService()
         {
             EnableSso enableSso = BootInfoHolder.getBootClass().getAnnotation(EnableSso.class);
 
-            return enableSso.userDetailService();
+            return enableSso.userService();
         }
 
         /**
-         * 获取拦截器
+         * 获取权限关系查询服务 Class
          * 
-         * @return 用户详情类
+         * @return 权限关系查询服务 Class
          */
-        public static final Class<? extends SsoInterceptor>[] getInterceptor()
+        public static final Class<? extends GrantQueryService> getGrantQuery()
         {
             EnableSso enableSso = BootInfoHolder.getBootClass().getAnnotation(EnableSso.class);
 
-            return enableSso.interceptor();
+            return enableSso.grantService();
         }
+
     }
 }

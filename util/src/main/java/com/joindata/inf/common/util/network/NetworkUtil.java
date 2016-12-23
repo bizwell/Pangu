@@ -10,6 +10,7 @@ import java.util.Set;
 import com.joindata.inf.common.basic.errors.ResourceErrors;
 import com.joindata.inf.common.basic.exceptions.ResourceException;
 import com.joindata.inf.common.util.basic.StringUtil;
+import com.joindata.inf.common.util.network.entity.HostPort;
 import com.xiaoleilu.hutool.util.NetUtil;
 
 /**
@@ -177,6 +178,29 @@ public class NetworkUtil
         {
             return false;
         }
+    }
+
+    /**
+     * 解析主机名+端口号串<br />
+     * 可以是 host1:port1,host2:port2 这样的，也可以是 host:port 这样的
+     * 
+     * @param host
+     * @return 主机名端口号对，如果是逗号分割的多个主机名端口号，返回的数组数量就是多个；如果是 1 个，数组数量就是 1 个
+     */
+    public static HostPort[] parseHostPort(String hostPortStr)
+    {
+        String[] strs = StringUtil.splitToArray(hostPortStr, ",");
+
+        HostPort[] hostPort = new HostPort[strs.length];
+
+        int i = 0;
+        for(String str: strs)
+        {
+            String[] pair = str.split(":");
+            hostPort[i++] = new HostPort(pair[0], Integer.parseInt(pair[1]));
+        }
+
+        return hostPort;
     }
 
     public static void main(String[] args) throws ResourceException, UnknownHostException, IOException

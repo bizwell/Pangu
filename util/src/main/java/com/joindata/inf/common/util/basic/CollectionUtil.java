@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -276,6 +277,72 @@ public class CollectionUtil
         Collections.reverse(list);
     }
 
+    /**
+     * 创建一个 EnumSet
+     * 
+     * @param Enum 内容
+     * @return EnumSet，如果 es 为 null 或空，返回 null
+     */
+    @SafeVarargs
+    public static <E extends Enum<E>> EnumSet<E> newEnumSet(E... es)
+    {
+        if(ArrayUtil.isEmpty(es))
+        {
+            return null;
+        }
+
+        if(es.length == 1)
+        {
+            return EnumSet.of(es[0]);
+        }
+
+        List<E> elist = new ArrayList<>();
+        for(int i = 1; i < es.length; i++)
+        {
+            elist.add(es[i]);
+        }
+
+        return EnumSet.of(es[0], CollectionUtil.toArray(elist));
+    }
+
+    /**
+     * 判断两者是否有交集
+     * 
+     * @param collection1 集合1
+     * @param collection2 集合2
+     * @return true，如果有交集。如果两者任何一个为 null，返回 false
+     */
+    public static boolean hasIntersection(Collection<?> collection1, Collection<?> collection2)
+    {
+        if(collection1 == null || collection2 == null)
+        {
+            return false;
+        }
+
+        if(collection1.size() < collection2.size())
+        {
+            for(Object obj: collection1)
+            {
+                if(collection2.contains(obj))
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            for(Object obj: collection2)
+            {
+                if(collection1.contains(obj))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static void main(String[] args)
     {
         System.out.println(newHashSet("A", "B", "C"));
@@ -309,5 +376,4 @@ public class CollectionUtil
         System.out.println(JsonUtil.toJSON(toArray(newList("a", "b", "c"))));
 
     }
-
 }

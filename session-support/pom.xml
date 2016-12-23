@@ -8,10 +8,10 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>sso-support</artifactId>
+	<artifactId>session-support</artifactId>
 	<packaging>jar</packaging>
 
-	<name>单点登录支持</name>
+	<name>HTTP 会话支持</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>
@@ -30,25 +30,15 @@
 			<version>${pangu.version}</version>
 		</dependency>
 
-		<!-- 会话支持 -->
+		<!-- Spring Session -->
 		<dependency>
-			<groupId>com.joindata.inf.common</groupId>
-			<artifactId>session-support</artifactId>
-			<version>${pangu.version}</version>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session</artifactId>
 		</dependency>
-
-		<!-- Spring Security -->
+		<!-- Spring Redis -->
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-cas-client</artifactId>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
 		</dependency>
 
 	</dependencies>

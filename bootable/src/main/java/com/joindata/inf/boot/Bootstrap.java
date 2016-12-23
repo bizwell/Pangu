@@ -2,8 +2,14 @@ package com.joindata.inf.boot;
 
 import java.lang.annotation.Annotation;
 
+import javax.servlet.Filter;
+import javax.servlet.annotation.WebFilter;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.FilterMapping;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -17,10 +23,16 @@ import com.joindata.inf.boot.mechanism.Jetty2Log4j2Bridge;
 import com.joindata.inf.boot.mechanism.JoindataAnnotationBeanNameGenerator;
 import com.joindata.inf.boot.webserver.JettyServerFactory;
 import com.joindata.inf.common.basic.annotation.JoindataComponent;
+import com.joindata.inf.common.basic.annotation.WebAppFilter;
 import com.joindata.inf.common.basic.annotation.WebConfig;
+import com.joindata.inf.common.basic.errors.SystemError;
+import com.joindata.inf.common.basic.exceptions.SystemException;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
+import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.ClassUtil;
+import com.joindata.inf.common.util.basic.CollectionUtil;
+import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.basic.SystemUtil;
 import com.joindata.inf.common.util.log.Logger;
 
@@ -56,10 +68,11 @@ public class Bootstrap
             {
                 log.info("启动 Web 应用...");
 
-                configureBootInfo(bootClz);
+                JoindataWebApp joindataWebApp = bootClz.getAnnotation(JoindataWebApp.class);
+                configureBootInfo(bootClz, joindataWebApp.value() + joindataWebApp.appId());
                 checkEnv();
 
-                context = bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).value());
+                context = bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).port());
 
                 log.info("应用已启动, PID: {}{}", SystemUtil.getProcessId(), ", Web 端口号: " + Bootstrap.port);
 
@@ -69,7 +82,8 @@ public class Bootstrap
             {
                 log.info("启动应用...");
 
-                configureBootInfo(bootClz);
+                JoindataApp joindataApp = bootClz.getAnnotation(JoindataApp.class);
+                configureBootInfo(bootClz, joindataApp.value() + joindataApp.appId());
                 checkEnv();
 
                 context = boot(bootClz);
@@ -105,11 +119,11 @@ public class Bootstrap
 
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
         context.setBeanNameGenerator(new JoindataAnnotationBeanNameGenerator());
-        
+
         // 注册容器关闭句柄
         log.info("注册容器关闭句柄...");
         context.registerShutdownHook();
-        
+
         // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
         log.info("注册启动类: {}", bootClz.getName());
         context.register(bootClz);
@@ -160,6 +174,43 @@ public class Bootstrap
             log.info("重定向 Jetty 日志记录器至: {}", Jetty2Log4j2Bridge.class.getName());
             org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4j2Bridge("JettyLogger"));
 
+            ServletContextHandler handler = new ServletContextHandler();
+
+            // 添加 Filter
+            for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
+            {
+                WebAppFilter webAppFilter = configHubClz.getAnnotation(WebAppFilter.class);
+                for(Class<? extends Filter> filterClz: webAppFilter.value())
+                {
+                    WebFilter webFilter = filterClz.getAnnotation(WebFilter.class);
+                    if(webFilter == null)
+                    {
+                        throw new SystemException(SystemError.DEPEND_RESOURCE_CANNOT_READY, "没有设置 Filter 属性，这样不好");
+                    }
+
+                    FilterMapping mapping = new FilterMapping();
+                    if(StringUtil.isBlank(webFilter.filterName()))
+                    {
+                        mapping.setFilterName(filterClz.getSimpleName());
+                    }
+                    else
+                    {
+                        mapping.setFilterName(webFilter.filterName());
+                    }
+                    mapping.setPathSpecs(webFilter.urlPatterns());
+                    if(!ArrayUtil.isEmpty(webFilter.servletNames()))
+                    {
+                        mapping.setServletNames(webFilter.servletNames());
+                    }
+                    mapping.setDispatcherTypes(CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
+
+                    FilterHolder holder = new FilterHolder(filterClz);
+                    handler.getServletHandler().addFilter(holder, mapping);
+
+                    log.info("注册 Filter: {}", mapping.getFilterName());
+                }
+            }
+
             WebAppContext webAppContext = JettyServerFactory.makeAppContext(context.getClassLoader(), dispatcherServlet);
             Server server = JettyServerFactory.newServer(port, context, webAppContext);
             log.info("配置 Jetty - 完成");
@@ -171,11 +222,11 @@ public class Bootstrap
             // 记录端口号
             Bootstrap.port = ((ServerConnector)server.getConnectors()[0]).getLocalPort();
         }
-        
+
         // 注册容器关闭句柄
         log.info("注册容器关闭句柄...");
         context.registerShutdownHook();
-        
+
         // 注册启动类
         log.info("注册启动类: {}", bootClz.getName());
         context.register(bootClz);
@@ -229,9 +280,13 @@ public class Bootstrap
     /**
      * 设置启动信息，以供其他组件使用
      */
-    public static void configureBootInfo(Class<?> bootClz)
+    public static void configureBootInfo(Class<?> bootClz, String appId)
     {
         log.info("配置启动信息 - 开始");
+
+        // 设置 AppID
+        BootInfoHolder.setAppId(appId);
+        log.info("应用 ID: {}" + appId);
 
         // 告诉大家启动类是哪个
         BootInfoHolder.setBootClass(bootClz);

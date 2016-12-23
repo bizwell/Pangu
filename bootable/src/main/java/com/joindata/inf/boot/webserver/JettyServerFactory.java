@@ -122,6 +122,7 @@ public class JettyServerFactory
 
         // 这里用 HandlerList，可以使 handler 短路，有 handler 处理过就不再处理，而不至于所有去处理所有 handler
         HandlerList handlerList = new HandlerList();
+
         for(Handler handler: handlers)
         {
             handlerList.addHandler(handler);

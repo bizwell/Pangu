@@ -16,9 +16,6 @@
 
 	<dependencies>
 
-		<!-- SpringBoot <dependency> <groupId>org.springframework.boot</groupId> 
-			<artifactId>spring-boot-starter</artifactId> </dependency> -->
-
 		<!-- Disconf 支持 -->
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>

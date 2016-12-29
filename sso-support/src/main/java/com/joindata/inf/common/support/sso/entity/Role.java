@@ -48,6 +48,17 @@ public class Role implements GrantedAuthority, ConfigAttribute
         return getRoleId();
     }
 
+    @Override
+    public int hashCode()
+    {
+        if(this.roleId == null)
+        {
+            return super.hashCode();
+        }
+
+        return this.roleId.hashCode();
+    }
+
     /**
      * 如果传入的对象是 ConfigAttribute，会根据 roleId 来判定是否相同
      */
@@ -66,6 +77,12 @@ public class Role implements GrantedAuthority, ConfigAttribute
     public String getAttribute()
     {
         return this.roleId;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.roleId + "(" + this.roleName + ")";
     }
 
 }

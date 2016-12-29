@@ -22,7 +22,7 @@ import com.joindata.inf.common.support.sso.stereotype.UserAuthInfoQueryService;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(bind = ConfigHub.class, name = "SSO - 单点登录支持")
+@JoindataComponent(bind = ConfigHub.class, name = "单点登录支持")
 public @interface EnableSso
 {
     /** 被排除的资源规则 */

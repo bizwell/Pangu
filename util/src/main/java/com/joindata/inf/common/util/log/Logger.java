@@ -3,11 +3,11 @@ package com.joindata.inf.common.util.log;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
-import com.joindata.inf.common.util.basic.PropertiesUtil;
 import com.joindata.inf.common.util.basic.ResourceUtil;
 
 /**
@@ -42,20 +42,23 @@ public class Logger
      */
     public synchronized static final Logger get()
     {
+        ConfigurationSource configurationSource = null;
         try
         {
             if(ResourceUtil.isResourceInJar("log4j2.xml"))
             {
-                PropertyConfigurator.configure(PropertiesUtil.loadProperties(ClassUtil.getRootResourceAsStream("log4j2.xml")));
+                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log4j2.xml"));
             }
             else if(ResourceUtil.isResourceInJar("log-config.xml"))
             {
-                PropertyConfigurator.configure(PropertiesUtil.loadProperties(ClassUtil.getRootResourceAsStream("log-config.xml")));
+                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log-config.xml"));
             }
             else if(ResourceUtil.isResourceInJar("log.xml"))
             {
-                PropertyConfigurator.configure(PropertiesUtil.loadProperties(ClassUtil.getRootResourceAsStream("log-config.xml")));
+                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log-config.xml"));
             }
+
+            Configurator.initialize(ClassUtil.getClassLoader(), configurationSource);
         }
         catch(IOException e)
         {
@@ -70,6 +73,77 @@ public class Logger
         }
 
         return LogMap.get(clz);
+    }
+
+    /**
+     * 获取指定类的日志记录器
+     * 
+     * @return 日志记录器
+     */
+    public synchronized static final Logger newLogger(Class<?> clz)
+    {
+        ConfigurationSource configurationSource = null;
+        try
+        {
+            if(ResourceUtil.isResourceInJar("log4j2.xml"))
+            {
+                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log4j2.xml"));
+            }
+            else if(ResourceUtil.isResourceInJar("log-config.xml"))
+            {
+                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log-config.xml"));
+            }
+            else if(ResourceUtil.isResourceInJar("log.xml"))
+            {
+                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log-config.xml"));
+            }
+
+            Configurator.initialize(ClassUtil.getClassLoader(), configurationSource);
+        }
+        catch(IOException e)
+        {
+            System.err.println("没有配置 LOG4J2 的配置文件在工程目录下，将无法正常打印日志");
+            System.out.println("可以配置 log4j2.xml、 log-config.xml 或 log.xml 在工程编译根目录下");
+        }
+
+        if(!LogMap.containsKey(clz))
+        {
+            LogMap.put(clz, new Logger(clz));
+        }
+
+        return LogMap.get(clz);
+    }
+
+    /**
+     * trace 日志
+     * 
+     * @param message 消息内容
+     */
+    public void trace(String message)
+    {
+        logger.trace(message);
+    }
+
+    /**
+     * trace 日志
+     * 
+     * @param message 消息内容
+     * @param params 日志消息参数，可用于替换日志内容中的占位符
+     */
+    public void trace(String message, Object... params)
+    {
+        logger.trace(message, params);
+    }
+
+    /**
+     * trace 日志
+     * 
+     * @param message 消息内容
+     * @param throwable 堆栈
+     */
+    public void trace(String message, Throwable throwable)
+    {
+        logger.trace(message, throwable);
     }
 
     /**
@@ -230,5 +304,15 @@ public class Logger
     public void fatal(String message, Throwable throwable)
     {
         logger.fatal(message, throwable);
+    }
+
+    /**
+     * 取到 log4j2 的 Logger，一般不用
+     * 
+     * @return Log4j2 的 Logger
+     */
+    public org.apache.logging.log4j.Logger sourceLogger()
+    {
+        return this.logger;
     }
 }

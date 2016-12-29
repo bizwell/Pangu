@@ -78,6 +78,27 @@
 				<version>${pangu.version}</version>
 			</dependency>
 
+			<!-- 支持 HTTP 会话 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>session-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 支持 SSO -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>sso-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 支持 Dubbo -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>dubbo-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

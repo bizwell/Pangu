@@ -76,9 +76,15 @@ public abstract class GrantQueryService
         if(PATH_ATTRIBUTES_MAP.get(path) == null)
         {
             Collection<ConfigAttribute> attrs = CollectionUtil.newHashSet();
-            for(ConfigAttribute attr: RESOURCE_ROLE.getRoleSet(path))
+
+            RoleSet roleSet = getResourceRole().getRoleSet(path);
+
+            if(roleSet != null)
             {
-                attrs.add(attr);
+                for(ConfigAttribute attr: getResourceRole().getRoleSet(path))
+                {
+                    attrs.add(attr);
+                }
             }
 
             PATH_ATTRIBUTES_MAP.put(path, attrs);

@@ -16,9 +16,9 @@ import com.joindata.inf.common.support.fastdfs.bootconfig.WebMvcConfig;
  * @date 2016年12月2日 下午5:30:49
  */
 @Configuration
-@EnableDisconf
 @Import(FastDfsConfig.class)
 @WebConfig(WebMvcConfig.class)
+@EnableDisconf
 public class ConfigHub extends AbstractConfigHub
 {
     @Override

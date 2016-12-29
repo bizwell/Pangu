@@ -16,13 +16,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
-import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -32,8 +29,10 @@ import com.joindata.inf.common.support.sso.properties.CasProperties;
 import com.joindata.inf.common.support.sso.stereotype.GrantQueryService;
 import com.joindata.inf.common.support.sso.stereotype.UserAuthInfoQueryService;
 import com.joindata.inf.common.support.sso.support.CustomAccessDecisionManager;
+import com.joindata.inf.common.support.sso.support.CustomConcurrentSessionControlAuthenticationStrategy;
 import com.joindata.inf.common.support.sso.support.CustomSecurityInterceptor;
 import com.joindata.inf.common.support.sso.support.CustomSecurityMetadataSource;
+import com.joindata.inf.common.support.sso.support.RedisConcurrentSessionRegistry;
 
 /**
  * Spring Security 的 CAS 配置
@@ -49,7 +48,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter
     private CasProperties properties;
 
     @Autowired
-    private SessionAuthenticationStrategy sessionAuthenticationStrategy;
+    private RedisConcurrentSessionRegistry redisConcurrentSessionRegistry;
 
     /** 设置验证处理服务 */
     @Override
@@ -82,7 +81,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter
         LogoutConfigurer<HttpSecurity> handler = http.logout();
         handler.logoutRequestMatcher(new AntPathRequestMatcher(properties.getLogoutFilterUrl()));
         handler.addLogoutHandler(new SecurityContextLogoutHandler());
-        handler.deleteCookies("JSESSIONID", "SESSION");
+        handler.deleteCookies(properties.getCookies(), "SESSION");
 
         // 对所有请求生效
         http.authorizeRequests().anyRequest().authenticated();
@@ -117,6 +116,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter
     @Bean
     public CasAuthenticationEntryPoint casAuthenticationEntryPoint()
     {
+        // TODO 后续根据张凯写的下面的注释做支持 REST 方式的 entryPoint 处理器
+        // 如果此处设置成重定向CAS的登录地址，那么必须解决调用方和服务方的跨域访问，否则调用方会出现No Access Control Allow Origin 的错误。
+        // 或者自定CasAuthenticationEntryPoint，直接返回一个错误码到前端。让前端自己去重定向到CAS服务端，但是重定向时必须设置service等于服务端的地址，
+        // 如：http://server:port/context/j_spring_cas_security_check
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
         entryPoint.setLoginUrl(properties.getLoginUrl());
         entryPoint.setServiceProperties(serviceProperties());
@@ -133,6 +136,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter
 
         // 设置 CAS 服务器地址
         provider.setTicketValidator(new Cas20ServiceTicketValidator(properties.getCasServerUrlPrefix()));
+
+        provider.setKey(properties.getKey());
 
         // 设置用户信息保存服务
         provider.setAuthenticationUserDetailsService(new UserDetailsByNameServiceWrapper<>(super.getApplicationContext().getBean(Util.getUserAuthQueryService())));
@@ -155,19 +160,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter
         filter.setAuthenticationSuccessHandler(successHandler);
 
         // Session 管理策略（来自 session 组件）
-        filter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
+        filter.setSessionAuthenticationStrategy(new CustomConcurrentSessionControlAuthenticationStrategy(redisConcurrentSessionRegistry));
 
         // 认证管理器，用默认的
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }
-    
-    @Bean
-    public ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy()
-    {
-        ConcurrentSessionControlAuthenticationStrategy strategy = new ConcurrentSessionControlAuthenticationStrategy()
-    }
-    
+
     /**
      * 工具类
      * 

@@ -36,6 +36,6 @@ public class ResourceRole extends HashMap<Resource, RoleSet>
      */
     public RoleSet getRoleSet(String resourceValue)
     {
-        return this.get(resourceValue);
+        return this.getRoleSet(Resource.ofPath(resourceValue));
     }
 }

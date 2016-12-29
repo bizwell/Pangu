@@ -19,7 +19,7 @@ import com.joindata.inf.common.basic.annotation.JoindataComponent;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(bind = ConfigHub.class, name = "Swagger - RESTful 文档支持")
+@JoindataComponent(bind = ConfigHub.class, name = "RESTful 文档支持")
 public @interface EnableSwagger
 {
     /** 扫描的包名 */

@@ -1,19 +1,21 @@
 package com.joindata.inf.boot;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
-import javax.servlet.Filter;
 import javax.servlet.annotation.WebFilter;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.FilterMapping;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.joindata.inf.boot.annotation.JoindataApp;
@@ -22,8 +24,9 @@ import com.joindata.inf.boot.bootconfig.WebMvcConfig;
 import com.joindata.inf.boot.mechanism.Jetty2Log4j2Bridge;
 import com.joindata.inf.boot.mechanism.JoindataAnnotationBeanNameGenerator;
 import com.joindata.inf.boot.webserver.JettyServerFactory;
+import com.joindata.inf.common.basic.annotation.FilterConfig;
 import com.joindata.inf.common.basic.annotation.JoindataComponent;
-import com.joindata.inf.common.basic.annotation.WebAppFilter;
+import com.joindata.inf.common.basic.annotation.WebAppFilterItem;
 import com.joindata.inf.common.basic.annotation.WebConfig;
 import com.joindata.inf.common.basic.errors.SystemError;
 import com.joindata.inf.common.basic.exceptions.SystemException;
@@ -56,8 +59,16 @@ public class Bootstrap
      */
     public static final ApplicationContext boot(String... args)
     {
+        try
+        {
+            StreamUtils.copy(ClassUtil.getRootResourceAsStream("logo.txt"), System.out);
+        }
+        catch(IOException e)
+        {
+            System.err.println(e);
+        }
+
         Class<?> bootClz = ClassUtil.getCaller();
-        log.info("启动类是: {}", bootClz.getName());
 
         ApplicationContext context = null;
 
@@ -97,6 +108,11 @@ public class Bootstrap
                 System.exit(0);
             }
         }
+        catch(SystemException e)
+        {
+            log.fatal("启动失败, 发生意外错误: {}", e.getMessage());
+            System.exit(0);
+        }
         catch(Exception e)
         {
             log.fatal("启动失败, 发生意外错误: {}", e.getMessage(), e);
@@ -124,6 +140,15 @@ public class Bootstrap
         log.info("注册容器关闭句柄...");
         context.registerShutdownHook();
 
+        // 扫描 ConfigHub 的包
+        for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
+        {
+            log.info("注册组件类: {}", configHubClz.getName());
+            context.register(configHubClz);
+            log.info("注册扫描包: {}", configHubClz.getPackage().getName());
+            context.scan(configHubClz.getPackage().getName());
+        }
+
         // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
         log.info("注册启动类: {}", bootClz.getName());
         context.register(bootClz);
@@ -131,13 +156,6 @@ public class Bootstrap
         // 扫描启动类的包
         log.info("注册扫描包: {}", bootClz.getPackage().getName());
         context.scan(bootClz.getPackage().getName());
-
-        // 扫描 ConfigHub 的包
-        for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
-        {
-            log.info("注册扫描包: {}", configHubClz.getPackage().getName());
-            context.scan(configHubClz.getPackage().getName());
-        }
 
         log.info("配置 Spring - 完成");
 
@@ -174,44 +192,64 @@ public class Bootstrap
             log.info("重定向 Jetty 日志记录器至: {}", Jetty2Log4j2Bridge.class.getName());
             org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4j2Bridge("JettyLogger"));
 
-            ServletContextHandler handler = new ServletContextHandler();
+            WebAppContext webAppContext = JettyServerFactory.makeAppContext(context.getClassLoader(), dispatcherServlet);
 
             // 添加 Filter
             for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
             {
-                WebAppFilter webAppFilter = configHubClz.getAnnotation(WebAppFilter.class);
-                for(Class<? extends Filter> filterClz: webAppFilter.value())
+                FilterConfig filterConfig = configHubClz.getAnnotation(FilterConfig.class);
+
+                if(filterConfig != null)
                 {
-                    WebFilter webFilter = filterClz.getAnnotation(WebFilter.class);
-                    if(webFilter == null)
-                    {
-                        throw new SystemException(SystemError.DEPEND_RESOURCE_CANNOT_READY, "没有设置 Filter 属性，这样不好");
-                    }
 
-                    FilterMapping mapping = new FilterMapping();
-                    if(StringUtil.isBlank(webFilter.filterName()))
+                    for(WebAppFilterItem filterItem: filterConfig.value())
                     {
-                        mapping.setFilterName(filterClz.getSimpleName());
-                    }
-                    else
-                    {
-                        mapping.setFilterName(webFilter.filterName());
-                    }
-                    mapping.setPathSpecs(webFilter.urlPatterns());
-                    if(!ArrayUtil.isEmpty(webFilter.servletNames()))
-                    {
-                        mapping.setServletNames(webFilter.servletNames());
-                    }
-                    mapping.setDispatcherTypes(CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
+                        WebFilter webFilter = filterItem.config();
+                        if(webFilter == null)
+                        {
+                            throw new SystemException(SystemError.DEPEND_RESOURCE_CANNOT_READY, "没有设置 Filter 属性，这样不好");
+                        }
 
-                    FilterHolder holder = new FilterHolder(filterClz);
-                    handler.getServletHandler().addFilter(holder, mapping);
+                        FilterMapping mapping = new FilterMapping();
+                        if(StringUtil.isBlank(webFilter.filterName()))
+                        {
+                            mapping.setFilterName(filterItem.filter().getSimpleName());
+                        }
+                        else
+                        {
+                            mapping.setFilterName(webFilter.filterName());
+                        }
+                        mapping.setPathSpecs(webFilter.urlPatterns());
+                        if(!ArrayUtil.isEmpty(webFilter.servletNames()))
+                        {
+                            mapping.setServletNames(webFilter.servletNames());
+                        }
+                        mapping.setDispatcherTypes(CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
 
-                    log.info("注册 Filter: {}", mapping.getFilterName());
+                        FilterHolder holder = null;
+
+                        // 对 Spring 的代理 filter 特殊处理，因为这傻逼玩意必须有个 targetBeanName 草他大爷的！
+                        if(filterItem.filter().equals(DelegatingFilterProxy.class))
+                        {
+                            holder = new FilterHolder(new DelegatingFilterProxy(webFilter.filterName()));
+                        }
+                        else
+                        {
+                            holder = new FilterHolder(filterItem.filter());
+                        }
+
+                        holder.setName(mapping.getFilterName());
+
+                        for(String path: mapping.getPathSpecs())
+                        {
+                            webAppContext.addFilter(holder, path, CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
+                        }
+
+                        log.info("注册自定义过滤器: {}", mapping.getFilterName());
+                    }
                 }
             }
 
-            WebAppContext webAppContext = JettyServerFactory.makeAppContext(context.getClassLoader(), dispatcherServlet);
             Server server = JettyServerFactory.newServer(port, context, webAppContext);
             log.info("配置 Jetty - 完成");
 
@@ -226,18 +264,6 @@ public class Bootstrap
         // 注册容器关闭句柄
         log.info("注册容器关闭句柄...");
         context.registerShutdownHook();
-
-        // 注册启动类
-        log.info("注册启动类: {}", bootClz.getName());
-        context.register(bootClz);
-
-        // 扫描启动类的包
-        log.info("注册扫描包: {}", bootClz.getPackage().getName());
-        context.scan(bootClz.getPackage().getName());
-
-        // 注册公共 WebMvc 配置
-        log.info("注册 Web 配置类: {}", WebMvcConfig.class.getName());
-        context.register(WebMvcConfig.class);
 
         for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
         {
@@ -263,9 +289,24 @@ public class Bootstrap
             }
 
             // 扫描 ConfigHub 包中的组件
+            log.info("注册组件类: {}", configHubClz.getName());
+            context.register(configHubClz);
+
             log.info("注册扫描包: {}", configHubClz.getPackage().getName());
             context.scan(configHubClz.getPackage().getName());
         }
+
+        // 注册启动类
+        log.info("注册启动类: {}", bootClz.getName());
+        context.register(bootClz);
+
+        // 扫描启动类的包
+        log.info("注册扫描包: {}", bootClz.getPackage().getName());
+        context.scan(bootClz.getPackage().getName());
+
+        // 注册公共 WebMvc 配置
+        log.info("注册 Web 配置类: {}", WebMvcConfig.class.getName());
+        context.register(WebMvcConfig.class);
 
         log.info("配置 Spring - 完成");
 
@@ -286,10 +327,11 @@ public class Bootstrap
 
         // 设置 AppID
         BootInfoHolder.setAppId(appId);
-        log.info("应用 ID: {}" + appId);
+        log.info("应用 ID: {}", appId);
 
         // 告诉大家启动类是哪个
         BootInfoHolder.setBootClass(bootClz);
+        log.info("启动类是: {}", bootClz.getName());
 
         Annotation[] annos = bootClz.getAnnotations();
         for(Annotation anno: annos)
@@ -300,7 +342,8 @@ public class Bootstrap
                 continue;
             }
 
-            log.info("声明使用组件: {}", jc.name());
+            log.info("声明使用组件: @{} - {}", anno.annotationType().getSimpleName(), jc.name());
+
             BootInfoHolder.addConfigHub(jc.bind());
         }
 
@@ -316,6 +359,30 @@ public class Bootstrap
     {
         log.info("检查环境 - 开始");
 
+        // 检查依赖组件
+        Set<String> needAnno = CollectionUtil.newHashSet();
+        for(Class<? extends AbstractConfigHub> configHubClz: BootInfoHolder.getConfigHubClasses())
+        {
+            log.info("检查依赖组件: {}", configHubClz);
+            for(Class<? extends Annotation> clz: getDependComponent(configHubClz))
+            {
+                if(BootInfoHolder.hasBootAnno(clz))
+                {
+                    log.info("         @{} - OK!", clz.getSimpleName());
+                }
+                else
+                {
+                    needAnno.add("@" + clz.getSimpleName());
+                    log.fatal("         @{} - 不 OK!", clz.getSimpleName());
+                }
+            }
+        }
+        if(!CollectionUtil.isNullOrEmpty(needAnno))
+        {
+            throw new SystemException(SystemError.DEPEND_COMPONENT_NOT_READY, "请将所需组件注解声明在启动类上: " + needAnno);
+        }
+
+        // 执行组件的 check 方法
         for(AbstractConfigHub configHub: BootInfoHolder.getConfigHubs())
         {
             log.info("执行环境检查: {}.{}", configHub.getClass().getName(), "check()");
@@ -324,4 +391,26 @@ public class Bootstrap
 
         log.info("检查环境 - 完成");
     }
+
+    /**
+     * 获取依赖组件
+     * 
+     * @return 依赖组件集合
+     */
+    private static Set<Class<? extends Annotation>> getDependComponent(Class<? extends AbstractConfigHub> clz)
+    {
+        Set<Class<? extends Annotation>> set = CollectionUtil.newHashSet();
+        for(Annotation anno: clz.getAnnotations())
+        {
+            JoindataComponent jc = anno.annotationType().getAnnotation(JoindataComponent.class);
+            if(jc == null)
+            {
+                continue;
+            }
+            set.add(anno.annotationType());
+        }
+
+        return set;
+    }
+
 }

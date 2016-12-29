@@ -14,8 +14,8 @@ import com.joindata.inf.common.support.redis.bootconfig.RedisConfig;
  * @date 2016年12月7日 下午4:29:51
  */
 @Configuration
-@EnableDisconf
 @Import({RedisConfig.class})
+@EnableDisconf
 public class ConfigHub extends AbstractConfigHub
 {
     @Override

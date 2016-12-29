@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
+import com.joindata.inf.common.support.fastdfs.support.component.FastDfsClient;
 import com.joindata.inf.common.support.fastdfs.support.component.web.FastDfsMultipartResolver;
 import com.joindata.inf.common.util.log.Logger;
 
@@ -22,7 +22,7 @@ public class WebMvcConfig extends DelegatingWebMvcConfiguration
     private static final Logger log = Logger.get();
 
     @Autowired
-    private FastdfsClient client;
+    private FastDfsClient client;
 
     @Bean
     public CharacterEncodingFilter initializeCharacterEncodingFilter()

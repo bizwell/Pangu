@@ -14,8 +14,8 @@ import com.joindata.inf.common.support.elasticsearch.bootconfig.ElasticSearchCon
  * @date 2016年12月7日 下午1:53:33
  */
 @Configuration
-@EnableDisconf
 @Import({ElasticSearchConfig.class})
+@EnableDisconf
 public class ConfigHub extends AbstractConfigHub
 {
     @Override

@@ -11,6 +11,9 @@ import com.baidu.disconf.client.common.annotations.DisconfFileItem;
 @DisconfFile(filename = "redis.properties")
 public class RedisProperties
 {
+    /** 集群方式（SHARD 或 CLUSTER） */
+    private String type;
+
     /** 主机（可设置多个，格式为 host1:port,host2:port） */
     private String host;
 
@@ -28,6 +31,17 @@ public class RedisProperties
 
     /** 归还连接时测试 */
     private boolean testOnReturn;
+
+    @DisconfFileItem(name = "ha.type", associateField = "type")
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
+    }
 
     @DisconfFileItem(name = "redis.host", associateField = "host")
     public String getHost()

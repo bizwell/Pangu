@@ -18,7 +18,7 @@ public class BootInfoHolder
 {
     private static Class<?> BOOT_CLASS = null;
 
-    private static Set<Class<?>> CONFIG_HUBS_CLASSES = new HashSet<>();
+    private static Set<Class<? extends AbstractConfigHub>> CONFIG_HUBS_CLASSES = new HashSet<>();
 
     private static Set<AbstractConfigHub> CONFIG_HUBS = new HashSet<>();
 
@@ -115,7 +115,7 @@ public class BootInfoHolder
      */
     public static boolean hasBootAnno(Class<? extends Annotation> annoClz)
     {
-        return BOOT_CLASS.getAnnotation(annoClz) == null;
+        return BOOT_CLASS.getAnnotation(annoClz) != null;
     }
 
     /**
@@ -145,12 +145,14 @@ public class BootInfoHolder
      * 
      * @param clzSet 配置器类集合
      */
+    @SuppressWarnings("unchecked")
     public static void addConfigHubs(Set<Class<?>> clzSet)
     {
-        CONFIG_HUBS_CLASSES.addAll(clzSet);
 
         for(Class<?> clz: clzSet)
         {
+            CONFIG_HUBS_CLASSES.add((Class<? extends AbstractConfigHub>)clz);
+
             try
             {
                 CONFIG_HUBS.add((AbstractConfigHub)clz.newInstance());
@@ -169,7 +171,7 @@ public class BootInfoHolder
      * 
      * @return 配置器类集合
      */
-    public static Set<Class<?>> getConfigHubClasses()
+    public static Set<Class<? extends AbstractConfigHub>> getConfigHubClasses()
     {
         return CONFIG_HUBS_CLASSES;
     }
@@ -183,6 +185,17 @@ public class BootInfoHolder
     public static Set<AbstractConfigHub> getConfigHubs()
     {
         return CONFIG_HUBS;
+    }
+
+    /**
+     * 获取应用的顶级包<br />
+     * <i>返回启动类所在包</i>
+     * 
+     * @return 包名
+     */
+    public static String getAppPackage()
+    {
+        return BOOT_CLASS.getPackage().getName();
     }
 
 }

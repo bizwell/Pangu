@@ -16,9 +16,9 @@ import com.joindata.inf.common.support.mybatis.bootconfig.MyBatisConfig;
  * @date 2016年12月2日 下午5:32:55
  */
 @Configuration
-@EnableDisconf
 @Import({MyBatisConfig.class, CustomMapperScannerRegistrar.class})
 @EnableTransactionManagement
+@EnableDisconf
 public class ConfigHub extends AbstractConfigHub
 {
     @Override

@@ -19,7 +19,7 @@ import com.joindata.inf.common.basic.annotation.JoindataComponent;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(bind = ConfigHub.class, name = "SESSION - HTTP 会话支持")
+@JoindataComponent(bind = ConfigHub.class, name = "HTTP 会话支持")
 public @interface EnableSession
 {
 }

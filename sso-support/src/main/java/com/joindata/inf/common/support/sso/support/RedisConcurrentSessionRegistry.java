@@ -31,10 +31,10 @@ import com.joindata.inf.common.util.log.Logger;
 @Component
 public class RedisConcurrentSessionRegistry implements SessionRegistry, ApplicationListener<SessionDestroyedEvent>
 {
+    private static final Logger log = Logger.get();
+    
     @Autowired
     private RedisOperationsSessionRepository repository;
-
-    private static final Logger log = Logger.get();
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;

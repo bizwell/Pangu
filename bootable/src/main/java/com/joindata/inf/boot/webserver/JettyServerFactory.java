@@ -62,7 +62,7 @@ public class JettyServerFactory
             encodingFilter.setForceEncoding(true);
 
             FilterHolder encodingFilterHolder = new FilterHolder(encodingFilter);
-            webAppContext.addFilter(encodingFilterHolder, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.REQUEST));
+            webAppContext.addFilter(encodingFilterHolder, "/*",  EnumSet.allOf(DispatcherType.class));
 
             log.info("注册字符编码过滤器: {}, encoding = {}, InitParameters = {}", encodingFilter.getClass().getName(), encodingFilter.getEncoding(), encodingFilterHolder.getInitParameters());
         }

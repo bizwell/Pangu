@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.apache.commons.fileupload.FileItem;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata.Builder;
+import com.joindata.inf.common.support.fastdfs.support.component.FastDfsClient;
 import com.joindata.inf.common.util.log.Logger;
 
 /**
@@ -24,9 +24,9 @@ public class FastDfsMultipartFile extends CommonsMultipartFile
 
     private static final long serialVersionUID = -5839543693444498974L;
 
-    private FastdfsClient client;
+    private FastDfsClient client;
 
-    public FastDfsMultipartFile(FileItem fileItem, FastdfsClient client)
+    public FastDfsMultipartFile(FileItem fileItem, FastDfsClient client)
     {
         super(fileItem);
         this.client = client;

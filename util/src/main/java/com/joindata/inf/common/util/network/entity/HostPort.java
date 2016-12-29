@@ -38,4 +38,10 @@ public class HostPort
         this.port = port;
     }
 
+    @Override
+    public String toString()
+    {
+        return this.getHost() + ":" + this.getPort();
+    }
+
 }

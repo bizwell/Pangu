@@ -8,18 +8,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.servlet.Filter;
+import javax.servlet.annotation.WebFilter;
 
-/**
- * 标注过滤器
- * 
- * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date Dec 19, 2016 6:13:46 PM
- */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface WebAppFilter
+public @interface WebAppFilterItem
 {
-    Class<? extends Filter>[] value();
+    Class<? extends Filter> filter();
+
+    WebFilter config();
 }

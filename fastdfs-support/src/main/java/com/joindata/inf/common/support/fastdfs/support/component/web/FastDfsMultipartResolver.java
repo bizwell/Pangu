@@ -14,7 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import com.joindata.inf.common.support.fastdfs.dependency.client.FastdfsClient;
+import com.joindata.inf.common.support.fastdfs.support.component.FastDfsClient;
 import com.joindata.inf.common.util.log.Logger;
 
 /**
@@ -27,9 +27,9 @@ public class FastDfsMultipartResolver extends CommonsMultipartResolver
 {
     private static final Logger log = Logger.get();
 
-    private FastdfsClient client;
+    private FastDfsClient client;
 
-    public FastDfsMultipartResolver(FastdfsClient client)
+    public FastDfsMultipartResolver(FastDfsClient client)
     {
         this.client = client;
     }

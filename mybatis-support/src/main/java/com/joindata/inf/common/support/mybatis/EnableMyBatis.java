@@ -19,7 +19,7 @@ import com.joindata.inf.common.basic.annotation.JoindataComponent;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(bind = ConfigHub.class, name = "MyBatis - RDBMS ORM 支持")
+@JoindataComponent(bind = ConfigHub.class, name = "RDBMS ORM 支持")
 public @interface EnableMyBatis
 {
     /** 要扫描的顶级包，默认是当前包 */

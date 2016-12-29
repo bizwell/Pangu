@@ -16,8 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 
-import com.joindata.inf.common.support.sso.entity.AuthInfo;
-
 /**
  * 权限拦截器
  * 
@@ -37,7 +35,7 @@ public class CustomSecurityInterceptor extends AbstractSecurityInterceptor imple
     @Override
     public Class<?> getSecureObjectClass()
     {
-        return AuthInfo.class.asSubclass(AuthInfo.class);
+        return String.class;
     }
 
     @Override
@@ -54,10 +52,10 @@ public class CustomSecurityInterceptor extends AbstractSecurityInterceptor imple
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
     {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         FilterInvocation fi = new FilterInvocation(request, response, chain);
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         this.getAccessDecisionManager().decide(authentication, null, obtainSecurityMetadataSource().getAttributes(fi.getRequest().getRequestURI()));
+        chain.doFilter(request, response);
     }
 
     @Override

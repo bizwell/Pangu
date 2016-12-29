@@ -71,6 +71,8 @@
 		<elasticsearch.version>5.0.2</elasticsearch.version>
 		<jedis.version>2.9.0</jedis.version>
 		<zookeeper.version>3.4.9</zookeeper.version>
+		<zkclient.version>0.10</zkclient.version>
+		<dubbo.version>2.8.4</dubbo.version>
 	</properties>
 
 	<dependencyManagement>
@@ -361,6 +363,12 @@
 				<groupId>com.offbytwo.class-finder</groupId>
 				<artifactId>class-finder</artifactId>
 				<version>${class-finder.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!-- AspectJ -->
@@ -516,6 +524,37 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+			<!-- ZooKeeper 客户端小工具 -->
+			<dependency>
+				<groupId>com.101tec</groupId>
+				<artifactId>zkclient</artifactId>
+				<version>${zkclient.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.zookeeper</groupId>
+						<artifactId>zookeeper</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<!-- Dubbox -->
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>dubbo</artifactId>
+				<version>${dubbo.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.httpcomponents</groupId>
+						<artifactId>httpcore</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -618,6 +657,7 @@
 		<module>redis-support</module>
 		<module>sso-support</module>
 		<module>session-support</module>
+		<module>dubbo-support</module>
 		<module>bootable</module>
 		<module>joindata-app</module>
 		<module>joindata-app-plugin</module>

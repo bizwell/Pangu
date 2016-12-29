@@ -10,7 +10,9 @@ import java.util.Set;
 import com.joindata.inf.common.basic.errors.ResourceErrors;
 import com.joindata.inf.common.basic.exceptions.ResourceException;
 import com.joindata.inf.common.util.basic.StringUtil;
+import com.joindata.inf.common.util.basic.ValidateUtil;
 import com.joindata.inf.common.util.network.entity.HostPort;
+import com.joindata.inf.common.util.network.entity.ProtocolHostPort;
 import com.xiaoleilu.hutool.util.NetUtil;
 
 /**
@@ -182,9 +184,9 @@ public class NetworkUtil
 
     /**
      * 解析主机名+端口号串<br />
-     * 可以是 host1:port1,host2:port2 这样的，也可以是 host:port 这样的
+     * <i>如果 port 没写，当成 80 处理了</i>
      * 
-     * @param host
+     * @param hostPortStr 可以是 host1:port1,host2:port2 这样的，也可以是 host:port 这样的
      * @return 主机名端口号对，如果是逗号分割的多个主机名端口号，返回的数组数量就是多个；如果是 1 个，数组数量就是 1 个
      */
     public static HostPort[] parseHostPort(String hostPortStr)
@@ -197,10 +199,71 @@ public class NetworkUtil
         for(String str: strs)
         {
             String[] pair = str.split(":");
-            hostPort[i++] = new HostPort(pair[0], Integer.parseInt(pair[1]));
+            hostPort[i++] = new HostPort(pair[0], StringUtil.isBlank(pair[1]) ? 80 : Integer.parseInt(pair[1]));
         }
 
         return hostPort;
+    }
+
+    /**
+     * 解析协议+主机名+端口号串<br />
+     * <i>如果 port 没写，当成 80 处理了。如果 protocol 没写，当 http 处理了。如果 protocol 和 port 都没写，也 OK，就用前面两个默认值</i>
+     * 
+     * @param protocolHostPortStr 可以是 protocol1://host1:port1,protocol2://host2:port2 这样的，也可以是 protocol://host:port 这样的
+     * @return 协议、主机名端口号对，如果是逗号分割的多个主机名端口号，返回的数组数量就是多个；如果是 1 个，数组数量就是 1 个
+     */
+    public static ProtocolHostPort[] parseProtocolHostPort(String protocolHostPortStr)
+    {
+        String[] strs = StringUtil.splitToArray(protocolHostPortStr, ",");
+
+        ProtocolHostPort[] protocolHostPorts = new ProtocolHostPort[strs.length];
+
+        int i = 0;
+        for(String str: strs)
+        {
+            String part1 = null;
+            String part2 = null;
+            int part3 = 80;
+
+            // 出现两次冒号代表有端口号和协议
+            if(StringUtil.countMatches(str, ":") == 2)
+            {
+                part1 = StringUtil.substringBeforeFirst(str, ":");
+                part2 = StringUtil.substringBeforeLast(StringUtil.substringAfterFirst(str, "//"), ":");
+                part3 = Integer.parseInt(StringUtil.substringAfterLast(str, ":"));
+            }
+
+            // 出现一次冒号，需要判断是协议还是端口号
+            if(StringUtil.countMatches(str, ":") == 1)
+            {
+                // 如果是数字，一定是端口号，默认给 HTTP 协议
+                if(ValidateUtil.isPureNumberText(StringUtil.substringAfterLast(str, ":")))
+                {
+                    part1 = "http";
+                    part2 = StringUtil.substringBeforeLast(str, ":");
+                    part3 = Integer.parseInt(StringUtil.substringAfterLast(str, ":"));
+                }
+                // 否则，一定是没有带端口号的，默认给 80 端口号
+                else
+                {
+                    part1 = StringUtil.substringBeforeFirst(str, ":");
+                    part2 = StringUtil.substringAfterFirst(str, ":");
+                    part3 = 80;
+                }
+            }
+
+            // 也可以是个奇葩，啥也没就直接当成只有主机名了
+            if(StringUtil.countMatches(str, ":") == 0)
+            {
+                part1 = "http";
+                part2 = str;
+                part3 = 80;
+            }
+
+            protocolHostPorts[i++] = new ProtocolHostPort(part1, part2, part3);
+        }
+
+        return protocolHostPorts;
     }
 
     public static void main(String[] args) throws ResourceException, UnknownHostException, IOException

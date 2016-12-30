@@ -49,7 +49,7 @@ public class DubboProperties
 
     /** 远程调用负载均衡方式 */
     private String consumerLoadbalance;
-
+    
     @DisconfFileItem(name = "app.owner", associateField = "appOwner")
     public String getAppOwner()
     {

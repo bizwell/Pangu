@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ConsumerConfig;
+import com.alibaba.dubbo.config.MonitorConfig;
 import com.alibaba.dubbo.config.ProtocolConfig;
 import com.alibaba.dubbo.config.ProviderConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
@@ -123,6 +124,18 @@ public class DubboConfig
         config.setRetries(properties.getConsumerRetries());
         config.setLoadbalance(properties.getConsumerLoadbalance());
 
+        return config;
+    }
+
+    /**
+     * 监控中心配置
+     */
+    @Bean
+    @Scope("singleton")
+    public MonitorConfig monitorConfig()
+    {
+        MonitorConfig config = new MonitorConfig();
+        config.setProtocol("registry");
         return config;
     }
 }

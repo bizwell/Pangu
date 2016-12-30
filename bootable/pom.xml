@@ -11,7 +11,7 @@
 	<artifactId>bootable</artifactId>
 	<packaging>jar</packaging>
 
-	<name>可启动特性</name>
+	<name>应用启动器</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>

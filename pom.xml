@@ -623,7 +623,7 @@
 					<charset>${project.build.sourceEncoding}</charset>
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<docencoding>${project.build.sourceEncoding}</docencoding>
-					<doctitle>${project.artifactId} ${project.version}: API doc</doctitle>
+					<doctitle>${project.name} API 参考  <![CDATA[<small>${project.version}</small> <span style='display:none' id="appMetaInfo">*${project.name}~${project.version}*</span>]]></doctitle>
 					<additionalparam>-Xdoclint:none</additionalparam>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>

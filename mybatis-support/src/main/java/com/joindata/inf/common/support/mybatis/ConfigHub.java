@@ -2,12 +2,12 @@ package com.joindata.inf.common.support.mybatis;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
 import com.joindata.inf.common.support.mybatis.bootconfig.CustomMapperScannerRegistrar;
 import com.joindata.inf.common.support.mybatis.bootconfig.MyBatisConfig;
+import com.joindata.inf.common.support.mybatis.bootconfig.TransactionConfig;
 
 /**
  * MyBatis 支持配置器
@@ -16,8 +16,7 @@ import com.joindata.inf.common.support.mybatis.bootconfig.MyBatisConfig;
  * @date 2016年12月2日 下午5:32:55
  */
 @Configuration
-@Import({MyBatisConfig.class, CustomMapperScannerRegistrar.class})
-@EnableTransactionManagement
+@Import({TransactionConfig.class, MyBatisConfig.class, CustomMapperScannerRegistrar.class})
 @EnableDisconf
 public class ConfigHub extends AbstractConfigHub
 {

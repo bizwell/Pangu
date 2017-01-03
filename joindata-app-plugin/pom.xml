@@ -8,7 +8,7 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>com.joindata</groupId>
+	<groupId>com.joindata.inf</groupId>
 	<artifactId>joindata-app-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 

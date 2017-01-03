@@ -21,7 +21,7 @@ public class FastDfsFile extends File
 
     /** 上传后文件 ID */
     private CompletableFuture<FileId> fileIdFuture;
-
+    
     /**
      * 创建一个 FastDFS 文件
      * 

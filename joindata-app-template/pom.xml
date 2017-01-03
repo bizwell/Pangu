@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.joindata.inf</groupId>
+		<artifactId>joindata-app</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath />
+	</parent>
+
+	<groupId>com.joindata.inf.archetype</groupId>
+	<packaging>pom</packaging>
+	<artifactId>joindata-app-template</artifactId>
+
+	<name>应用骨架</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-archetype-plugin</artifactId>
+					<version>2.4</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<modules>
+		<module>__rootArtifactId__-app-kernel</module>
+		<module>__rootArtifactId__-app-bundle</module>
+	</modules>
+</project>

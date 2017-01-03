@@ -3,10 +3,13 @@ package com.joindata.inf.common.support.fastdfs.support.component.web;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.fileupload.FileItem;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.joindata.inf.common.support.fastdfs.dependency.client.FileId;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata.Builder;
 import com.joindata.inf.common.support.fastdfs.support.component.FastDfsClient;
@@ -55,6 +58,24 @@ public class FastDfsMultipartFile extends CommonsMultipartFile
 
             super.transferTo(dest);
         }
+    }
+
+    /**
+     * 上传文件
+     * 
+     * @return 远程文件 ID
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    public String upload() throws InterruptedException, ExecutionException
+    {
+        log.info("上传文件到服务器, 文件名 : {}", super.getOriginalFilename());
+
+        Builder metaBuilder = FileMetadata.newBuilder();
+        metaBuilder.put("fileName", super.getOriginalFilename());
+
+        CompletableFuture<FileId> fileId = client.upload(this.getOriginalFilename(), this.getBytes(), metaBuilder.build());
+        return fileId.get().toString();
     }
 
 }

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
+import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ConsumerConfig;
 import com.alibaba.dubbo.config.MonitorConfig;
@@ -14,6 +15,7 @@ import com.alibaba.dubbo.config.ProviderConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.spring.AnnotationBean;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
+import com.joindata.inf.common.support.dubbo.adapter.log.Log4j2LoggerAdapter;
 import com.joindata.inf.common.support.dubbo.properties.DubboProperties;
 import com.joindata.inf.common.util.network.NetworkUtil;
 
@@ -31,6 +33,12 @@ public class DubboConfig
 
     @Autowired
     private DubboProperties properties;
+
+    static
+    {
+        System.setProperty("dubbo.application.logger", "slf4j");
+        LoggerFactory.setLoggerAdapter(new Log4j2LoggerAdapter());
+    }
 
     /**
      * 启用注解扫描

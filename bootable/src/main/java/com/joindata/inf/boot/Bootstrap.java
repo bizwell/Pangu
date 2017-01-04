@@ -140,6 +140,14 @@ public class Bootstrap
         log.info("注册容器关闭句柄...");
         context.registerShutdownHook();
 
+        // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
+        log.info("注册启动类: {}", bootClz.getName());
+        context.register(bootClz);
+
+        // 扫描启动类的包
+        log.info("注册扫描包: {}", bootClz.getPackage().getName());
+        context.scan(bootClz.getPackage().getName());
+
         // 扫描 ConfigHub 的包
         for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
         {
@@ -148,14 +156,6 @@ public class Bootstrap
             log.info("注册扫描包: {}", configHubClz.getPackage().getName());
             context.scan(configHubClz.getPackage().getName());
         }
-
-        // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
-        log.info("注册启动类: {}", bootClz.getName());
-        context.register(bootClz);
-
-        // 扫描启动类的包
-        log.info("注册扫描包: {}", bootClz.getPackage().getName());
-        context.scan(bootClz.getPackage().getName());
 
         log.info("配置 Spring - 完成");
 
@@ -265,6 +265,14 @@ public class Bootstrap
         log.info("注册容器关闭句柄...");
         context.registerShutdownHook();
 
+        // 注册启动类
+        log.info("注册启动类: {}", bootClz.getName());
+        context.register(bootClz);
+
+        // 扫描启动类的包
+        log.info("注册扫描包: {}", bootClz.getPackage().getName());
+        context.scan(bootClz.getPackage().getName());
+
         for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
         {
             // 注册支持组件的 Web 配置
@@ -295,14 +303,6 @@ public class Bootstrap
             log.info("注册扫描包: {}", configHubClz.getPackage().getName());
             context.scan(configHubClz.getPackage().getName());
         }
-
-        // 注册启动类
-        log.info("注册启动类: {}", bootClz.getName());
-        context.register(bootClz);
-
-        // 扫描启动类的包
-        log.info("注册扫描包: {}", bootClz.getPackage().getName());
-        context.scan(bootClz.getPackage().getName());
 
         // 注册公共 WebMvc 配置
         log.info("注册 Web 配置类: {}", WebMvcConfig.class.getName());

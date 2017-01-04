@@ -126,6 +126,8 @@ public class FileUtil
             throw new FileNotFoundException("没有指定正确的路径！");
         }
 
+        content = StringUtil.replaceAll(content, "\r", "");
+
         FileUtils.writeStringToFile(new File(filePath), content, Charset.forName("UTF-8"));
     }
 
@@ -259,6 +261,33 @@ public class FileUtil
 
         File srcFile = new File(src);
         File destDir = new File(dest);
+
+        if(srcFile.isDirectory())
+        {
+            FileUtils.copyDirectoryToDirectory(srcFile, destDir);
+        }
+        else
+        {
+            FileUtils.copyFileToDirectory(srcFile, destDir);
+        }
+    }
+
+    /**
+     * 复制文件或文件夹，到另外一个目录下<br />
+     * 
+     * <i>如果已存在同名文件，则替换之。<i><br />
+     * <i>如果已存在同名文件夹，则合并之。</i>
+     * 
+     * @param src 源文件或文件夹路径
+     * @param dest 目标文件夹
+     * @throws IOException 传入的路径为 null ，或发生任何其他 IO 错误，均抛出该异常
+     */
+    public static final void copyToDir(File srcFile, File destDir) throws IOException
+    {
+        if(srcFile == null || destDir == null)
+        {
+            throw new FileNotFoundException("没有指定正确的路径！");
+        }
 
         if(srcFile.isDirectory())
         {
@@ -688,6 +717,26 @@ public class FileUtil
         move(zipFile.getPath(), destPath);
 
         return destPath;
+    }
+
+    /**
+     * 压缩文件/文件夹
+     * 
+     * @param path 生成的 ZIP 文件
+     * @param files 要添加到 ZIP 的文件
+     * @return 压缩后的文件路径
+     * @throws IOException 传入的路径为 null ，或发生任何其他 IO 错误，均抛出该异常
+     */
+    public static final String zip(File zipFile, File... files) throws IOException
+    {
+        if(ArrayUtil.isEmpty(files) || zipFile == null)
+        {
+            throw new FileNotFoundException("文件路径不对");
+        }
+
+        ZipUtil.zip(zipFile, true, files);
+
+        return zipFile.getPath();
     }
 
     /**

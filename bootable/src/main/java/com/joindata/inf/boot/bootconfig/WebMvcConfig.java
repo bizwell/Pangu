@@ -42,5 +42,4 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
 
         log.debug("注册 HTTP 消息转换器: {}", messageConverter.toString());
     }
-
 }

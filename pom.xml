@@ -186,6 +186,12 @@
 				<artifactId>log4j-core</artifactId>
 				<version>${log4j2.version}</version>
 			</dependency>
+			<!-- 桥接：告诉Log4j使用Log4j2 -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-1.2-api</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
 			<!-- 桥接：告诉Slf4j使用Log4j2 -->
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -363,12 +369,6 @@
 				<groupId>com.offbytwo.class-finder</groupId>
 				<artifactId>class-finder</artifactId>
 				<version>${class-finder.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>log4j</groupId>
-						<artifactId>log4j</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 
 			<!-- AspectJ -->
@@ -583,6 +583,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-1.2-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
 		</dependency>
 		<dependency>
@@ -602,7 +606,6 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
-					<goal>jar</goal>
 				</configuration>
 			</plugin>
 
@@ -634,6 +637,14 @@
 		</plugins>
 
 		<resources>
+
+			<!-- 各种夹杂在其中 XML 文件也要在编译时加入（如 MyBatis 的 Mapper） -->
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
 
 			<!-- resource 文件夹也要在编译时加入 -->
 			<resource>

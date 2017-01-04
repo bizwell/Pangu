@@ -366,6 +366,11 @@ public class ClassUtil
         Set<Class<?>> set = CollectionUtil.newHashSet();
         for(Class<?> clz: classSet)
         {
+            if (clz==null)
+            {
+                continue;
+            }
+            
             if(clz.isAnnotationPresent(annoClz))
             {
                 // 找要排除的注解
@@ -631,7 +636,10 @@ public class ClassUtil
                 }
                 catch(ClassNotFoundException e)
                 {
-                    log.error("找不到该类: {}", clzName, e);
+                    return null;
+                }
+                catch(NoClassDefFoundError e)
+                {
                     return null;
                 }
         }

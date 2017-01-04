@@ -49,7 +49,7 @@ import com.joindata.inf.common.util.basic.CollectionUtil;
  * @date Dec 15, 2016 9:54:25 AM
  */
 @Mojo(name = "jar", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.RUNTIME)
-@Execute(goal = "clean compile", phase = LifecyclePhase.PACKAGE)
+@Execute(goal = "clean compile dependency:copy-dependencies", phase = LifecyclePhase.PACKAGE)
 public class JarMojo extends AbstractMojo
 {
 
@@ -195,6 +195,12 @@ public class JarMojo extends AbstractMojo
         return "one-jar-boot-" + onejarVersion + ".jar";
     }
 
+    // /** One-jar 参数文件 */
+    // private String getOnejarPropertyFile()
+    // {
+    // return "one-jar.properties";
+    // }
+
     /**
      * 读取 One-jar 模板文件
      */
@@ -268,21 +274,11 @@ public class JarMojo extends AbstractMojo
      * 
      * @return 项目所有的类
      */
-    @SuppressWarnings("unchecked")
     private Set<Class<?>> loadProjectClasses() throws DependencyResolutionRequiredException, MalformedURLException
     {
         Set<Class<?>> classSet = CollectionUtil.newHashSet();
 
-        List<String> classPathList = project.getCompileClasspathElements();
-        for(String path: classPathList)
-        {
-            if(path.endsWith(".jar"))
-            {
-                continue;
-            }
-
-            classSet.addAll(ClassUtil.findClasses(new File(path)));
-        }
+        classSet.addAll(ClassUtil.findClasses(new File(project.getBuild().getOutputDirectory())));
 
         return classSet;
     }

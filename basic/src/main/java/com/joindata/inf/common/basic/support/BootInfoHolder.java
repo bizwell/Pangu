@@ -27,7 +27,7 @@ public class BootInfoHolder
     private static String APP_ID = "";
 
     private static String APP_VERSION = "";
-
+    
     /**
      * 设置启动信息
      * 

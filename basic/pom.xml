@@ -15,4 +15,14 @@
 	<name>公共基础类</name>
 	<url>http://www.joindata.com</url>
 
+	<dependencies>
+	
+		<dependency>
+			<!-- 需要一些 Spring 的配置支持类 -->
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		
+	</dependencies>
+
 </project>

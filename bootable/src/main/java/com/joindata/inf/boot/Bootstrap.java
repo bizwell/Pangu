@@ -139,7 +139,10 @@ public class Bootstrap
         // 注册容器关闭句柄
         log.info("注册容器关闭句柄...");
         context.registerShutdownHook();
-
+        
+        log.info("注册公共扫描包...");
+        context.scan("com.joindata.inf.common.basic.support");
+        
         // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
         log.info("注册启动类: {}", bootClz.getName());
         context.register(bootClz);
@@ -156,7 +159,7 @@ public class Bootstrap
             log.info("注册扫描包: {}", configHubClz.getPackage().getName());
             context.scan(configHubClz.getPackage().getName());
         }
-
+        
         log.info("配置 Spring - 完成");
 
         log.info("启动 Spring - 开始");
@@ -265,6 +268,9 @@ public class Bootstrap
         log.info("注册容器关闭句柄...");
         context.registerShutdownHook();
 
+        log.info("注册公共扫描包...");
+        context.scan("com.joindata.inf.common.basic.support");
+        
         // 注册启动类
         log.info("注册启动类: {}", bootClz.getName());
         context.register(bootClz);

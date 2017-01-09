@@ -80,12 +80,12 @@ public class Bootstrap
                 log.info("启动 Web 应用...");
 
                 JoindataWebApp joindataWebApp = bootClz.getAnnotation(JoindataWebApp.class);
-                configureBootInfo(bootClz, joindataWebApp.value() + joindataWebApp.appId());
+                configureBootInfo(bootClz, joindataWebApp.id(), joindataWebApp.version());
                 checkEnv();
 
                 context = bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).port());
 
-                log.info("应用已启动, PID: {}{}", SystemUtil.getProcessId(), ", Web 端口号: " + Bootstrap.port);
+                log.info("应用已启动, PID: {}{}", SystemUtil.getProcessId(), ". Web 端口号: " + Bootstrap.port);
 
             }
             // 启动应用
@@ -94,7 +94,7 @@ public class Bootstrap
                 log.info("启动应用...");
 
                 JoindataApp joindataApp = bootClz.getAnnotation(JoindataApp.class);
-                configureBootInfo(bootClz, joindataApp.value() + joindataApp.appId());
+                configureBootInfo(bootClz, joindataApp.id(), joindataApp.version());
                 checkEnv();
 
                 context = boot(bootClz);
@@ -321,13 +321,17 @@ public class Bootstrap
     /**
      * 设置启动信息，以供其他组件使用
      */
-    public static void configureBootInfo(Class<?> bootClz, String appId)
+    public static void configureBootInfo(Class<?> bootClz, String appId, String appVersion)
     {
         log.info("配置启动信息 - 开始");
 
         // 设置 AppID
         BootInfoHolder.setAppId(appId);
         log.info("应用 ID: {}", appId);
+
+        // 设置应用版本号
+        BootInfoHolder.setAppVersion(appVersion);
+        log.info("应用版本号: {}", appVersion);
 
         // 告诉大家启动类是哪个
         BootInfoHolder.setBootClass(bootClz);

@@ -6,6 +6,12 @@ import org.springframework.stereotype.Service;
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
 
+/**
+ * Redis 配置参数
+ * 
+ * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
+ * @date Jan 6, 2017 4:31:20 PM
+ */
 @Service
 @Scope("singleton")
 @DisconfFile(filename = "redis.properties")

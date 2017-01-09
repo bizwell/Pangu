@@ -26,6 +26,8 @@ public class BootInfoHolder
 
     private static String APP_ID = "";
 
+    private static String APP_VERSION = "";
+
     /**
      * 设置启动信息
      * 
@@ -104,6 +106,26 @@ public class BootInfoHolder
     public static String getAppId()
     {
         return APP_ID;
+    }
+
+    /**
+     * 设置应用版本号
+     * 
+     * @param appVersion 应用版本号
+     */
+    public static void setAppVersion(String appVersion)
+    {
+        APP_VERSION = appVersion;
+    }
+
+    /**
+     * 获取应用版本号
+     * 
+     * @return 应用版本号
+     */
+    public static String getAppVersion()
+    {
+        return APP_VERSION;
     }
 
     /**

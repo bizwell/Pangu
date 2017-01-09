@@ -4,7 +4,7 @@ import com.joindata.inf.boot.Bootstrap;
 import com.joindata.inf.boot.annotation.JoindataWebApp;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
 
-@JoindataWebApp(value = "APP.TEST")
+@JoindataWebApp(id = "APP.TEST", version = "1.0.0")
 @EnableDisconf
 public class App
 {

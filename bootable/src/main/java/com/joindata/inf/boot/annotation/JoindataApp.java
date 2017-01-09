@@ -40,8 +40,8 @@ import org.springframework.context.annotation.Configuration;
 public @interface JoindataApp
 {
     /** 应用 ID */
-    String value();
+    String id();
 
-    /** 应用 ID */
-    String appId() default "";
+    /** 应用版本号 */
+    String version();
 }

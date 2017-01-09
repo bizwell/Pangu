@@ -21,6 +21,7 @@ deploy_key_rsa
 *.project
 *.settings
 .project
+.classpath
 target/
 .gitignore
 *.gitignore

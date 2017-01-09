@@ -28,4 +28,3 @@ target/
 bin
 
 # Don't want see the fuckin' file again!
-disconf/

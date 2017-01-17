@@ -34,7 +34,7 @@
 		<servlet.version>3.1.0</servlet.version>
 		<fastjson.version>1.2.21</fastjson.version>
 		<javassist.version>3.20.0-GA</javassist.version>
-		<log4j2.version>2.6.2</log4j2.version>
+		<log4j2.version>2.7</log4j2.version>
 		<commons-logging.version>1.2</commons-logging.version>
 		<slf4j.version>1.7.21</slf4j.version>
 		<jetty.version>9.3.14.v20161028</jetty.version>
@@ -76,6 +76,7 @@
 		<dubbo.version>2.8.4</dubbo.version>
 		<elasticjob.version>2.0.3</elasticjob.version>
 		<gson.version>2.8.0</gson.version>
+		<kafka.version>0.10.1.1</kafka.version>
 	</properties>
 
 	<dependencyManagement>
@@ -101,6 +102,12 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
 				<version>${spring.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!-- Spring 上下文 -->
@@ -205,6 +212,11 @@
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-jcl</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-jul</artifactId>
 				<version>${log4j2.version}</version>
 			</dependency>
 
@@ -599,6 +611,25 @@
 				<version>${gson.version}</version>
 			</dependency>
 
+			<!-- Gson -->
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
+			</dependency>
+
+			<!-- Kafka 客户端 -->
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-streams</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -636,6 +667,10 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-jcl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-jul</artifactId>
 		</dependency>
 
 	</dependencies>
@@ -715,7 +750,9 @@
 		<module>session-support</module>
 		<module>dubbo-support</module>
 		<module>elasticjob-support</module>
+		<module>kafka-support</module>
 		<module>bootable</module>
+		<module>mq-sterotype</module>
 		<module>joindata-app</module>
 		<module>joindata-app-plugin</module>
 		<module>joindata-app-template</module>

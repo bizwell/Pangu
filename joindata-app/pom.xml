@@ -105,6 +105,13 @@
 				<artifactId>elasticjob-support</artifactId>
 				<version>${pangu.version}</version>
 			</dependency>
+			
+			<!-- 支持 Kafka -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>kafka-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>

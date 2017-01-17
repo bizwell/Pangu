@@ -27,27 +27,16 @@ public class DisconfConfig
 {
     private static final Logger log = Logger.get();
 
-    /** 扫描的包名 */
-    private String scanPackage;
-
     /**
      * Disconf 管理类
      */
     @Bean(destroyMethod = "destroy")
-    public DisconfMgrBean disconfMgrBean()
+    public static DisconfMgrBean disconfMgrBean()
     {
         DisconfMgrBean bean = new DisconfMgrBean();
 
-        if(StringUtil.isNullOrEmpty(Util.getScanPackage()))
-        {
-            bean.setScanPackage(scanPackage);
-            log.info("Disconf 扫描包: {}", scanPackage);
-        }
-        else
-        {
-            bean.setScanPackage(Util.getScanPackage());
-            log.info("Disconf 扫描包: {}", Util.getScanPackage());
-        }
+        bean.setScanPackage(Util.getScanPackage());
+        log.info("Disconf 扫描包: {}", Util.getScanPackage());
 
         return bean;
     }
@@ -56,7 +45,7 @@ public class DisconfConfig
      * 傻逼玩意
      */
     @Bean(initMethod = "init", destroyMethod = "destroy")
-    public DisconfMgrBeanSecond disconfMgrBeanSecond()
+    public static DisconfMgrBeanSecond disconfMgrBeanSecond()
     {
         return new DisconfMgrBeanSecond();
     }

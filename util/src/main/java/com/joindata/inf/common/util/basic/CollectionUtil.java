@@ -184,7 +184,7 @@ public class CollectionUtil
      * @param es 初始化元素，可以为多个，也可以没有，接受数组，但类型必须相同
      * @return 一个 ArrayList
      */
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public static final <E> List<E> newList(E... es)
     {
         List<E> list = new ArrayList<E>();

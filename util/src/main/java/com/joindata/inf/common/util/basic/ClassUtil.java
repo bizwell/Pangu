@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -366,11 +367,11 @@ public class ClassUtil
         Set<Class<?>> set = CollectionUtil.newHashSet();
         for(Class<?> clz: classSet)
         {
-            if (clz==null)
+            if(clz == null)
             {
                 continue;
             }
-            
+
             if(clz.isAnnotationPresent(annoClz))
             {
                 // 找要排除的注解
@@ -643,6 +644,18 @@ public class ClassUtil
                     return null;
                 }
         }
+    }
+
+    /**
+     * 获取一个泛型类的第一个参数的实际类型
+     * 
+     * @param clz 包含泛型的 Class
+     * @return 泛型参数实际 Type
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> getNestedGenericType(Class<?> clz)
+    {
+        return (Class<T>)((ParameterizedType)(clz.getGenericInterfaces()[0])).getActualTypeArguments()[0];
     }
 
     public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException

@@ -43,6 +43,7 @@ public class Logger
     public synchronized static final Logger get()
     {
         ConfigurationSource configurationSource = null;
+
         try
         {
             if(ResourceUtil.isResourceInJar("log4j2.xml"))

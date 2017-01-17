@@ -5,6 +5,7 @@ import org.mybatis.spring.mapper.ClassPathMapperScanner;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.stereotype.Repository;
 
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.mybatis.EnableMyBatis;
@@ -32,14 +33,17 @@ public class CustomMapperScannerRegistrar extends MapperScannerRegistrar
     {
         ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
 
+        // 只扫描 Repository 标记的
+        scanner.setAnnotationClass(Repository.class);
+
         // this check is needed in Spring 3.1
         if(resourceLoader != null)
         {
             scanner.setResourceLoader(resourceLoader);
         }
-        
+
         log.info("MyBatis 扫描包为: " + ArrayUtil.join(Util.getScanPackage()));
-        
+
         scanner.registerFilters();
         scanner.doScan(Util.getScanPackage());
     }

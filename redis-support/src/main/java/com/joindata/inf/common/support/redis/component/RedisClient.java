@@ -371,7 +371,6 @@ public class RedisClient
      * @param clz 对象的 Class
      * @return 对象列表
      */
-    @SuppressWarnings("unchecked")
     public <T extends Serializable> List<T> getObjectList(String key, int start, int end, Class<T> clz)
     {
 
@@ -406,7 +405,6 @@ public class RedisClient
      * @param clz 对象的 Class
      * @return 对象列表
      */
-    @SuppressWarnings("unchecked")
     public <T extends Serializable> List<T> getObjectList(String key, Class<T> clz)
     {
 
@@ -441,7 +439,6 @@ public class RedisClient
      * @param start 起始，从 0 开始
      * @return 对象数组
      */
-    @SuppressWarnings("unchecked")
     public <T extends Serializable> List<T> getObjectSubList(String key, int start, Class<T> clz)
     {
 
@@ -604,7 +601,6 @@ public class RedisClient
      * @param entries Map 的 key 列表
      * @return 值列表
      */
-    @SuppressWarnings("unchecked")
     public <T extends Serializable> List<T> getObjectMapValues(String key, Class<T> clz, String... entries)
     {
 

@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
@@ -74,37 +75,81 @@ public class ZipMojo extends AbstractMojo
         // Show some info about the plugin.
         displayPluginInfo();
 
-        // 编译目录 (target/)
-        File targetDir = new File(project.getBuild().getOutputDirectory());
-
-        // 程序打包目录 (target/pack)
-        File packRoot = new File(outputDirectory, "pack");
-
-        // 程序打包目录 (target/pack/PROGRAM)
-        File packProgramRoot = new File(packRoot, "PROGRAM");
-
-        // 程序打包目录 (target/pack/PROGRAM/xxx-x.x.x/)
-        File packProgram = new File(packProgramRoot, project.getBuild().getFinalName());
-
-        // 依赖输出目录 (target/pack/PROGRAM/lib)
-        File libDir = new File(packProgramRoot, libDirName);
-
-        // 启动脚本 (target/pack/start.sh)
-        File startScriptFile = new File(packRoot, "start.sh");
-
-        // 参数文件 (target/pack/start.sh)
-        File optsFile = new File(packRoot, "CONFIG/OPTS");
-
-        // 最终的 zip 文件 (target/xxx-x.x.x.zip，包括 packRoot 下所有的资源)
-        File zipFile = new File(outputDirectory, project.getBuild().getFinalName() + ".zip");
         try
         {
+            // 获取主类信息
+            Class<?> mainClass = findBootClass();
+            String appId = null;
+            String appVersion = null;
+            {
+
+                JoindataApp app = mainClass.getAnnotation(JoindataApp.class);
+                if(app != null)
+                {
+                    appId = app.id();
+                    appVersion = app.version();
+                }
+            }
+            {
+                JoindataWebApp app = mainClass.getAnnotation(JoindataWebApp.class);
+                if(app != null)
+                {
+                    appId = app.id();
+                    appVersion = app.version();
+                }
+            }
+
+            // 编译目录 (target/)
+            File targetDir = new File(project.getBuild().getOutputDirectory());
+
+            // 程序打包目录 (target/pack)
+            File _packRoot = new File(outputDirectory, "pack/");
+
+            // 程序打包目录 (target/pack/x.x.x)
+            File packRoot = new File(outputDirectory, "pack/" + appVersion);
+
+            // 程序打包目录 (target/pack/x.x.x/PROGRAM)
+            File packProgramRoot = new File(packRoot, "PROGRAM");
+
+            // 程序配置文件目录 (target/pack/x.x.x/CONFIG)
+            File packConfigRoot = new File(packRoot, "CONFIG");
+
+            // 程序主目录 (target/pack/x.x.x/PROGRAM/xxx-x.x.x)
+            File packProgram = new File(packProgramRoot, project.getBuild().getFinalName());
+
+            // 依赖输出目录 (target/pack/x.x.x/PROGRAM/lib)
+            File libDir = new File(packProgramRoot, libDirName);
+
+            String moduleFiles[] = {"start.sh", "stop.sh", "restart.sh", "status.sh", "install.sh", "uninstall.sh", "DISCONF_OPTS", "JMX_OPTS", "JVM_OPTS"};
+            Map<String, File> fileMap = CollectionUtil.newMap();
+            for(String file: moduleFiles)
+            {
+                if(file.endsWith("_OPTS"))
+                {
+                    fileMap.put(file, new File(packConfigRoot, file));
+                }
+                else if(file.equals("install.sh") || file.equals("uninstall.sh"))
+                {
+                    fileMap.put(file, new File(_packRoot, file));
+                }
+                else
+                {
+                    fileMap.put(file, new File(packRoot, file));
+                }
+            }
+
+            // 依赖 JAR 包名字
+            StringBuffer libJars = new StringBuffer();
+
+            // 最终的 zip 文件 (target/xxx-x.x.x.zip，包括 packRoot 下所有的资源)
+            File zipFile = new File(outputDirectory, project.getBuild().getFinalName() + ".zip");
             // 复制依赖
             List<File> dependencyJars = extractDependencyFiles(artifacts);
             getLog().info("工程依赖 JAR 包数: " + dependencyJars.size());
             for(File jar: dependencyJars)
             {
                 getLog().debug("复制依赖: " + jar);
+                libJars.append(FileUtil.getName(jar.getPath())).append(" ");
                 FileUtil.copyToDir(jar.getPath(), libDir.getPath());
             }
 
@@ -123,16 +168,28 @@ public class ZipMojo extends AbstractMojo
                 FileUtil.copyToDir(f, packProgram);
             }
 
-            // 生成启动脚本
-            String startScript = StreamUtils.copyToString(ClassUtil.getRootResourceAsStream("_MODULE/start.sh"), Charset.forName("UTF-8"));
-            String opts = StreamUtils.copyToString(ClassUtil.getRootResourceAsStream("_MODULE/OPTS"), Charset.forName("UTF-8"));
-            startScript = StringUtil.replaceAll(startScript, "__MAINCLASS__", findBootClassName());
-            startScript = StringUtil.replaceAll(startScript, "__PROG__", project.getBuild().getFinalName());
-            FileUtil.writeTo(startScriptFile.getPath(), startScript);
-            FileUtil.writeTo(optsFile.getPath(), opts);
+            // 写配置文件和脚本
+            for(String file: moduleFiles)
+            {
+                String content = StreamUtils.copyToString(ClassUtil.getRootResourceAsStream("_MODULE/" + file), Charset.forName("UTF-8"));
+                content = StringUtil.replaceAll(content, "__MAINCLASS__", mainClass.getCanonicalName());
+                content = StringUtil.replaceAll(content, "__LIBJARS__", libJars.toString());
+                content = StringUtil.replaceAll(content, "__APPID__", appId);
+                content = StringUtil.replaceAll(content, "__APPVERSION__", appVersion);
+                content = StringUtil.replaceAll(content, "__PROG__", project.getBuild().getFinalName());
+
+                FileUtil.writeTo(fileMap.get(file).getPath(), content);
+
+                if(fileMap.get(file).getName().endsWith(".sh"))
+                {
+                    fileMap.get(file).setExecutable(true, true);
+                }
+            }
 
             // 打包文件
-            FileUtil.zip(zipFile, packRoot.listFiles());
+            FileUtil.zip(zipFile, _packRoot.listFiles());
+
+            getLog().info("文件已打包到: " + zipFile.getPath());
         }
         catch(IOException e)
         {
@@ -143,7 +200,6 @@ public class ZipMojo extends AbstractMojo
             getLog().error("无法解析依赖", e);
         }
 
-        getLog().info("文件已打包到: " + zipFile.getPath());
     }
 
     private void displayPluginInfo()
@@ -162,7 +218,7 @@ public class ZipMojo extends AbstractMojo
      * @throws MalformedURLException
      * @throws MojoFailureException
      */
-    private String findBootClassName() throws MalformedURLException, DependencyResolutionRequiredException, MojoFailureException
+    private Class<?> findBootClass() throws MalformedURLException, DependencyResolutionRequiredException, MojoFailureException
     {
         Set<Class<?>> clzSet = CollectionUtil.newHashSet();
 
@@ -187,7 +243,7 @@ public class ZipMojo extends AbstractMojo
             getLog().info("启动类为: " + clz.getName());
         }
 
-        return bootClz.getName();
+        return bootClz;
     }
 
     /**

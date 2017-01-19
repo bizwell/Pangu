@@ -1,1 +1,0 @@
--Ddisconf.env=LOCAL -Ddisconf.app=PANGU.TEST -Ddisconf.conf_server_host=disconf.dota -Ddisconf.enable.remote.conf=true -Ddisconf.version=1.0.0

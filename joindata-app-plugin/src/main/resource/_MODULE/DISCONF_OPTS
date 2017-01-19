@@ -1,0 +1,2 @@
+-Ddisconf.env=DEV
+-Ddisconf.conf_server_host=10.10.110.50

@@ -586,19 +586,15 @@ public class ClassUtil
             default:
                 try
                 {
-                    return Class.forName(clzName);
+                    return ClassUtils.getClass(clzName);
                 }
                 catch(ClassNotFoundException e)
                 {
-                    try
-                    {
-                        return ClassUtils.getClass(clzName);
-                    }
-                    catch(ClassNotFoundException e1)
-                    {
-                        log.error("找不到该类: {}", clzName, e1);
-                        return null;
-                    }
+                    return null;
+                }
+                catch(NoClassDefFoundError e)
+                {
+                    return null;
                 }
         }
     }

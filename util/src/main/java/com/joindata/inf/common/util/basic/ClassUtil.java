@@ -12,10 +12,10 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -83,6 +83,28 @@ public class ClassUtil
     }
 
     /**
+     * 获取 Class 的 Method 列表，并赋予可访问性
+     * 
+     * @param clz 要获取 Method 的 Class 反射对象
+     * @return Method 列表
+     */
+    public static final Method[] getMethods(Class<?> clz)
+    {
+        if(clz == null)
+        {
+            return null;
+        }
+
+        Method methods[] = ArrayUtils.addAll(clz.getDeclaredMethods(), (!clz.getSuperclass().equals(Object.class)) ? clz.getSuperclass().getDeclaredMethods() : null);
+
+        for(Method method: methods)
+        {
+            method.setAccessible(true);
+        }
+        return methods;
+    }
+
+    /**
      * 获取 Class 的 Field ，并赋予可访问性
      * 
      * @param clz 要获取 Field 的 Class 反射对象
@@ -115,19 +137,42 @@ public class ClassUtil
      * 
      * @param objClz 要操作的类
      * @param annoClz 要检测的注解 Class
-     * @return 属性-注解 LinkedHashMap，会保持属性在类中的排序
+     * @return 属性-注解 TreeMap，会保持属性在类中的排序
      */
     public static <ANNO extends Annotation> Map<Field, ANNO> getFieldAnnotationMap(Class<?> objClz, Class<ANNO> annoClz)
     {
         Field flds[] = getFields(objClz);
 
-        Map<Field, ANNO> map = new LinkedHashMap<Field, ANNO>();
+        Map<Field, ANNO> map = new TreeMap<Field, ANNO>();
         for(Field fld: flds)
         {
             ANNO anno = fld.getAnnotation(annoClz);
             if(anno != null)
             {
                 map.put(fld, anno);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 获取指定类的所有包含指定注解的“方法-注解” Map
+     * 
+     * @param objClz 要操作的类
+     * @param annoClz 要检测的注解 Class
+     * @return 方法-注解 HashMap
+     */
+    public static <ANNO extends Annotation> Map<Method, ANNO> getMethodAnnotationMap(Class<?> objClz, Class<ANNO> annoClz)
+    {
+        Method[] methods = getMethods(objClz);
+
+        Map<Method, ANNO> map = new TreeMap<Method, ANNO>();
+        for(Method method: methods)
+        {
+            ANNO anno = method.getAnnotation(annoClz);
+            if(anno != null)
+            {
+                map.put(method, anno);
             }
         }
         return map;

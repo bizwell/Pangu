@@ -27,6 +27,9 @@ echo -e "${SUCCESS}准备启动${RES}  应用ID __APPID__, 版本号 __APPVERSIO
 echo "------------------------------------------------"
 
 mkdir -p $piddir
+if [ ! -f $pidfile ]; then
+  touch $pidfile
+fi
 
 pid=`cat $pidfile`
 # 判断 PID 是否存在并且正在运行

@@ -34,7 +34,7 @@ if [ -z "$pid" ]; then
   echo ""
   exit 1;
 fi
-# 判断进程是否已启动
+# 判断进程是否不存在
 if ! kill -0 $pid > /dev/null 2>&1; then
   echo "进程不存在, 请确认是否启动"
   echo "------------------------------------------------"
@@ -45,11 +45,36 @@ fi
 
 # 停止
 kill $pid
-
 # 输出提示
 echo -e "PID: ${HIGHLIGHT}`cat $pidfile`${RES}"
 
-
 echo "------------------------------------------------"
-echo -e "${SUCCESS}已停止${RES}"
+
+i=1
+while :
+do
+  if kill -0 $pid > /dev/null 2>&1; then
+    case $i in
+      1) echo -en "${INFO}正在停止.  ${RES}\r";;
+      2) echo -en "${INFO}正在停止.. ${RES}\r";;
+      3) echo -en "${INFO}正在停止...${RES}\r";;
+      *) echo -en "${INFO}正在停止...${RES}\r";;
+    esac
+
+    if [ $i -eq 3 ]; then
+      i=1;
+    else
+      i=`expr $i + 1`
+    fi
+
+    sleep 0.6;
+  else
+    break;
+  fi
+
+done
+
+echo "" > $pidfile
+
+echo -e "${SUCCESS}已停止     ${RES}"
 echo ""

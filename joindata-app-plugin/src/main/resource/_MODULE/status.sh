@@ -23,12 +23,14 @@ pidfile="$piddir/__APPVERSION__.pid"
 
 mkdir -p $piddir
 if [ ! -f $pidfile ]; then
-   echo -e "${DANGER}找不到进程号${RES}"
-   exit 1;
+  echo -e "${DANGER}找不到进程号${RES}"
+  echo ""
+  exit 1;
 fi
 pid=`cat $pidfile`
 if [ -z "$pid" ]; then
   echo -e "${DANGER}找不到进程号${RES}"
+  echo ""
   exit 1;
 fi
 if ! kill -0 $pid > /dev/null 2>&1; then

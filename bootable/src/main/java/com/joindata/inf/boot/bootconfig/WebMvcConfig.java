@@ -8,11 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.joindata.inf.boot.annotation.JoindataWebApp;
+import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.util.log.Logger;
 
 @Configuration
@@ -42,4 +45,17 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
 
         log.debug("注册 HTTP 消息转换器: {}", messageConverter.toString());
     }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry)
+    {
+        super.addResourceHandlers(registry);
+        for(String staticDir: BootInfoHolder.getBootClass().getAnnotation(JoindataWebApp.class).staticDir())
+        {
+            registry.addResourceHandler("**").addResourceLocations("classpath:" + staticDir + "/");
+        }
+    }
+    
+    
+
 }

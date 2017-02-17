@@ -30,4 +30,7 @@ public interface AuthenticationError
 
     /** 账号已存在 */
     public static final ErrorEntity DUPLICATE_IDENTITY =  ErrorEntity.define(7006, "账号已存在");
+    
+    /** 密码不合法 */
+    public static final ErrorEntity INLEGAL_PASSWORD = ErrorEntity.define(7007, "密码不合法");
 }

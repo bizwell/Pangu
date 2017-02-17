@@ -140,23 +140,30 @@ public class ZipMojo extends AbstractMojo
             // 程序配置文件目录 (target/pack/x.x.x/CONFIG)
             File packConfigRoot = new File(packRoot, "CONFIG");
 
+            // 程序服务总成 (target/pack/x.x.x/init.d)
+            File packServiceRoot = new File(packRoot, "init.d");
+
             // 程序主目录 (target/pack/x.x.x/PROGRAM/xxx-x.x.x)
             File packProgram = new File(packProgramRoot, project.getBuild().getFinalName());
 
             // 依赖输出目录 (target/pack/x.x.x/PROGRAM/lib)
             File libDir = new File(packProgramRoot, libDirName);
 
-            String moduleFiles[] = {"start.sh", "stop.sh", "restart.sh", "status.sh", "install.sh", "uninstall.sh", "DISCONF_OPTS", "JMX_OPTS", "JVM_OPTS"};
+            String moduleFiles[] = {"start.sh", "stop.sh", "restart.sh", "status.sh", "install.sh", "uninstall.sh", "service.sh", "DISCONF_OPTS", "JMX_OPTS", "JVM_OPTS", "LINUX_USER"};
             Map<String, File> fileMap = CollectionUtil.newMap();
             for(String file: moduleFiles)
             {
-                if(file.endsWith("_OPTS"))
+                if(file.endsWith("_OPTS") || file.equals("LINUX_USER"))
                 {
                     fileMap.put(file, new File(packConfigRoot, file));
                 }
                 else if(file.equals("install.sh") || file.equals("uninstall.sh"))
                 {
                     fileMap.put(file, new File(_packRoot, file));
+                }
+                else if(file.equals("service.sh"))
+                {
+                    fileMap.put(file, new File(packServiceRoot, file));
                 }
                 else
                 {

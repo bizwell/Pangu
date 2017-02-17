@@ -16,6 +16,7 @@ cps=$CLASSPATH
 jars="__LIBJARS__"
 opts=`cat CONFIG/*_OPTS`
 
+appdir=/opt/app/product/__APPID__
 tmpdir="/data/tmp/__APPID__/__APPVERSION__"
 piddir="/var/run/__APPID__"
 stdoutfile="$tmpdir/nohup.out"
@@ -58,12 +59,13 @@ fi
 mkdir -p $tmpdir
 
 # 启动
-nohup java -server -classpath $cps $opts __MAINCLASS__ >> $stdoutfile 2>$stderrfile &
+nohup $JAVA_HOME/bin/java -server -classpath $cps $opts __MAINCLASS__ >> $stdoutfile 2>$stderrfile &
 
 # 写 PID
 echo $! > $pidfile
 
 echo -e "PID: ${HIGHLIGHT}`cat $pidfile`${RES}"
+echo -e "用户: ${HIGHLIGHT}`whoami`${RES}"
 echo "------------------------------------------------"
 echo -e "${SUCCESS}已启动${RES}"
 echo ""

@@ -27,7 +27,7 @@ fi
 pid=`cat $pidfile`
 # 判断 PID 是否存在
 if [ -z "$pid" ]; then
-  rm $pidfile
+  echo "" > $pidfile
   echo "找不到进程号, 请确认是否启动"
   echo "------------------------------------------------"
   echo -e "${DANGER}停止失败${RES}"

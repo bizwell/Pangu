@@ -17,6 +17,13 @@ appdir=/opt/app/product/__APPID__
 appconfigdir=$appdir/__APPVERSION__/CONFIG
 targetconfigdir=/var/config/__APPID__/__APPVERSION__
 
+userconfigfile=$appdir/__APPVERSION__/CONFIG/LINUX_USER
+
+tmpdir="/data/tmp/__APPID__/__APPVERSION__"
+logdir="/data/log/__APPID__"
+mkdir -p $tmpdir
+mkdir -p $logdir
+
 echo -e "${SUCCESS}准备安装${RES}  应用ID __APPID__, 版本号 __APPVERSION__"
 echo "------------------------------------------------------------"
 
@@ -55,7 +62,8 @@ echo -e "${SUCCESS}				OK${RES}"
 echo -en "${INFO}---(STEP 1 )${RES} 复制程序文件..."
 mkdir -p $appdir
 cp -Rfp __APPVERSION__ $appdir
-chmod 100 $appdir/__APPVERSION__/*.sh
+chmod 500 $appdir/__APPVERSION__/*.sh
+chmod 500 $appdir/__APPVERSION__/init.d/*.sh
 echo -e "${SUCCESS}				OK${RES}"
 
 # 创建配置文件软链接
@@ -66,7 +74,38 @@ ln -s $appconfigdir/* $targetconfigdir/
 echo -e "${SUCCESS}			OK${RES}"
 echo "------------------------------------------------------------"
 
+# 设置用户
+inputuser=""
+while [ -z "$inputuser" ]
+do
+	echo -en "${WARN}运行该程序的用户: ${RES}"
+	read inputuser
+done
+
+id $inputuser >& /dev/null
+if [ $? -ne 0 ]
+then
+   useradd -M $inputuser
+fi
+echo -en "${INFO}---(STEP 3 )${RES} 配置权限..."
+chown -R $inputuser $appdir/__APPVERSION__/
+chown -R $inputuser $tmpdir
+chown -R $inputuser $logdir
+chmod -R 771 $piddir
+chown $inputuser $pidfile
+echo $inputuser > $userconfigfile
+echo -e "${SUCCESS}				OK${RES}"
+echo "------------------------------------------------------------"
+
 echo -e "${SUCCESS}已安装${RES}"
 echo ""
 echo -e "程序目录: ${HIGHLIGHT}$appdir/__APPVERSION__${RES}"
 echo -e "配置目录: ${HIGHLIGHT}$targetconfigdir${RES}"
+echo -e "日志目录: ${HIGHLIGHT}$logdir${RES}"
+echo -e "临时目录: ${HIGHLIGHT}$tmpdir${RES}"
+
+echo ""
+echo -e "${INFO}现在可以做这些事: ${RES}"
+echo -e "修改程序用户: ${HIGHLIGHT}$appdir/__APPVERSION__/CONFIG/LINUX_USER${RES}"
+echo -e "修改 JMX/JVM/Disconf 参数: ${HIGHLIGHT}$appdir/__APPVERSION__/CONFIG/*_OPTS${RES}"
+echo -e "通过服务脚本启动程序: ${HIGHLIGHT}$appdir/__APPVERSION__/init.d/service.sh${RES}"

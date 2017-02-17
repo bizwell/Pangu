@@ -50,6 +50,9 @@ public @interface JoindataWebApp
 
     /** 用什么样的 Web 容器，默认是 Jetty（目前你也没得选 →_→） */
     Server container() default Server.JETTY;
+    
+    /** 静态资源目录 */
+    String[] staticDir() default {};
 
     public enum Server
     {

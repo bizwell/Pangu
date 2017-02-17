@@ -1,6 +1,6 @@
 package com.joindata.inf.boot.sterotype;
 
-import com.joindata.inf.common.basic.exceptions.GenericException;
+import com.joindata.inf.common.basic.exceptions.BizException;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,9 +40,9 @@ public class RestResponse<T>
         return new RestResponse<TT>(500, null, message);
     }
 
-    public static final <TT> RestResponse<TT> fail(GenericException e)
+    public static final <TT> RestResponse<TT> fail(BizException e)
     {
-        return new RestResponse<TT>(500, e.getCode(), e.getMessage());
+        return new RestResponse<TT>(500, e.getErrorEntity().getCode(), e.getMessage());
     }
 
     public static final <TT> RestResponse<TT> fail(Exception e)

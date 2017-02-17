@@ -3,10 +3,12 @@ package com.joindata.inf.boot;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.annotation.WebFilter;
 
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -143,6 +145,7 @@ public class Bootstrap
 
         log.info("注册公共扫描包...");
         context.scan("com.joindata.inf.common.basic.support");
+        context.scan("com.joindata.inf.boot.mechanism");
 
         // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
         log.info("注册启动类: {}", bootClz.getName());
@@ -254,7 +257,17 @@ public class Bootstrap
                 }
             }
 
-            Server server = JettyServerFactory.newServer(port, context, webAppContext);
+            List<Handler> handlers = CollectionUtil.newList();
+
+            // 静态资源目录 TODO 这个里面后续要处理冲突问题，貌似并不生效，暂时用 Spring 的静态资源处理器来处理静态资源
+            // for(String staticDir: bootClz.getAnnotation(JoindataWebApp.class).staticDir())
+            // {
+            // handlers.add(JettyServerFactory.makeResourceHandler(staticDir, true, 1024, null));
+            // }
+
+            handlers.add(webAppContext);
+
+            Server server = JettyServerFactory.newServer(port, context, handlers);
             log.info("配置 Jetty - 完成");
 
             log.info("启动 Jetty Server - 开始");
@@ -271,6 +284,7 @@ public class Bootstrap
 
         log.info("注册公共扫描包...");
         context.scan("com.joindata.inf.common.basic.support");
+        context.scan("com.joindata.inf.boot.mechanism");
 
         // 注册启动类
         log.info("注册启动类: {}", bootClz.getName());

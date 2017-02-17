@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.joindata.inf.boot.sterotype.RestResponse;
+import com.joindata.inf.common.basic.exceptions.BizException;
 import com.joindata.inf.common.basic.exceptions.GenericException;
 import com.joindata.inf.common.util.log.Logger;
 
@@ -20,17 +22,18 @@ import com.joindata.inf.common.util.log.Logger;
  * @author 宋翔
  * @date 2015年11月17日 下午3:52:32
  */
+@RestControllerAdvice
 @ControllerAdvice
 public class ExceptionAdvice
 {
     private static final Logger log = Logger.get();
 
-    @ExceptionHandler(GenericException.class)
+    @ExceptionHandler(BizException.class)
     @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody RestResponse<?> handleException(GenericException e)
+    public @ResponseBody RestResponse<?> handleException(BizException e)
     {
-        log.error("异常响应: {}", e.getMessage(), e);
-        
+        log.warn("业务异常: {}", e.getMessage());
+
         return RestResponse.fail(e);
     }
 
@@ -39,7 +42,7 @@ public class ExceptionAdvice
     public @ResponseBody RestResponse<?> handleException(Exception e)
     {
         log.error("异常响应: {}", e.getMessage(), e);
-        
+
         return RestResponse.fail(e);
     }
 }

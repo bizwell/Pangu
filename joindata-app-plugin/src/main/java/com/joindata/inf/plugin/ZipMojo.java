@@ -144,7 +144,7 @@ public class ZipMojo extends AbstractMojo
             File packServiceRoot = new File(packRoot, "init.d");
 
             // 程序主目录 (target/pack/x.x.x/PROGRAM/xxx-x.x.x)
-            File packProgram = new File(packProgramRoot, project.getBuild().getFinalName());
+            File packProgram = new File(packProgramRoot, appId + "-" + appVersion);
 
             // 依赖输出目录 (target/pack/x.x.x/PROGRAM/lib)
             File libDir = new File(packProgramRoot, libDirName);
@@ -175,7 +175,7 @@ public class ZipMojo extends AbstractMojo
             StringBuffer libJars = new StringBuffer();
 
             // 最终的 zip 文件 (target/xxx-x.x.x.zip，包括 packRoot 下所有的资源)
-            File zipFile = new File(outputDirectory, project.getBuild().getFinalName() + ".zip");
+            File zipFile = new File(outputDirectory, appId + "-" + appVersion + ".zip");
             // 复制依赖
             List<File> dependencyJars = extractDependencyFiles(artifacts);
             getLog().info("工程依赖 JAR 包数: " + dependencyJars.size());
@@ -209,7 +209,7 @@ public class ZipMojo extends AbstractMojo
                 content = StringUtil.replaceAll(content, "__LIBJARS__", libJars.toString());
                 content = StringUtil.replaceAll(content, "__APPID__", appId);
                 content = StringUtil.replaceAll(content, "__APPVERSION__", appVersion);
-                content = StringUtil.replaceAll(content, "__PROG__", project.getBuild().getFinalName());
+                content = StringUtil.replaceAll(content, "__PROG__", appId + "-" + appVersion);
 
                 FileUtil.writeTo(fileMap.get(file).getPath(), content);
 

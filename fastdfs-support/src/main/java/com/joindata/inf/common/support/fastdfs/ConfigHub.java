@@ -11,7 +11,7 @@ import com.joindata.inf.common.support.fastdfs.bootconfig.WebMvcConfig;
 
 /**
  * FastDFS 支持配置器
- * 
+ *
  * @author 宋翔<songxiang@joindata.com>
  * @date 2016年12月2日 下午5:30:49
  */

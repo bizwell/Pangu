@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -77,6 +76,9 @@
 		<elasticjob.version>2.0.3</elasticjob.version>
 		<gson.version>2.8.0</gson.version>
 		<kafka.version>0.10.1.1</kafka.version>
+		<jaxen.version>1.2.0-atlassian-2</jaxen.version>
+		<jxpath.version>1.3</jxpath.version>
+		<moxy.version>2.6.4</moxy.version>
 	</properties>
 
 	<dependencyManagement>
@@ -580,6 +582,21 @@
 				<version>${curator.version}</version>
 			</dependency>
 
+			<!-- Apache 的可使用 XPath 遍历 Java 对象的工具 -->
+			<dependency>
+				<groupId>commons-jxpath</groupId>
+				<artifactId>commons-jxpath</artifactId>
+				<version>${jxpath.version}</version>
+			</dependency>
+
+			<!-- Eclipse 的可使用 XPath 遍历 Java 对象的工具 -->
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.moxy</artifactId>
+				<version>${moxy.version}</version>
+			</dependency>
+
+
 			<!-- Dubbox -->
 			<dependency>
 				<groupId>com.alibaba</groupId>
@@ -646,6 +663,14 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+			<!-- JAXEN 解析 xpath -->
+			<dependency>
+				<groupId>jaxen</groupId>
+				<artifactId>jaxen</artifactId>
+				<version>${jaxen.version}</version>
+			</dependency>
+
 
 		</dependencies>
 	</dependencyManagement>
@@ -767,7 +792,7 @@
 		<module>session-support</module>
 		<module>dubbo-support</module>
 		<module>elasticjob-support</module>
-		<module>kafka-support</module>
+		<!-- module>kafka-support</module -->
 		<module>bootable</module>
 		<module>mq-sterotype</module>
 		<module>joindata-app</module>

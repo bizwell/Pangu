@@ -35,7 +35,7 @@ if [ -z "$pid" ]; then
 fi
 if ! kill -0 $pid > /dev/null 2>&1; then
   echo -e "${WARN}程序没有在运行${RES}"
-  rm $pidfile
+  echo ''> $pidfile
   exit 1;
 fi
 

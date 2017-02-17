@@ -12,7 +12,7 @@ import com.joindata.inf.common.util.basic.StringUtil;
 
 /**
  * Disconf 支持配置器
- * 
+ *
  * @author 宋翔<songxiang@joindata.com>
  * @date 2016年12月2日 下午5:31:11
  */
@@ -24,6 +24,8 @@ public class ConfigHub extends AbstractConfigHub
     {
         System.setProperty("disconf.app", BootInfoHolder.getAppId());
         System.setProperty("disconf.version", BootInfoHolder.getAppVersion());
+        System.setProperty("disconf.user_define_download_dir", "/data/tmp/" + BootInfoHolder.getAppId() + "/" + BootInfoHolder.getAppVersion() + "/disconf");
+        System.setProperty("disconf.enable_local_download_dir_in_class_path", "false");
         if(StringUtil.isBlank(System.getProperty("disconf.enable.remote.conf")))
         {
             System.setProperty("disconf.enable.remote.conf", "true");

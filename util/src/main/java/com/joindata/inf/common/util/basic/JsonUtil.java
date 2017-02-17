@@ -45,6 +45,18 @@ public class JsonUtil
     }
 
     /**
+     * 把对象转换成 JSON 字符串，并格式化<br />
+     * <i>需要转换的对象属性必须要有配套的 getter 方法</i>
+     * 
+     * @param obj 要转换的对象
+     * @return JSON 字符串
+     */
+    public static final String toPrettyJSON(Object obj)
+    {
+        return JSON.toJSONString(obj, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+    }
+
+    /**
      * 把 JSON 字符串转换成 Java 对象<br />
      * <i>将 JSON 中的字段映射到对象的字段中</i>
      * 

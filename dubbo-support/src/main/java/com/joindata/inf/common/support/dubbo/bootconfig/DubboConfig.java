@@ -80,6 +80,7 @@ public class DubboConfig
         RegistryConfig config = new RegistryConfig();
         config.setAddress(properties.getRegistryAddress());
         config.setTimeout(properties.getRegistryTimeout());
+        config.setFile("/data/tmp/" + BootInfoHolder.getAppId() + "/" + BootInfoHolder.getAppVersion() + "/dubbo/dubbo.cache");
         config.setCheck(true); // 必须检查注册中心是否存活
 
         return config;

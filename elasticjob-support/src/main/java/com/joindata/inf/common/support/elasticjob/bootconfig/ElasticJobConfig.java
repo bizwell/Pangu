@@ -22,17 +22,19 @@ public class ElasticJobConfig
 {
     private static final Logger log = Logger.get();
 
+    private static final String NAMESPACE = "elasticjob";
+
     @Autowired
     private ElasticJobProperties properties;
 
     @Bean
     public CoordinatorRegistryCenter coordinatorRegistryCenter()
     {
-        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(properties.getZkHosts(), properties.getZkNamespace());
+        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(properties.getZkHosts(), NAMESPACE);
         CoordinatorRegistryCenter center = new ZookeeperRegistryCenter(zkConfig);
         center.init();
 
-        log.info("ElasticJob 使用 Zookeeper 注册中心: {}, 命名空间: {}" + properties.getZkHosts(), properties.getZkNamespace());
+        log.info("ElasticJob 使用 Zookeeper 注册中心: {}, 命名空间: {}" + properties.getZkHosts(), NAMESPACE);
         return center;
     }
 

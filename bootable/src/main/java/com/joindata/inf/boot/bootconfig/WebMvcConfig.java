@@ -32,7 +32,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
         FastJsonHttpMessageConverter messageConverter = new FastJsonHttpMessageConverter();
         FastJsonConfig config = new FastJsonConfig();
 
-        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue);
+        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue, SerializerFeature.DisableCircularReferenceDetect, SerializerFeature.SkipTransientField);
         messageConverter.setFastJsonConfig(config);
         messageConverter.setDefaultCharset(Charset.forName("UTF-8"));
 
@@ -43,7 +43,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
 
         converters.add(messageConverter);
 
-        log.debug("注册 HTTP 消息转换器: {}", messageConverter.toString());
+        log.info("注册 HTTP 消息转换器: {}", messageConverter.toString());
     }
 
     @Override

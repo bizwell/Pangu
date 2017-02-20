@@ -21,8 +21,6 @@ public class ElasticJobProperties
 
     private String zkHosts;
 
-    private String zkNamespace;
-
     /*
      * TODO 暂时不要搞这么复杂 private int zkBaseSleep; private int zkMaxSleep; private int zkRetries;
      */
@@ -36,17 +34,6 @@ public class ElasticJobProperties
     public void setZkHosts(String zkHosts)
     {
         this.zkHosts = zkHosts;
-    }
-
-    @DisconfFileItem(name = "zk.namespace", associateField = "zkNamespace")
-    public String getZkNamespace()
-    {
-        return zkNamespace;
-    }
-
-    public void setZkNamespace(String zkNamespace)
-    {
-        this.zkNamespace = zkNamespace;
     }
 
     /*

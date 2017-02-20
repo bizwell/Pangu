@@ -655,7 +655,7 @@ public class StringUtil
      * 
      * @param c 要生成的字符
      * @param size 数量
-     * @return 有指定数量的空格的字符串
+     * @return 由指定数量的指定字符组成的字符串
      */
     public static String makeRepeat(char c, int size)
     {
@@ -664,6 +664,29 @@ public class StringUtil
         {
             sb.append(c);
         }
+        return sb.toString();
+    }
+
+    /**
+     * 生成指定数量的指定字符，并分隔开来
+     * 
+     * @param c 要生成的字符
+     * @param spliter 生成的字符串中的每个字符之间的分隔符
+     * @param size 数量
+     * @return 由指定数量的指定字符组成的字符串
+     */
+    public static String makeRepeat(char c, char spliter, int size)
+    {
+        StringBuffer sb = new StringBuffer();
+        for(int i = 0; i < size; i++)
+        {
+            sb.append(c);
+            if(i != size - 1)
+            {
+                sb.append(spliter);
+            }
+        }
+
         return sb.toString();
     }
 

@@ -28,18 +28,21 @@ public class TreeBuilder
      * @param elements 元素
      * @return 树结构的元素集合，一级元素是根节点
      */
-    public static Tree buildTree(Collection<TreeNode> elements)
+    public static <T extends TreeNode> Tree buildTree(Collection<T> elements)
     {
+        log.debug("准备生成树，节点数: {}", elements.size());
+
         Tree root = new Tree();
         Set<TreeNode> resultSet = CollectionUtil.newHashSet();
         root.setChildren(resultSet);
 
         if(CollectionUtil.isNullOrEmpty(elements))
         {
+            log.debug("并没有指定节点，返回空树");
             return root;
         }
 
-        long beginTime = System.nanoTime();
+        long beginTime = System.currentTimeMillis();
         for(TreeNode node1: elements)
         {
             boolean mark = false;
@@ -62,7 +65,7 @@ public class TreeBuilder
             }
         }
 
-        log.debug("构建树结构 - 执行所耗时间: {}ns", System.nanoTime() - beginTime);
+        log.debug("构建树结构 - 执行所耗时间: {}ms", System.currentTimeMillis() - beginTime);
 
         return root;
     }

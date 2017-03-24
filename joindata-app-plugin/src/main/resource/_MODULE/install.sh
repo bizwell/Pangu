@@ -13,11 +13,15 @@ echo ""
 dir=$(cd "$(dirname "`readlink -f $0`")"; pwd)
 cd $dir
 
-appdir=/opt/app/product/__APPID__
+appdir=/opt/__APPID__
 appconfigdir=$appdir/__APPVERSION__/CONFIG
 targetconfigdir=/var/config/__APPID__/__APPVERSION__
 
 userconfigfile=$appdir/__APPVERSION__/CONFIG/LINUX_USER
+
+quiet='N'
+restartapp='N'
+appuser=''
 
 tmpdir="/data/tmp/__APPID__/__APPVERSION__"
 logdir="/data/log/__APPID__"
@@ -25,6 +29,25 @@ mkdir -p $tmpdir
 mkdir -p $logdir
 
 echo -e "${SUCCESS}准备安装${RES}  应用ID __APPID__, 版本号 __APPVERSION__"
+# 可用选项
+while getopts "qru:" arg
+do
+  case $arg in
+    q)
+      quiet='Y'
+      export quiet=$quiet
+      echo -e "$INFO静默选项: $RES将覆盖安装"
+      ;;
+    r)
+      echo -e "$INFO重启指令: $RES将重启应用"
+      restartapp='Y'
+      ;;
+    u)
+      appuser=$OPTARG
+      echo -e "$INFO指定用户: $RES$OPTARG"
+      ;;
+  esac
+done
 echo "------------------------------------------------------------"
 
 echo -en "${INFO}---(STEP 0 )${RES} 检查环境..."
@@ -39,7 +62,7 @@ pid=`cat $pidfile`
 if [ ! -z "$pid" ]; then
   if kill -0 $pid > /dev/null 2>&1; then
 	  echo -e "${DANGER}			程序在运行${RES}"
-	  sure=""
+	  sure=$quiet
       while [ -z "$sure" ] || ([ ! $sure == "Y" ] && [ ! $sure = "N" ])
       do
           echo -en "${WARN}---(STEP - )${RES} 是否强制停止应用并继续安装(Y/N)? 		"
@@ -60,22 +83,38 @@ echo -e "${SUCCESS}				OK${RES}"
 
 # 复制应用程序文件夹
 echo -en "${INFO}---(STEP 1 )${RES} 复制程序文件..."
+# 先清理旧的目录，毛都不剩
+rm -r $appdir/__APPVERSION__
 mkdir -p $appdir
 cp -Rfp __APPVERSION__ $appdir
 chmod 500 $appdir/__APPVERSION__/*.sh
 chmod 500 $appdir/__APPVERSION__/init.d/*.sh
 echo -e "${SUCCESS}				OK${RES}"
 
-# 创建配置文件软链接
-echo -en "${INFO}---(STEP 2 )${RES} 创建配置文件软链接..."
+# 处理配置文件钩子
+echo -en "${INFO}---(STEP 2 )${RES} 处理配置文件钩子..."
 mkdir -p $targetconfigdir
-rm -f $targetconfigdir/*
-ln -s $appconfigdir/* $targetconfigdir/
+appcfgs=`ls $appconfigdir`
+# 如果有新的配置文件，复制到配置钩子文件夹
+for appcfg in $appcfgs
+do
+	if [ ! -f "$targetconfigdir/$appcfg" ]; then
+		cp $appconfigdir/$appcfg $targetconfigdir/
+	fi
+done
+targetcfgs=`ls $targetconfigdir/`
+# 如果没有该，删除对应配置钩子文件
+for targetcfg in $targetcfgs
+do
+	if [ ! -f "$appconfigdir/$targetcfg" ]; then
+		rm -f $targetconfigdir/$targetcfg
+	fi
+done
 echo -e "${SUCCESS}			OK${RES}"
-echo "------------------------------------------------------------"
 
 # 设置用户
-inputuser=""
+inputuser=$appuser
+echo "------------------------------------------------------------"
 while [ -z "$inputuser" ]
 do
 	echo -en "${WARN}运行该程序的用户: ${RES}"
@@ -92,6 +131,7 @@ chown -R $inputuser $appdir/__APPVERSION__/
 chown -R $inputuser $tmpdir
 chown -R $inputuser $logdir
 chmod -R 771 $piddir
+chown -R $inputuser $targetconfigdir/ $appconfigdir/
 chown $inputuser $pidfile
 echo $inputuser > $userconfigfile
 echo -e "${SUCCESS}				OK${RES}"
@@ -107,5 +147,9 @@ echo -e "临时目录: ${HIGHLIGHT}$tmpdir${RES}"
 echo ""
 echo -e "${INFO}现在可以做这些事: ${RES}"
 echo -e "修改程序用户: ${HIGHLIGHT}$appdir/__APPVERSION__/CONFIG/LINUX_USER${RES}"
-echo -e "修改 JMX/JVM/Disconf 参数: ${HIGHLIGHT}$appdir/__APPVERSION__/CONFIG/*_OPTS${RES}"
+echo -e "修改添加启动参数: ${HIGHLIGHT}$appdir/__APPVERSION__/CONFIG/*_OPTS${RES}"
 echo -e "通过服务脚本启动程序: ${HIGHLIGHT}$appdir/__APPVERSION__/init.d/service.sh${RES}"
+
+if [ $restartapp == 'Y' ]; then
+  $appdir/__APPVERSION__/init.d/service.sh restart
+fi

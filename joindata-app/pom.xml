@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -98,18 +97,32 @@
 				<artifactId>dubbo-support</artifactId>
 				<version>${pangu.version}</version>
 			</dependency>
-			
+
 			<!-- 支持 ElasticJob -->
 			<dependency>
 				<groupId>com.joindata.inf.common</groupId>
 				<artifactId>elasticjob-support</artifactId>
 				<version>${pangu.version}</version>
 			</dependency>
-			
+
 			<!-- 支持 Kafka -->
 			<dependency>
 				<groupId>com.joindata.inf.common</groupId>
 				<artifactId>kafka-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 支持短信服务 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>sms-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+
+			<!-- 支持 ID 生成器 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>idgen-support</artifactId>
 				<version>${pangu.version}</version>
 			</dependency>
 

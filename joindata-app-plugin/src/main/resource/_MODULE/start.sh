@@ -12,16 +12,19 @@ echo ""
 dir=$(cd "$(dirname "`readlink -f $0`")"; pwd)
 cd $dir
 
+targetconfigdir=/var/config/__APPID__/__APPVERSION__
+
 cps=$CLASSPATH
 jars="__LIBJARS__"
-opts=`cat CONFIG/*_OPTS`
+opts=`cat $targetconfigdir/*_OPTS`
 
-appdir=/opt/app/product/__APPID__
+appdir=/opt/__APPID__
 tmpdir="/data/tmp/__APPID__/__APPVERSION__"
 piddir="/var/run/__APPID__"
 stdoutfile="$tmpdir/nohup.out"
 stderrfile="$tmpdir/nohup.err"
 pidfile="$piddir/__APPVERSION__.pid"
+disconfOptsfile="/var/config/_DISCONF_OPTS"
 
 # 输出提示
 echo -e "${SUCCESS}准备启动${RES}  应用ID __APPID__, 版本号 __APPVERSION__"
@@ -44,6 +47,15 @@ if [ ! -z "$pid" ]; then
   fi
 fi
 
+if [ ! -f $disconfOptsfile ]; then
+  echo "没有找到 Disconf 配置文件，请先创建 $disconfOptsfile"
+  echo "------------------------------------------------"
+  echo -e "${DANGER}启动失败${RES}"
+  echo ""
+  exit 1;
+fi
+disconfOpts=`cat $disconfOptsfile`
+
 # 环境变量
 for j in $jars
 do
@@ -59,7 +71,7 @@ fi
 mkdir -p $tmpdir
 
 # 启动
-nohup $JAVA_HOME/bin/java -server -classpath $cps $opts __MAINCLASS__ >> $stdoutfile 2>$stderrfile &
+nohup $JAVA_HOME/bin/java -server -classpath $cps $disconfOpts $opts __MAINCLASS__ >> $stdoutfile 2>$stderrfile &
 
 # 写 PID
 echo $! > $pidfile

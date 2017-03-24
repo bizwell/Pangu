@@ -45,6 +45,7 @@
 		<commons-csv.version>1.4</commons-csv.version>
 		<commons-fileupload.version>1.3.2</commons-fileupload.version>
 		<httpclient.version>4.5.2</httpclient.version>
+		<httpcore.version>4.4.4</httpcore.version>
 		<truezip.version>7.7.10</truezip.version>
 		<jpinyin.version>1.1.8</jpinyin.version>
 		<thumbnailator.version>0.4.8</thumbnailator.version>
@@ -60,6 +61,7 @@
 		<aspectj.version>1.8.9</aspectj.version>
 		<disconf.version>2.6.36</disconf.version>
 		<netty.version>4.1.6.Final</netty.version>
+		<netty-old.version>3.7.0.Final</netty-old.version>
 		<mysql.version>5.1.40</mysql.version>
 		<mybatis.version>3.4.1</mybatis.version>
 		<mybatis-spring.version>1.3.0</mybatis-spring.version>
@@ -80,6 +82,10 @@
 		<jxpath.version>1.3</jxpath.version>
 		<moxy.version>2.6.4</moxy.version>
 		<jtds.version>1.3.1</jtds.version>
+		<sharding-jdbc.version>1.4.1</sharding-jdbc.version>
+		<niwodai-inf.version>2.0.0</niwodai-inf.version>
+		<activemq.version>5.11.1</activemq.version>
+		<smack.version>3.2.1</smack.version>
 	</properties>
 
 	<dependencyManagement>
@@ -270,6 +276,13 @@
 				<version>${httpclient.version}</version>
 			</dependency>
 
+			<!-- Apache HTTP 核心 -->
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>${httpcore.version}</version>
+			</dependency>
+
 			<!-- Apache HTTP 多媒体处理客户端 -->
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
@@ -424,6 +437,13 @@
 				<groupId>io.netty</groupId>
 				<artifactId>netty-all</artifactId>
 				<version>${netty.version}</version>
+			</dependency>
+
+			<!-- Netty 网络传输 -->
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty</artifactId>
+				<version>${netty-old.version}</version>
 			</dependency>
 
 			<!-- Servlet 包 -->
@@ -634,13 +654,6 @@
 				<version>${gson.version}</version>
 			</dependency>
 
-			<!-- Gson -->
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>${gson.version}</version>
-			</dependency>
-
 			<!-- Kafka 客户端 -->
 			<dependency>
 				<groupId>org.apache.kafka</groupId>
@@ -679,6 +692,60 @@
 				<version>${jtds.version}</version>
 			</dependency>
 
+			<!-- ShardingJDBC 当当分表分库框架 -->
+			<dependency>
+				<groupId>com.dangdang</groupId>
+				<artifactId>sharding-jdbc-core</artifactId>
+				<version>${sharding-jdbc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dangdang</groupId>
+				<artifactId>sharding-jdbc-transaction-storage</artifactId>
+				<version>${sharding-jdbc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dangdang</groupId>
+				<artifactId>sharding-jdbc-config-common</artifactId>
+				<version>${sharding-jdbc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dangdang</groupId>
+				<artifactId>sharding-jdbc-config-spring</artifactId>
+				<version>${sharding-jdbc.version}</version>
+			</dependency>
+
+			<!-- ActiveMQ -->
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-client</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-spring</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+
+			<!-- 你我贷短信服务 -->
+			<dependency>
+				<groupId>com.niwodai.inf</groupId>
+				<artifactId>notification-client-sms</artifactId>
+				<version>${niwodai-inf.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.activemq</groupId>
+						<artifactId>activemq-all</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<!-- XMPP 工具 -->
+			<dependency>
+				<groupId>org.igniterealtime.smack</groupId>
+				<artifactId>smack</artifactId>
+				<version>${smack.version}</version>
+			</dependency>
+		
 		</dependencies>
 	</dependencyManagement>
 
@@ -799,9 +866,13 @@
 		<module>session-support</module>
 		<module>dubbo-support</module>
 		<module>elasticjob-support</module>
-		<!-- module>kafka-support</module -->
+		<module>shardingjdbc-support</module>
+		<module>kafka-support</module>
+		<module>sms-support</module>
+		<module>idgen-support</module>
 		<module>bootable</module>
 		<module>mq-sterotype</module>
+		<module>jdbc-sterotype</module>
 		<module>joindata-app</module>
 		<module>joindata-app-plugin</module>
 		<module>joindata-app-template</module>

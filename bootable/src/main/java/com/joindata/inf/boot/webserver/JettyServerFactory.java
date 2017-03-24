@@ -53,7 +53,7 @@ public class JettyServerFactory
         ServletHolder holder = new ServletHolder(servlet);
         holder.setName("dispatcher-servlet");
         webAppContext.addServlet(holder, "/");
-        
+
         log.info("注册 Servlet: {} -> {}", "/", servlet.getClass());
 
         // 字符编码过滤器
@@ -63,7 +63,7 @@ public class JettyServerFactory
             encodingFilter.setForceEncoding(true);
 
             FilterHolder encodingFilterHolder = new FilterHolder(encodingFilter);
-            webAppContext.addFilter(encodingFilterHolder, "/*",  EnumSet.allOf(DispatcherType.class));
+            webAppContext.addFilter(encodingFilterHolder, "/*", EnumSet.allOf(DispatcherType.class));
 
             log.info("注册字符编码过滤器: {}, encoding = {}, InitParameters = {}", encodingFilter.getClass().getName(), encodingFilter.getEncoding(), encodingFilterHolder.getInitParameters());
         }
@@ -94,7 +94,7 @@ public class JettyServerFactory
     public static ResourceHandler makeResourceHandler(String resourceDir, boolean enableListDir, int minCacheLength, String cacheControl)
     {
         log.info("配置 ResourceHandler - 开始");
-        
+
         // 有静态资源才处理，否则不处理
         if(resourceDir == null)
         {
@@ -106,8 +106,8 @@ public class JettyServerFactory
         handler.setMinMemoryMappedContentLength(minCacheLength);
         handler.setDirectoriesListed(enableListDir);
         handler.setResourceBase(resourceDir);
-        
-        log.info("添加静态目录: {}, {}, 内存最小缓存数: {}, {}", resourceDir, enableListDir? "显示目录": "不显示目录", minCacheLength, cacheControl==null? "不缓存": "缓存控制指令: "+cacheControl);
+
+        log.info("添加静态目录: {}, {}, 内存最小缓存数: {}, {}", resourceDir, enableListDir ? "显示目录" : "不显示目录", minCacheLength, cacheControl == null ? "不缓存" : "缓存控制指令: " + cacheControl);
 
         if(cacheControl == null)
         {
@@ -141,7 +141,7 @@ public class JettyServerFactory
 
         return server;
     }
-    
+
     /**
      * 配置 HTTP 服务器
      */
@@ -149,20 +149,20 @@ public class JettyServerFactory
     {
         log.info("配置 Server - 开始");
         Server server = new Server(port);
-        
+
         // 这里用 HandlerList，可以使 handler 短路，有 handler 处理过就不再处理，而不至于所有去处理所有 handler
         HandlerList handlerList = new HandlerList();
-        
-        for (Handler handler: handlers)
+
+        for(Handler handler: handlers)
         {
             handlerList.addHandler(handler);
             log.info("注册 Handler: {}", handler.getClass());
         }
-        
+
         server.setHandler(handlerList);
-        
+
         log.info("配置 Server - 完成");
-        
+
         return server;
     }
 }

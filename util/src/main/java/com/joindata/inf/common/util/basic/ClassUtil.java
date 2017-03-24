@@ -156,6 +156,29 @@ public class ClassUtil
     }
 
     /**
+     * 获取指定类的所有包含指定注解的属性集合
+     * 
+     * @param objClz 要查询的类
+     * @param annoClz 要检测的注解 Class
+     * @return 属性 Set
+     */
+    public static <ANNO extends Annotation> Set<Field> getAnnotationFields(Class<?> objClz, Class<ANNO> annoClz)
+    {
+        Field flds[] = getFields(objClz);
+
+        Set<Field> set = CollectionUtil.newHashSet();
+        for(Field fld: flds)
+        {
+            ANNO anno = fld.getAnnotation(annoClz);
+            if(anno != null)
+            {
+                set.add(fld);
+            }
+        }
+        return set;
+    }
+
+    /**
      * 获取指定类的所有包含指定注解的“方法-注解” Map
      * 
      * @param objClz 要操作的类
@@ -610,6 +633,11 @@ public class ClassUtil
      */
     public static Class<?> parseClass(String clzName)
     {
+        if (clzName==null)
+        {
+            return null;
+        }
+        
         switch(clzName)
         {
             case "boolean":
@@ -653,6 +681,11 @@ public class ClassUtil
      */
     public static Class<?> parseClass(ClassLoader loader, String clzName)
     {
+        if (clzName==null)
+        {
+            return null;
+        }
+        
         switch(clzName)
         {
             case "boolean":

@@ -104,7 +104,7 @@ public class TreeBuilder
         System.out.println(JsonUtil.toJSON(tree));
 
         // 测试选取后代
-        for(TreeNode node: tree.getPosterity("2"))
+        for(TreeNode node: tree.getDescendant("2"))
         {
             System.out.println(JsonUtil.toJSON(node));
         }

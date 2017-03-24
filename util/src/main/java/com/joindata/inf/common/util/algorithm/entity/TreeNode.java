@@ -134,7 +134,7 @@ public class TreeNode implements Serializable
      * @return 所有后代
      */
     @SuppressWarnings("unchecked")
-    public <T extends TreeNode> List<T> getPosterity(String code)
+    public <T extends TreeNode> List<T> getDescendant(String code)
     {
         return getContext().selectNodes("//children[@code='" + code + "']//children");
     }

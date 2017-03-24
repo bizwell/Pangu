@@ -79,7 +79,13 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
 		</dependency>
-
+		
+		<!-- Apache HTTP 核心-->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+		</dependency>
+		
 		<!-- Apache 的 CSV 解析工具 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

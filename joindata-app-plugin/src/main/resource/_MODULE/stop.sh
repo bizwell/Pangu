@@ -15,7 +15,6 @@ cd $dir
 piddir="/var/run/__APPID__"
 pidfile="/var/run/__APPID__/__APPVERSION__.pid"
 
-
 echo -e "${SUCCESS}准备停止${RES}  应用ID __APPID__, 版本号 __APPVERSION__"
 echo "------------------------------------------------"
 
@@ -24,6 +23,7 @@ if [ ! -f $pidfile ]; then
   touch $pidfile
 fi
 
+wrongStatus='N'
 pid=`cat $pidfile`
 # 判断 PID 是否存在
 if [ -z "$pid" ]; then
@@ -32,49 +32,58 @@ if [ -z "$pid" ]; then
   echo "------------------------------------------------"
   echo -e "${DANGER}停止失败${RES}"
   echo ""
-  exit 1;
+  wrongStatus='Y'
+  if [ "$quiet" != 'Y' ]; then
+  	exit 1;
+  fi
 fi
 # 判断进程是否不存在
 if ! kill -0 $pid > /dev/null 2>&1; then
-  echo "进程不存在, 请确认是否启动"
-  echo "------------------------------------------------"
-  echo -e "${WARN}无需停止${RES}"
-  echo ""
-  exit 0;
+  if [ "$wrongStatus" == 'N' ]; then
+	  echo "进程不存在, 请确认是否启动"
+	  echo "------------------------------------------------"
+	  echo -e "${WARN}无需停止${RES}"
+	  echo ""
+      wrongStatus='Y'
+	  if [ "$quiet" != 'Y' ]; then
+	  	exit 0;
+	  fi
+  fi
 fi
 
 # 停止
-kill $pid
-# 输出提示
-echo -e "PID: ${HIGHLIGHT}`cat $pidfile`${RES}"
+if [ "$wrongStatus" == 'N' ]; then
 
-echo "------------------------------------------------"
+	kill $pid
+	# 输出提示
+	echo -e "PID: ${HIGHLIGHT}`cat $pidfile`${RES}"
 
-i=1
-while :
-do
-  if kill -0 $pid > /dev/null 2>&1; then
-    case $i in
-      1) echo -en "${INFO}正在停止.  ${RES}\r";;
-      2) echo -en "${INFO}正在停止.. ${RES}\r";;
-      3) echo -en "${INFO}正在停止...${RES}\r";;
-      *) echo -en "${INFO}正在停止...${RES}\r";;
-    esac
-
-    if [ $i -eq 3 ]; then
-      i=1;
-    else
-      i=`expr $i + 1`
-    fi
-
-    sleep 0.6;
-  else
-    break;
-  fi
-
-done
-
-echo "" > $pidfile
-
-echo -e "${SUCCESS}已停止     ${RES}"
-echo ""
+	i=1
+	while :
+	do
+	  if kill -0 $pid > /dev/null 2>&1; then
+	    case $i in
+	      1) echo -en "${INFO}正在停止.  ${RES}\r";;
+	      2) echo -en "${INFO}正在停止.. ${RES}\r";;
+	      3) echo -en "${INFO}正在停止...${RES}\r";;
+	      *) echo -en "${INFO}正在停止...${RES}\r";;
+	    esac
+	
+	    if [ $i -eq 3 ]; then
+	      i=1;
+	    else
+	      i=`expr $i + 1`
+	    fi
+	
+	    sleep 0.6;
+	  else
+	    break;
+	  fi
+	
+	done
+	
+	echo "" > $pidfile
+	
+	echo -e "${SUCCESS}已停止     ${RES}"
+	echo ""
+fi

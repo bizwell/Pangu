@@ -13,7 +13,7 @@ echo ""
 dir=$(cd "$(dirname "`readlink -f $0`")"; pwd)
 cd $dir
 
-appdir=/opt/app/product/__APPID__
+appdir=/opt/__APPID__
 appconfigdir=$appdir/__APPVERSION__/CONFIG
 targetconfigdir=/var/config/__APPID__/__APPVERSION__
 tmpdir="/data/tmp/__APPID__/__APPVERSION__"
@@ -77,13 +77,8 @@ rm -rf $tmpdir
 rm -f $pidfile
 echo -e "${SUCCESS}				OK${RES}"
 
-# 删除配置文件软链接
-echo -en "${INFO}---(STEP 2 )${RES} 删除配置文件软链接..."
-rm -rf $targetconfigdir
-echo -e "${SUCCESS}			OK${RES}"
-
 # 删除应用程序文件夹
-echo -en "${INFO}---(STEP 3 )${RES} 删除程序文件..."
+echo -en "${INFO}---(STEP 2 )${RES} 删除程序文件..."
 rm -rf $appdir/__APPVERSION__
 echo -e "${SUCCESS}				OK${RES}"
 
@@ -91,9 +86,10 @@ echo "------------------------------------------------------------"
 echo -e "${SUCCESS}已卸载${RES}"
 echo ""
 echo -e "已移除临时目录: ${HIGHLIGHT}$tmpdir${RES}"
-echo -e "已移除配置目录: ${HIGHLIGHT}$targetconfigdir${RES}"
+# 不删除 echo -e "已移除配置目录: ${HIGHLIGHT}$targetconfigdir${RES}"
 echo -e "已移除程序目录: ${HIGHLIGHT}$appdir/__APPVERSION__${RES}"
 echo ""
-echo -e "${DANGER}请注意！！！${RES}日志目录和程序用户不删除，请自行决定"
+echo -e "${DANGER}请注意！！！${RES}日志目录、配置文件和程序用户不删除，请自行决定"
 echo -e "日志目录: ${HIGHLIGHT}$logdir${RES}"
+echo -e "配置目录: ${HIGHLIGHT}$targetconfigdir${RES}"
 echo -e "程序用户: ${HIGHLIGHT}$user${RES}"

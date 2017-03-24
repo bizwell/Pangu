@@ -191,6 +191,7 @@ public class Bootstrap
 
         log.info("创建 DispatcherServlet: {}", DispatcherServlet.class.getName());
         DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
+        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
 
         // 启动 Jetty Jetty
         {
@@ -205,6 +206,61 @@ public class Bootstrap
             for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
             {
                 FilterConfig filterConfig = configHubClz.getAnnotation(FilterConfig.class);
+
+                if(filterConfig != null)
+                {
+
+                    for(WebAppFilterItem filterItem: filterConfig.value())
+                    {
+                        WebFilter webFilter = filterItem.config();
+                        if(webFilter == null)
+                        {
+                            throw new SystemException(SystemError.DEPEND_RESOURCE_CANNOT_READY, "没有设置 Filter 属性，这样不好");
+                        }
+
+                        FilterMapping mapping = new FilterMapping();
+                        if(StringUtil.isBlank(webFilter.filterName()))
+                        {
+                            mapping.setFilterName(filterItem.filter().getSimpleName());
+                        }
+                        else
+                        {
+                            mapping.setFilterName(webFilter.filterName());
+                        }
+                        mapping.setPathSpecs(webFilter.urlPatterns());
+                        if(!ArrayUtil.isEmpty(webFilter.servletNames()))
+                        {
+                            mapping.setServletNames(webFilter.servletNames());
+                        }
+                        mapping.setDispatcherTypes(CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
+
+                        FilterHolder holder = null;
+
+                        // 对 Spring 的代理 filter 特殊处理，因为这傻逼玩意必须有个 targetBeanName 草他大爷的！
+                        if(filterItem.filter().equals(DelegatingFilterProxy.class))
+                        {
+                            holder = new FilterHolder(new DelegatingFilterProxy(webFilter.filterName()));
+                        }
+                        else
+                        {
+                            holder = new FilterHolder(filterItem.filter());
+                        }
+
+                        holder.setName(mapping.getFilterName());
+
+                        for(String path: mapping.getPathSpecs())
+                        {
+                            webAppContext.addFilter(holder, path, CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
+                        }
+
+                        log.info("注册自定义过滤器: {}", mapping.getFilterName());
+                    }
+                }
+            }
+
+            // 添加 Filter
+            {
+                FilterConfig filterConfig = BootInfoHolder.getBootClass().getAnnotation(FilterConfig.class);
 
                 if(filterConfig != null)
                 {

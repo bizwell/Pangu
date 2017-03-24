@@ -60,7 +60,7 @@ import com.joindata.inf.common.util.basic.StringUtil;
 //////////////////////////////////////////////////////////////////
 
 /**
- * 创建 ZIP 包，这个会把程序入口 JAR 包和依赖都打进一个 ZIP 包，解压后可通过 java -jar 来运行
+ * 创建 ZIP 包，这个会把程序入口 JAR 包和依赖都打进一个 ZIP 包
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Dec 15, 2016 9:54:25 AM
@@ -125,7 +125,7 @@ public class ZipMojo extends AbstractMojo
                 }
             }
 
-            // 编译目录 (target/)
+            // 编译目录 (target/classes)
             File targetDir = new File(project.getBuild().getOutputDirectory());
 
             // 程序打包目录 (target/pack)
@@ -149,7 +149,7 @@ public class ZipMojo extends AbstractMojo
             // 依赖输出目录 (target/pack/x.x.x/PROGRAM/lib)
             File libDir = new File(packProgramRoot, libDirName);
 
-            String moduleFiles[] = {"start.sh", "stop.sh", "restart.sh", "status.sh", "install.sh", "uninstall.sh", "service.sh", "DISCONF_OPTS", "JMX_OPTS", "JVM_OPTS", "LINUX_USER"};
+            String moduleFiles[] = {"start.sh", "stop.sh", "restart.sh", "status.sh", "install.sh", "uninstall.sh", "log.sh", "service.sh", "deploy.sh", "deploy-logo", "JMX_OPTS", "JVM_OPTS", "LINUX_USER"};
             Map<String, File> fileMap = CollectionUtil.newMap();
             for(String file: moduleFiles)
             {
@@ -164,6 +164,10 @@ public class ZipMojo extends AbstractMojo
                 else if(file.equals("service.sh"))
                 {
                     fileMap.put(file, new File(packServiceRoot, file));
+                }
+                else if(file.equals("deploy.sh") || file.equals("deploy-logo"))
+                {
+                    fileMap.put(file, new File(outputDirectory, file));
                 }
                 else
                 {
@@ -289,6 +293,10 @@ public class ZipMojo extends AbstractMojo
         Set<Class<?>> classSet = CollectionUtil.newHashSet();
 
         classSet.addAll(ClassUtil.findClasses(new File(project.getBuild().getOutputDirectory())));
+
+        getLog().info("=============不要逼我");
+        getLog().info(new File(project.getBuild().getOutputDirectory()).getPath());
+        getLog().info(classSet.toString());
 
         return classSet;
     }

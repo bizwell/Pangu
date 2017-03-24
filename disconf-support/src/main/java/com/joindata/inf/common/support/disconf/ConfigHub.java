@@ -2,6 +2,8 @@ package com.joindata.inf.common.support.disconf;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 import com.joindata.inf.common.basic.errors.SystemError;
 import com.joindata.inf.common.basic.exceptions.SystemException;
@@ -18,6 +20,7 @@ import com.joindata.inf.common.util.basic.StringUtil;
  */
 @Configuration
 @Import({DisconfConfig.class})
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ConfigHub extends AbstractConfigHub
 {
     static

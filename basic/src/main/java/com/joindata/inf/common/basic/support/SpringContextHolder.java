@@ -42,4 +42,16 @@ public class SpringContextHolder implements ApplicationContextAware
     {
         return context.getBean(clz);
     }
+
+    /**
+     * 通过名字获取应用上下文中的 Bean
+     * 
+     * @param name Bean 名称
+     * @return Bean 实例
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getBean(String name)
+    {
+        return (T)context.getBean(name);
+    }
 }

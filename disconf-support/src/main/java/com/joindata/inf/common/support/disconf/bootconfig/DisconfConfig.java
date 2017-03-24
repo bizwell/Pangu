@@ -5,6 +5,8 @@ import java.util.Set;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 import com.baidu.disconf.client.DisconfMgrBean;
 import com.baidu.disconf.client.DisconfMgrBeanSecond;
@@ -23,6 +25,7 @@ import com.joindata.inf.common.util.log.Logger;
  */
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class DisconfConfig
 {
     private static final Logger log = Logger.get();
@@ -31,6 +34,7 @@ public class DisconfConfig
      * Disconf 管理类
      */
     @Bean(destroyMethod = "destroy")
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public static DisconfMgrBean disconfMgrBean()
     {
         DisconfMgrBean bean = new DisconfMgrBean();
@@ -45,6 +49,7 @@ public class DisconfConfig
      * 傻逼玩意
      */
     @Bean(initMethod = "init", destroyMethod = "destroy")
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public static DisconfMgrBeanSecond disconfMgrBeanSecond()
     {
         return new DisconfMgrBeanSecond();

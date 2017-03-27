@@ -123,6 +123,7 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor
                     {
                         // 注入
                         fld.set(beanFactory.getBean(beanName), seqBean);
+
                     }
                     catch(IllegalArgumentException | IllegalAccessException e)
                     {

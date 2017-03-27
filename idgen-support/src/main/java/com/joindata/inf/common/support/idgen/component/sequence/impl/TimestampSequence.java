@@ -43,7 +43,6 @@ public class TimestampSequence implements Sequence
     {
         this.sequenceName = sequenceName;
         this.node = BASE_NODE + "/" + this.sequenceName;
-
     }
 
     @Override

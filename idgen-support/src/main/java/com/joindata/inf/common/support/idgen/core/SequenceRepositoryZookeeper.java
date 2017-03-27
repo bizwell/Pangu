@@ -53,7 +53,6 @@ public class SequenceRepositoryZookeeper implements SequenceRepository {
 	 * 确保zkClient连接状态
 	 */
 	private void ensureStart() {
-		log.info("Zookeeper 连接状态: {}", zkClient.getState());
 		if (zkClient.getState() != CuratorFrameworkState.STARTED) {
 			zkClient.start();
 		}

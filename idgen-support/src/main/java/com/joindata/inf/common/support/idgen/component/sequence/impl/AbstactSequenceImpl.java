@@ -51,14 +51,17 @@ public abstract class AbstactSequenceImpl implements Sequence {
 		int days = getDays();
 		int prefix;
 		try {
-			prefix = getPrefix();
-			long sequence = getSequence(appId, name);
-			long sequenceId = new BigInteger("10").pow(14).longValue() * days + prefix * new BigInteger("10").pow(12).longValue() +  sequence;
-			if (sequenceId < 0) {
-				log.error("获取id失败， 已经没有可用的ID");
-				throw new IDGeneratorException("获取id失败， 已经没有可用的ID");
+			synchronized (this) {
+				prefix = getPrefix();
+				long sequence = getSequence(appId, name);
+				long sequenceId = new BigInteger("10").pow(14).longValue() * days + prefix * new BigInteger("10").pow(12).longValue() +  sequence;
+				if (sequenceId < 0) {
+					log.error("获取id失败， 已经没有可用的ID");
+					throw new IDGeneratorException("获取id失败， 已经没有可用的ID");
+				}
+				return sequenceId;
 			}
-			return sequenceId;
+		
 		} catch (Exception e) {
 			log.error("get id failed!", e);
 			throw new IDGeneratorException(e);

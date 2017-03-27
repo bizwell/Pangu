@@ -27,7 +27,7 @@ public class IdRangeFactory {
 		this.sequenceRepository = sequenceRepository;
 	}
 	
-	public synchronized IdRange getCurrentIdRange(String appId, String sequenceName) {
+	public IdRange getCurrentIdRange(String appId, String sequenceName) {
 		String key = new StringBuffer(appId).append(ID_RANGE_CACHE_KEY_SEPERATOR).append(sequenceName)
 				.append(ID_RANGE_CACHE_KEY_SEPERATOR).append(Constant.TIMESTAMP_SEQUENCE).toString();
 		
@@ -37,7 +37,7 @@ public class IdRangeFactory {
 			if (idRange.hasMoreIds()) {
 				return idRange;
 			} else {
-				log.error("区间{}id 不够了， 需要重建下一个区间", idRange);
+				log.debug("区间{}id 不够了， 需要重建下一个区间", idRange);
 				idRange = rebuildRange(appId, sequenceName);
 				idRangeCacheMap.put(key, idRange);
 			}

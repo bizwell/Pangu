@@ -1,17 +1,16 @@
-package com.joindata.inf.common.support.sms;
+package com.joindata.inf.common.support.email;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
-import com.joindata.inf.common.support.sms.bootconfig.EmailConfig;
+import com.joindata.inf.common.support.email.bootconfig.EmailConfig;
 
 /**
- * 短信服务配置器
- * 
- * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date Mar 22, 2017 11:07:59 AM
+ * 邮件服务配置器
+ * @author <a href="mailto:gaowei1@joindata.com">高伟</a>
+ * @date 2017-03-29
  */
 @Configuration
 @Import({EmailConfig.class})

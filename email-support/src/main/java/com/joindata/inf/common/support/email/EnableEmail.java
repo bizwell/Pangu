@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.sms;
+package com.joindata.inf.common.support.email;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,13 +8,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.joindata.inf.common.basic.annotation.JoindataComponent;
-import com.joindata.inf.common.support.sms.cst.SmsSystemId;
+import com.joindata.inf.common.support.email.cst.SmsSystemId;
 
 /**
- * 启用短信服务
  * 
- * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date Mar 21, 2017 5:52:14 PM
+ * 启用邮件服务
+ * @author <a href="mailto:gaowei1@joindata.com">高伟</a>
+ * @date 2017-03-29
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

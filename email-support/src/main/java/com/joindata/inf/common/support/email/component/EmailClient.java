@@ -1,16 +1,16 @@
 /**
  * 
  */
-package com.joindata.inf.common.support.sms.component;
+package com.joindata.inf.common.support.email.component;
 
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.joindata.inf.common.support.sms.bootconfig.EmailConfig;
-import com.joindata.inf.common.support.sms.pojo.EmailSendRequest;
-import com.joindata.inf.common.support.sms.pojo.EmailTemplate;
+import com.joindata.inf.common.support.email.bootconfig.EmailConfig;
+import com.joindata.inf.common.support.email.pojo.EmailSendRequest;
+import com.joindata.inf.common.support.email.pojo.EmailTemplate;
 import com.joindata.inf.common.util.log.Logger;
 import com.joindata.inf.common.util.tools.UuidUtil;
 import com.niwodai.inf.notification.client.email.notification.request.EmailNotifyRequest;
@@ -40,7 +40,7 @@ public class EmailClient {
 		if (template != null) {
 			request.setTemplateId(template.getTemplateId());
 			request.setTemplateContents(template.getData());
-			
+			request.setUsingTemplate(true);
 		}
 		
 		request.setContentText(emailSendRequest.getContentTxt());

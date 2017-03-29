@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.sms.bootconfig;
+package com.joindata.inf.common.support.email.bootconfig;
 
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.joindata.inf.common.basic.support.BootInfoHolder;
-import com.joindata.inf.common.support.sms.EnableEmail;
-import com.joindata.inf.common.support.sms.properties.EmailProperties;
+import com.joindata.inf.common.support.email.EnableEmail;
+import com.joindata.inf.common.support.email.properties.EmailProperties;
 import com.joindata.inf.common.util.log.Logger;
 import com.niwodai.inf.notification.client.email.sender.EmailNotifyJmsSender;
 
@@ -39,7 +39,7 @@ public class EmailConfig
         return BootInfoHolder.getBootClass().getAnnotation(EnableEmail.class).systemId();
     }
     
-    @Bean
+    @Bean("emailJmsTemplate")
     public JmsTemplate jmsTemplate()
     {
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();

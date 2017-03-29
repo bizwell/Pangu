@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.sms.properties;
+package com.joindata.inf.common.support.email.properties;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -7,10 +7,9 @@ import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
 
 /**
- * SMS 配置文件
- * 
- * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date Mar 22, 2017 10:35:07 AM
+ * 邮件配置文件
+ * @author <a href="mailto:gaowei1@joindata.com">高伟</a>
+ * @date 2017-03-29
  */
 @Service
 @Scope("singleton")

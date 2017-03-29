@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.sms.pojo;
+package com.joindata.inf.common.support.email.pojo;
 
 import java.util.HashMap;
 import java.util.Map;

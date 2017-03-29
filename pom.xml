@@ -86,6 +86,7 @@
 		<niwodai-inf.version>2.0.0</niwodai-inf.version>
 		<activemq.version>5.11.1</activemq.version>
 		<smack.version>3.2.1</smack.version>
+		<lombok.version>1.16.4</lombok.version>
 	</properties>
 
 	<dependencyManagement>
@@ -745,7 +746,13 @@
 				<artifactId>smack</artifactId>
 				<version>${smack.version}</version>
 			</dependency>
-		
+
+			<!-- LOMBOK -->
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -869,6 +876,7 @@
 		<module>shardingjdbc-support</module>
 		<module>kafka-support</module>
 		<module>sms-support</module>
+		<module>email-support</module>
 		<module>idgen-support</module>
 		<module>bootable</module>
 		<module>mq-sterotype</module>

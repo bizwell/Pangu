@@ -20,6 +20,8 @@ public class IdgenProperties
     public static final String FILENAME = "idgen.properties";
 
     private String zkHosts;
+    
+    private int rangeSize;
 
     @DisconfFileItem(name = "zk.hosts", associateField = "zkHosts")
     public String getZkHosts()
@@ -27,8 +29,19 @@ public class IdgenProperties
         return zkHosts;
     }
 
-    public void setZkHosts(String zkHosts)
+    @DisconfFileItem(name = "range.size.max", associateField = "rangeSize")
+	public int getRangeSize() {
+		return rangeSize;
+	}
+
+	public void setRangeSize(int rangeSize) {
+		this.rangeSize = rangeSize;
+	}
+
+	public void setZkHosts(String zkHosts)
     {
         this.zkHosts = zkHosts;
     }
+    
+    
 }

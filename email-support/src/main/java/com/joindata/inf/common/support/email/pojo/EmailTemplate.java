@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.sms.pojo;
+package com.joindata.inf.common.support.email.pojo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,21 +9,21 @@ import java.util.Map;
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Mar 22, 2017 1:49:36 PM
  */
-public class SmsTemplete
+public class EmailTemplate
 {
     private int templateId;
 
     private Map<String, String> data;
 
-    private SmsTemplete(int templateId)
+    private EmailTemplate(int templateId)
     {
         this.templateId = templateId;
         this.data = new HashMap<>();
     }
 
-    public static final SmsTemplete of(int templateId)
+    public static final EmailTemplate of(int templateId)
     {
-        return new SmsTemplete(templateId);
+        return new EmailTemplate(templateId);
     }
 
     /**
@@ -33,14 +33,14 @@ public class SmsTemplete
      * @param value 参数值
      * @return 返回参数对象，方便链式调用
      */
-    public SmsTemplete withParam(String name, String value)
+    public EmailTemplate withParam(String name, String value)
     {
         this.data.put(name, value);
         return this;
     }
 
     /** 获取模板 ID */
-    public int getTemplateId()
+    public long getTemplateId()
     {
         return templateId;
     }

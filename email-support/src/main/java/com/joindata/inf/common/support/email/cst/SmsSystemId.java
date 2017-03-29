@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.sms.cst;
+package com.joindata.inf.common.support.email.cst;
 
 /**
  * NIMS 系统 ID

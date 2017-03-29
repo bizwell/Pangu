@@ -33,7 +33,7 @@ import com.joindata.inf.common.util.log.Logger;
 public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, BeanPostProcessor, ApplicationContextAware
 {
     private static final Logger log = Logger.get();
-
+    
     private ApplicationContext applicationContext;
 
     @Override
@@ -80,14 +80,12 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, B
                     BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(fld.getType());
                     Class<?> dependencyClass = fld.getType();
                     Set<Field> dependencyFields = ClassUtil.getAnnotationFields(dependencyClass, Resource.class);
-                    for(Field field: dependencyFields)
-                    {
-                        String dependencyBeanName = field.getAnnotation(Resource.class).name();
+                    for (Field field : dependencyFields) {
+                    	String dependencyBeanName = field.getAnnotation(Resource.class).name();
                         beanBuilder.addDependsOn(dependencyBeanName);
                         beanBuilder.addPropertyReference(field.getName(), dependencyBeanName);
                     }
                     beanBuilder.addConstructorArgValue(sequence.value());
-
                     log.info("注册序列生产器 Bean: {}", seqBeanName);
 
                     registry.registerBeanDefinition(seqBeanName, beanBuilder.getBeanDefinition());
@@ -102,9 +100,9 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, B
         // DO NOTHING
     }
 
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException
-    {
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+
         // 给 Sequence 依赖对象赋值
         {
             Set<Field> annoFlds = ClassUtil.getAnnotationFields(bean.getClass(), Sequence.class);
@@ -144,6 +142,5 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, B
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException
     {
         this.applicationContext = applicationContext;
-
-    }
+	}
 }

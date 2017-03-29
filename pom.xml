@@ -87,6 +87,7 @@
 		<activemq.version>5.11.1</activemq.version>
 		<smack.version>3.2.1</smack.version>
 		<lombok.version>1.16.4</lombok.version>
+		<ons.version>1.1.8</ons.version>
 	</properties>
 
 	<dependencyManagement>
@@ -726,6 +727,24 @@
 				<artifactId>activemq-spring</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
+			
+			<!-- ons -->
+			
+			<dependency>
+				<groupId>com.aliyun.openservices</groupId>
+				<artifactId>ons-client</artifactId>
+				<version>${ons.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+	    				<artifactId>slf4j-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
 			<!-- 你我贷短信服务 -->
 			<dependency>
@@ -738,6 +757,13 @@
 						<artifactId>activemq-all</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			
+			<!-- 你我贷邮件服务 -->
+			<dependency>
+				<groupId>com.niwodai.inf</groupId>
+				<artifactId>notification-client-email</artifactId>
+				<version>${niwodai-inf.version}</version>
 			</dependency>
 
 			<!-- XMPP 工具 -->

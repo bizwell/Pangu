@@ -16,4 +16,6 @@ public interface SequenceRepository {
 	
 	public long get(String key) throws Exception;
 	
+	public long getAndIncrease(String key, long addValue) throws Exception;
+	
 }

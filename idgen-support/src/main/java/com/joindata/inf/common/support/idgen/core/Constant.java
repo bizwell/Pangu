@@ -15,4 +15,5 @@ public class Constant {
 	/** 生成id前五位时间戳从该时间开始计 */
 	public static final String TIMESTAMP_SINCE_DATE = "2017-01-01";
 	public static final String TIMESTAMP_SEQUENCE = "seq-tmp";
+	public static final String SEQUENCE = "sequence";
 }

@@ -54,8 +54,8 @@ public class IdRangeFactory {
 		try {
 			int rangeSize = idgenProperties.getRangeSize();
 			rangeSize = rangeSize <= 0? Constant.ID_RANGE_DEFAULT_SIZE : rangeSize;
-			long startId = sequenceRepository.increaseAndGet(dataId, rangeSize);
-			return new IdRange(startId, rangeSize);
+			long startId = sequenceRepository.getAndIncrease(dataId, rangeSize);
+			return new IdRange(startId - 1, rangeSize);
 		} catch (Exception e) {
 			log.error("zookeeper add increase value failed. node path={}", dataId, e);
 			throw new IDGeneratorException(e);
@@ -69,6 +69,6 @@ public class IdRangeFactory {
 	 * @return
 	 */
 	private String getDataId(String appId, String sequenceName) {
-		return new StringBuffer("/").append(appId).append("/").append(Constant.TIMESTAMP_SEQUENCE).append("/").append(sequenceName).toString();
+		return new StringBuffer("/").append(Constant.SEQUENCE).append("/").append(appId).append("/").append(Constant.TIMESTAMP_SEQUENCE).append("/").append(sequenceName).toString();
 	}
 }

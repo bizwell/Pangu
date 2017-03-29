@@ -30,7 +30,7 @@ public class PrefixSequence extends AbstactSequenceImpl {
 	
 	@Override
 	public int getPrefix() throws Exception {
-		String prefixDataId = new StringBuffer("/").append(this.appId).append("/").append(Constant.TIMESTAMP_SEQUENCE).toString();
+		String prefixDataId = new StringBuffer("/").append(Constant.SEQUENCE).append("/").append(this.appId).append("/").append(Constant.TIMESTAMP_SEQUENCE).toString();
 		if (!sequenceRepository.exist(prefixDataId + "/" + this.name)) {
 			sequenceRepository.increaseAndGet(prefixDataId, 1);
 		}

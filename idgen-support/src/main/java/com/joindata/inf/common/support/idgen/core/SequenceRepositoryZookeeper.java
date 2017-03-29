@@ -8,8 +8,6 @@ import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.atomic.DistributedAtomicLong;
 import org.apache.curator.retry.RetryOneTime;
 
-import com.joindata.inf.common.util.log.Logger;
-
 /**
  * 基于zookeeper实现的分布式id 自增原子性操作
  * @author <a href="mailto:gaowei1@joindata.com">高伟</a>
@@ -17,7 +15,6 @@ import com.joindata.inf.common.util.log.Logger;
  */
 public class SequenceRepositoryZookeeper implements SequenceRepository {
 
-	private static final Logger log = Logger.get();
 	private static final int RETRY_MAX_TIMES = 100;
 
 	private CuratorFramework zkClient;
@@ -56,5 +53,14 @@ public class SequenceRepositoryZookeeper implements SequenceRepository {
 		if (zkClient.getState() != CuratorFrameworkState.STARTED) {
 			zkClient.start();
 		}
+	}
+
+	@Override
+	public long getAndIncrease(String key, long addValue) throws Exception {
+		ensureStart();
+		DistributedAtomicLong distributedAtomicLong = new DistributedAtomicLong(zkClient, key, new RetryOneTime(RETRY_MAX_TIMES));
+		long startId = distributedAtomicLong.get().preValue();
+		distributedAtomicLong.add(addValue);
+		return startId;
 	}
 }

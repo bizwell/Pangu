@@ -125,6 +125,13 @@
 				<artifactId>idgen-support</artifactId>
 				<version>${pangu.version}</version>
 			</dependency>
+			
+			<!-- 支持 ShardingJDBC -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>shardingjdbc-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>

@@ -179,6 +179,21 @@ public class CollectionUtil
     }
 
     /**
+     * 定义一个只有一个元素的 Map
+     * 
+     * @param key Key
+     * @param value 值
+     * @return Map
+     */
+    public static <K, V> Map<K, V> newMap(K key, V value)
+    {
+        Map<K, V> map = new HashMap<K, V>(1);
+        map.put(key, value);
+
+        return map;
+    }
+
+    /**
      * 创建一个新的 List，可填入初始化元素
      * 
      * @param es 初始化元素，可以为多个，也可以没有，接受数组，但类型必须相同

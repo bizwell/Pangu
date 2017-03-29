@@ -27,8 +27,31 @@ public interface RedisClient
      * @param key 键
      * @param seconds 超时秒数
      * @param value 值
+     * @return setex 的响应码
      */
-    public void putWithExpire(String key, int seconds, String value);
+    public String putWithExpire(String key, int seconds, String value);
+
+    /**
+     * 设置字符串，当键不存在时
+     * 
+     * @param key 键
+     * @param value 值
+     * @return true，如果原值不存在且新值设置成功
+     * @return 1，如果原值不存在且新值设置成功。否则 0
+     */
+    public long putIfNone(String key, String value);
+
+    /**
+     * 设置会超时的字符串，当键不存在时<br />
+     * <i>该方法不是原生的，可能不安全，请酌情使用<i>
+     * 
+     * @param key 键
+     * @param seconds 超时秒数
+     * @param value 值
+     * @return setex 的响应码
+     */
+    // TODO 考虑调用原生 API 做成安全的
+    public String putWithExpireIfNone(String key, int seconds, String value);
 
     /**
      * 获取字符串
@@ -67,8 +90,30 @@ public interface RedisClient
      * @param key 键
      * @param seconds 多少秒后超时
      * @param obj 可序列化对象
+     * @return setex 的响应码
      */
-    public void putWithExpire(String key, int seconds, Serializable obj);
+    public String putWithExpire(String key, int seconds, Serializable obj);
+
+    /**
+     * 存储对象，当键不存在时
+     * 
+     * @param key 键
+     * @param obj 可序列化对象
+     * @return 1，如果原值不存在且新值设置成功。否则 0
+     */
+    public long putIfNone(String key, Serializable obj);
+
+    /**
+     * 存储会超时的对象，当键不存在时<br />
+     * <i>该方法不是原生的，可能不安全，请酌情使用<i>
+     * 
+     * @param key 键
+     * @param seconds 多少秒后超时
+     * @param obj 可序列化对象
+     * @return setex 的响应码
+     */
+    // TODO 考虑调用原生 API 做成安全的
+    public String putWithExpireIfNone(String key, int seconds, Serializable obj);
 
     /**
      * 存储字符串序列（从前插入）<br />
@@ -292,6 +337,24 @@ public interface RedisClient
      * @return +1 后的序列
      */
     public Long incr(String key);
+
+    /**
+     * 设置新值，返回旧值
+     * 
+     * @param key 键
+     * @param newValue 新值
+     * @return 旧值
+     */
+    public String getSet(String key, String newValue);
+
+    /**
+     * 设置新值，返回旧值
+     * 
+     * @param key 键
+     * @param newValue 新值
+     * @return 旧值
+     */
+    public <T extends Serializable> T getSet(String key, T newValue);
 
     public static void main(String[] args) throws IOException
     {

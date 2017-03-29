@@ -58,6 +58,7 @@ public class RedisConfig
         else
         {
             Jedis jedis = new Jedis(hostPorts[0].getHost(), hostPorts[1].getPort());
+            // TODO 考虑维护 POOL JedisPool jedis = new JedisPool(config, hostPorts[0].getHost(), hostPorts[1].getPort());
             redisClient = new SingleRedisClient(jedis);
         }
 

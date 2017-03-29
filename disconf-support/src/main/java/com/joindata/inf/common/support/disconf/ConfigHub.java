@@ -10,6 +10,7 @@ import com.joindata.inf.common.basic.exceptions.SystemException;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.disconf.bootconfig.DisconfConfig;
+import com.joindata.inf.common.support.disconf.cst.DisconfCst;
 import com.joindata.inf.common.util.basic.StringUtil;
 
 /**
@@ -27,7 +28,7 @@ public class ConfigHub extends AbstractConfigHub
     {
         System.setProperty("disconf.app", BootInfoHolder.getAppId());
         System.setProperty("disconf.version", BootInfoHolder.getAppVersion());
-        System.setProperty("disconf.user_define_download_dir", "/data/tmp/" + BootInfoHolder.getAppId() + "/" + BootInfoHolder.getAppVersion() + "/disconf");
+        System.setProperty("disconf.user_define_download_dir", DisconfCst.DOWNLOAD_DIR);
         System.setProperty("disconf.enable_local_download_dir_in_class_path", "false");
         if(StringUtil.isBlank(System.getProperty("disconf.enable.remote.conf")))
         {

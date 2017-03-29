@@ -5,6 +5,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.Configuration;
 
+import com.joindata.inf.common.basic.annotation.FilterComponent;
 import com.joindata.inf.common.util.basic.ClassUtil;
 
 /**
@@ -19,13 +20,17 @@ public class JoindataAnnotationBeanNameGenerator extends AnnotationBeanNameGener
     public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry)
     {
         String beanName = null;
-        if(ClassUtil.parseClass(definition.getBeanClassName()).getAnnotation(Configuration.class) != null)
+        Class<?> clz = ClassUtil.parseClass(definition.getBeanClassName());
+        if(clz.getAnnotation(Configuration.class) != null)
+        {
+            beanName = definition.getBeanClassName();
+        }
+        else if(clz.getAnnotation(FilterComponent.class) != null)
         {
             beanName = definition.getBeanClassName();
         }
         else
         {
-
             beanName = super.generateBeanName(definition, registry);
         }
         return beanName;

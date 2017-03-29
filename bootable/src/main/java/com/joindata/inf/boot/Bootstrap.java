@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.annotation.WebFilter;
 
 import org.eclipse.jetty.server.Handler;
@@ -27,6 +28,7 @@ import com.joindata.inf.boot.bootconfig.WebMvcConfig;
 import com.joindata.inf.boot.mechanism.Jetty2Log4j2Bridge;
 import com.joindata.inf.boot.mechanism.JoindataAnnotationBeanNameGenerator;
 import com.joindata.inf.boot.webserver.JettyServerFactory;
+import com.joindata.inf.common.basic.annotation.FilterComponent;
 import com.joindata.inf.common.basic.annotation.FilterConfig;
 import com.joindata.inf.common.basic.annotation.JoindataComponent;
 import com.joindata.inf.common.basic.annotation.WebAppFilterItem;
@@ -260,55 +262,80 @@ public class Bootstrap
 
             // 添加 Filter
             {
-                FilterConfig filterConfig = BootInfoHolder.getBootClass().getAnnotation(FilterConfig.class);
-
-                if(filterConfig != null)
+                // 归 Web 容器管的 Filter
                 {
+                    FilterConfig filterConfig = BootInfoHolder.getBootClass().getAnnotation(FilterConfig.class);
 
-                    for(WebAppFilterItem filterItem: filterConfig.value())
+                    if(filterConfig != null)
                     {
-                        WebFilter webFilter = filterItem.config();
-                        if(webFilter == null)
-                        {
-                            throw new SystemException(SystemError.DEPEND_RESOURCE_CANNOT_READY, "没有设置 Filter 属性，这样不好");
-                        }
 
-                        FilterMapping mapping = new FilterMapping();
-                        if(StringUtil.isBlank(webFilter.filterName()))
+                        for(WebAppFilterItem filterItem: filterConfig.value())
                         {
-                            mapping.setFilterName(filterItem.filter().getSimpleName());
-                        }
-                        else
-                        {
-                            mapping.setFilterName(webFilter.filterName());
-                        }
-                        mapping.setPathSpecs(webFilter.urlPatterns());
-                        if(!ArrayUtil.isEmpty(webFilter.servletNames()))
-                        {
-                            mapping.setServletNames(webFilter.servletNames());
-                        }
-                        mapping.setDispatcherTypes(CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
+                            WebFilter webFilter = filterItem.config();
+                            if(webFilter == null)
+                            {
+                                throw new SystemException(SystemError.DEPEND_RESOURCE_CANNOT_READY, "没有设置 Filter 属性，这样不好");
+                            }
 
-                        FilterHolder holder = null;
+                            FilterMapping mapping = new FilterMapping();
+                            if(StringUtil.isBlank(webFilter.filterName()))
+                            {
+                                mapping.setFilterName(filterItem.filter().getSimpleName());
+                            }
+                            else
+                            {
+                                mapping.setFilterName(webFilter.filterName());
+                            }
+                            mapping.setPathSpecs(webFilter.urlPatterns());
+                            if(!ArrayUtil.isEmpty(webFilter.servletNames()))
+                            {
+                                mapping.setServletNames(webFilter.servletNames());
+                            }
+                            mapping.setDispatcherTypes(CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
 
-                        // 对 Spring 的代理 filter 特殊处理，因为这傻逼玩意必须有个 targetBeanName 草他大爷的！
-                        if(filterItem.filter().equals(DelegatingFilterProxy.class))
-                        {
-                            holder = new FilterHolder(new DelegatingFilterProxy(webFilter.filterName()));
+                            FilterHolder holder = null;
+
+                            // 对 Spring 的代理 filter 特殊处理，因为这傻逼玩意必须有个 targetBeanName 草他大爷的！
+                            if(filterItem.filter().equals(DelegatingFilterProxy.class))
+                            {
+                                holder = new FilterHolder(new DelegatingFilterProxy(webFilter.filterName()));
+                            }
+                            else
+                            {
+                                holder = new FilterHolder(filterItem.filter());
+                            }
+
+                            holder.setName(mapping.getFilterName());
+
+                            for(String path: mapping.getPathSpecs())
+                            {
+                                webAppContext.addFilter(holder, path, CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
+                            }
+
+                            log.info("注册自定义过滤器: {}", mapping.getFilterName());
                         }
-                        else
+                    }
+                }
+
+                // 归 Spring 代理的 Filter
+                {
+                    Set<Class<?>> filterClasses = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), FilterComponent.class);
+                    {
+                        for(Class<?> clz: filterClasses)
                         {
-                            holder = new FilterHolder(filterItem.filter());
+                            FilterComponent webFilter = clz.getAnnotation(FilterComponent.class);
+                            String beanName = clz.getCanonicalName();
+                            FilterHolder holder = new FilterHolder(new DelegatingFilterProxy(beanName));
+
+                            holder.setName("delegating-" + beanName);
+
+                            for(String path: webFilter.path())
+                            {
+                                webAppContext.addFilter(holder, path, CollectionUtil.newEnumSet(DispatcherType.values()));
+                            }
+
+                            log.info("注册自定义 Spring 代理过滤器: {}", beanName);
                         }
-
-                        holder.setName(mapping.getFilterName());
-
-                        for(String path: mapping.getPathSpecs())
-                        {
-                            webAppContext.addFilter(holder, path, CollectionUtil.newEnumSet(webFilter.dispatcherTypes()));
-                        }
-
-                        log.info("注册自定义过滤器: {}", mapping.getFilterName());
                     }
                 }
             }

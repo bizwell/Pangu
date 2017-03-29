@@ -56,9 +56,39 @@ public class ClusterRedisClient implements RedisClient
      * @param seconds 超时秒数
      * @param value 值
      */
-    public void putWithExpire(String key, int seconds, String value)
+    public String putWithExpire(String key, int seconds, String value)
     {
-        jedis.setex(key, seconds, value);
+        return jedis.setex(key, seconds, value);
+    }
+
+    /**
+     * 设置字符串，当键不存在时
+     * 
+     * @param key 键
+     * @param value 值
+     */
+    public long putIfNone(String key, String value)
+    {
+        return jedis.setnx(key, value);
+    }
+
+    /**
+     * 设置会超时的字符串，当键不存在时<br />
+     * <i>该方法不是原生的，可能不安全，请酌情使用<i>
+     * 
+     * @param key 键
+     * @param seconds 超时秒数
+     * @param value 值
+     */
+    // TODO 考虑调用原生 API 做成安全的
+    public String putWithExpireIfNone(String key, int seconds, String value)
+    {
+        if(jedis.exists(key))
+        {
+            return jedis.setex(key, seconds, value);
+        }
+
+        return null;
     }
 
     /**
@@ -122,9 +152,39 @@ public class ClusterRedisClient implements RedisClient
      * @param seconds 多少秒后超时
      * @param obj 可序列化对象
      */
-    public void putWithExpire(String key, int seconds, Serializable obj)
+    public String putWithExpire(String key, int seconds, Serializable obj)
     {
-        jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
+        return jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
+    }
+
+    /**
+     * 存储对象
+     * 
+     * @param key 键
+     * @param obj 可序列化对象
+     */
+    public long putIfNone(String key, Serializable obj)
+    {
+        return jedis.setnx(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
+    }
+
+    /**
+     * 存储会超时的对象，当键不存在时<br />
+     * <i>该方法不是原生的，可能不安全，请酌情使用<i>
+     * 
+     * @param key 键
+     * @param seconds 多少秒后超时
+     * @param obj 可序列化对象
+     */
+    // TODO 考虑调用原生 API 做成安全的
+    public String putWithExpireIfNone(String key, int seconds, Serializable obj)
+    {
+        if(jedis.exists(key))
+        {
+            return jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
+        }
+
+        return null;
     }
 
     /**
@@ -739,5 +799,27 @@ public class ClusterRedisClient implements RedisClient
         Long ret = jedis.incr(key);
 
         return ret;
+    }
+
+    @Override
+    public String getSet(String key, String newValue)
+    {
+        if(StringUtil.isBlank(key))
+        {
+            return null;
+        }
+
+        return jedis.getSet(key, newValue);
+    }
+
+    @Override
+    public <T extends Serializable> T getSet(String key, T newValue)
+    {
+        if(StringUtil.isBlank(key))
+        {
+            return null;
+        }
+
+        return BeanUtil.deserializeObject(jedis.getSet(StringUtil.toBytes(key), BeanUtil.serializeObject(newValue)));
     }
 }

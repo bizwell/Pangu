@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +46,11 @@ public class BeanUtil
                 try
                 {
                     if(StringUtil.isEquals(fld.getName(), "serialVersionUID"))
+                    {
+                        continue;
+                    }
+
+                    if(Modifier.isFinal(fld.getModifiers()))
                     {
                         continue;
                     }

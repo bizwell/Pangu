@@ -7,11 +7,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Set;
 
+import com.joindata.inf.common.basic.entities.StringMap;
 import com.joindata.inf.common.basic.errors.ResourceErrors;
 import com.joindata.inf.common.basic.exceptions.ResourceException;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.basic.ValidateUtil;
 import com.joindata.inf.common.util.network.entity.HostPort;
+import com.joindata.inf.common.util.network.entity.JdbcConn;
 import com.joindata.inf.common.util.network.entity.ProtocolHostPort;
 import com.xiaoleilu.hutool.util.NetUtil;
 
@@ -266,6 +268,46 @@ public class NetworkUtil
         return protocolHostPorts;
     }
 
+    /**
+     * 解析 JDBC 连接串
+     * 
+     * @param connStr 连接串
+     * @return 连接串
+     */
+    public static JdbcConn parseJdbcConn(String srcStr)
+    {
+        if(StringUtil.isNullOrEmpty(srcStr) || !srcStr.startsWith("jdbc"))
+        {
+            return null;
+        }
+
+        String connStr = StringUtil.replaceFirst(srcStr, "jdbc:", "");
+
+        JdbcConn conn = new JdbcConn();
+        conn.setDbType(StringUtil.substringBeforeFirst(connStr, "://"));
+
+        connStr = StringUtil.replaceFirst(connStr, conn.getDbType() + "://", "");
+
+        conn.setHostPort(NetworkUtil.parseHostPort(StringUtil.substringBeforeFirst(connStr, "/"))[0]);
+
+        connStr = StringUtil.replaceFirst(connStr, conn.getHostPort() + "/", "");
+
+        conn.setDbName(StringUtil.substringBeforeFirst(connStr, "?"));
+
+        StringMap params = new StringMap();
+
+        String[] paramStr = StringUtil.splitToArray(StringUtil.substringAfterFirst(connStr, "?"), "&");
+        for(String param: paramStr)
+        {
+            String[] kv = StringUtil.splitToArray(param, "=");
+            params.put(kv[0], kv.length == 2 ? kv[1] : "");
+        }
+
+        conn.setParams(params);
+
+        return conn;
+    }
+
     public static void main(String[] args) throws ResourceException, UnknownHostException, IOException
     {
         System.out.println(nextUsableLocalPort(1000, 2000));
@@ -277,5 +319,8 @@ public class NetworkUtil
         System.out.println(getLocalIpv4s());
 
         System.out.println(isReachable("baidu.com", 80));
+
+        System.out.println(parseJdbcConn("jdbc:mysql://localhost:3306/order_store_2?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=false"));
     }
+
 }

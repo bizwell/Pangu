@@ -113,7 +113,71 @@ public class StringUtil
         }
         return str.trim();
     }
+    
+    /**
+     * 将字符串左边去指定字符
+     * 
+     * @param str 要去空格的字符串，如果为空，返回空
+     * @return 去除后的字符串<br />
+     *         <i>如果参数为 null，返回 null</i>
+     */
+    public static final String trimLeft(String str, char c)
+    {
+        if(str == null)
+        {
+            return null;
+        }
+        
+        while (str.startsWith(String.valueOf(c)))
+        {
+            str = str.substring(1);
+        }
+        
+        return str.trim();
+    }
 
+    /**
+     * 将字符串右边去指定字符
+     * 
+     * @param str 要去空格的字符串，如果为空，返回空
+     * @return 去除后的字符串<br />
+     *         <i>如果参数为 null，返回 null</i>
+     */
+    public static final String trimRight(String str, char c)
+    {
+        if(str == null)
+        {
+            return null;
+        }
+
+        while (str.endsWith(String.valueOf(c)))
+        {
+            str = str.substring(0, str.length()-1);
+        }
+        
+        return str.trim();
+    }
+
+    /**
+     * 将字符串右边去指定字符
+     * 
+     * @param str 要去空格的字符串，如果为空，返回空
+     * @return 去除后的字符串<br />
+     *         <i>如果参数为 null，返回 null</i>
+     */
+    public static final String trim(String str, char c)
+    {
+        if(str == null)
+        {
+            return null;
+        }
+        
+        str = trimLeft(str, c);
+        str = trimRight(str, c);
+        
+        return str;
+    }
+    
     /**
      * 将字符串左右去空格
      * 
@@ -606,6 +670,28 @@ public class StringUtil
     }
 
     /**
+     * 获取字符串最后几位
+     * 
+     * @param str 要操作的字符串<i>如果是 null 或 空字符串，原样返回</i>
+     * @param count 最后几位？<i>如果是 0，返回空字符串</i>
+     * @return 最后几位！<i>如果超出字符串长度，返回原字符串</i>
+     */
+    public static final String getLast(String str, int count)
+    {
+        if(str == null || str.equals(""))
+        {
+            return str;
+        }
+
+        if(str.length() < count)
+        {
+            return str;
+        }
+
+        return str.substring(str.length() - count, str.length());
+    }
+
+    /**
      * 查找指定字符串出现了几次
      * 
      * @param str 原始字符串
@@ -793,6 +879,12 @@ public class StringUtil
         System.out.println(toString(toBytes("你麻痹")));
 
         System.out.println(toString(null));
+
+        System.out.println(Long.parseLong(getLast(String.valueOf(Long.MAX_VALUE), 12)));
+
+        System.out.println(trim("0012300", '0'));
+        System.out.println(trimLeft("0012300", '0'));
+        System.out.println(trimRight("0012300", '0'));
     }
 
 }

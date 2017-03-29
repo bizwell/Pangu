@@ -21,7 +21,7 @@ import com.joindata.inf.common.util.log.Logger;
 public class TimestampSequence implements Sequence
 {
     private static final Logger log = Logger.get();
-
+    
     private CuratorFramework zkClient;
 
     public static final String BASE_NODE = "/seq-tmp";

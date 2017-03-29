@@ -125,6 +125,13 @@
 				<artifactId>idgen-support</artifactId>
 				<version>${pangu.version}</version>
 			</dependency>
+			
+			<!-- 支持邮件服务 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>email-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>

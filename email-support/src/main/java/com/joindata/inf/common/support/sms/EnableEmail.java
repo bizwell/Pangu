@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 import com.joindata.inf.common.basic.annotation.JoindataComponent;
 import com.joindata.inf.common.support.sms.cst.SmsSystemId;
-import com.niwodai.inf.notification.client.request.SendChannel;
 
 /**
  * 启用短信服务
@@ -21,16 +20,9 @@ import com.niwodai.inf.notification.client.request.SendChannel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(bind = ConfigHub.class, name = "短信服务")
-public @interface EnableSms
+@JoindataComponent(bind = ConfigHub.class, name = "邮件服务")
+public @interface EnableEmail
 {
-    /**
-     * 短信发送通道
-     * 
-     * @see SendChannel
-     */
-    SendChannel channel();
-
     /**
      * 在短信系统中的 AppID
      * 

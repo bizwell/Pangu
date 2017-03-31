@@ -1,5 +1,6 @@
 package com.joindata.inf.common.support.shardingjdbc.bootconfig;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +18,15 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule.ShardingRuleBuild
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule.TableRuleBuilder;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.joindata.inf.common.support.shardingjdbc.core.algorithm.Long.GroupRangeSuffixChooser;
 import com.joindata.inf.common.support.shardingjdbc.core.rule.shardingwithgroup.Long.ModShardingTableAlgorithm;
+import com.joindata.inf.common.support.shardingjdbc.core.rule.shardingwithgroup.Long.ModShardingTableWithMultikeyAlgorithm;
 import com.joindata.inf.common.support.shardingjdbc.core.rule.shardingwithgroup.Long.RangeGroupSchemeAlgorithm;
+import com.joindata.inf.common.support.shardingjdbc.core.rule.shardingwithgroup.Long.RangeGroupSchemeMultikeyAlgorithm;
 import com.joindata.inf.common.support.shardingjdbc.properties.ShardingJdbcConf;
+import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingColumnRule;
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingDataSourceProperties;
+import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupByColumnRule;
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupRule;
 import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
@@ -66,7 +72,12 @@ public class ShardingJdbcConfig
     public ShardingRule shardingRule()
     {
         ShardingRuleBuilder builder = new ShardingRuleBuilder();
-        builder.tableRules(generateTableRules());
+        //单分表键对应的rule
+        Collection<TableRule> tableRulesWithSingleShardingKey = generateTableRulesWithSingleShardingKey();
+      //多分表键对应的rule
+        Collection<TableRule> tableRulesWithMultiShardingKey = generateTableRulesWithMultiShardingKey();
+        tableRulesWithSingleShardingKey.addAll(tableRulesWithMultiShardingKey);
+        builder.tableRules(tableRulesWithSingleShardingKey);
         builder.dataSourceRule(dataSourceRule());
 
         return builder.build();
@@ -77,7 +88,7 @@ public class ShardingJdbcConfig
      * 
      * @return 表规则集合
      */
-    private Collection<TableRule> generateTableRules()
+    private Collection<TableRule> generateTableRulesWithSingleShardingKey()
     {
         Collection<TableRule> rules = CollectionUtil.newHashSet();
 
@@ -98,7 +109,6 @@ public class ShardingJdbcConfig
 
                 // 设置表分片策略
                 builder.tableShardingStrategy(new TableShardingStrategy(rule.getShardingKey(), new ModShardingTableAlgorithm()));
-
                 // 挑选适当的数据源
                 Map<String, DataSource> dsMap = CollectionUtil.newMap();
                 Set<String> dbNames = getDataSourceMap().keySet();
@@ -130,6 +140,77 @@ public class ShardingJdbcConfig
             }
         }
 
+        return rules;
+    }
+
+    /**
+     * 多个分库分表键对应的table rule
+     * 
+     * @return
+     */
+    private Collection<TableRule> generateTableRulesWithMultiShardingKey()
+    {
+
+        Collection<TableRule> rules = CollectionUtil.newHashSet();
+        if(!ArrayUtil.isEmpty(conf.getShardingWithGroupByColumnRule()))
+        {
+            for(ShardingWithGroupByColumnRule rule: conf.getShardingWithGroupByColumnRule())
+            {
+                String logicTable = rule.getLogicTable();
+                TableRuleBuilder builder = new TableRuleBuilder(logicTable);
+                List<ShardingColumnRule> shardingColumnRules = rule.getShardingColumnRules();
+                // 设置物理表
+                List<String> tables = CollectionUtil.newList();
+                for(int i = 0; i < rule.getShardingCount(); i++)
+                {
+                    tables.add(logicTable + "_" + i);
+                }
+                builder.actualTables(tables);
+                List<String> shardingColumns = new ArrayList<>();
+                // 挑选适当的数据源
+                Map<String, DataSource> dsMap = CollectionUtil.newMap();
+                Map<String, ShardingColumnRule> shardingColumnRuleMap = CollectionUtil.newMap();
+                Map<String, GroupRangeSuffixChooser> dbChooserFactory = CollectionUtil.newMap();
+                String defaultDs = null;
+                for(ShardingColumnRule shardingColumnRule: shardingColumnRules)
+                {
+                    String shardingColumn = shardingColumnRule.getColumnName();
+                    shardingColumns.add(shardingColumn);
+                    shardingColumnRuleMap.put(shardingColumn, shardingColumnRule);
+                    Set<String> dbNames = getDataSourceMap().keySet();
+                    for(String dbName: dbNames)
+                    {
+                        // 分组库
+                        if(ValidateUtil.isPureNumberText(StringUtil.replaceAll(dbName.toUpperCase(), shardingColumnRule.getSchemaName().toUpperCase() + "_", "")))
+                        {
+                            dsMap.put(dbName, getDataSourceMap().get(dbName));
+                        }
+                        // 默认库
+                        if(StringUtil.isEqualsIgnoreCase(dbName, shardingColumnRule.getSchemaName()))
+                        {
+                            defaultDs = dbName;
+                            dsMap.put(defaultDs, getDataSourceMap().get(dbName));
+                        }
+                    }
+                 // 针对每个分库分表键, 构造所属的db选择器
+                    GroupRangeSuffixChooser dbChooser = new GroupRangeSuffixChooser(defaultDs, shardingColumnRule.getGroupVolum(), shardingColumnRule.getKeyEnob());
+                    dbChooserFactory.put(shardingColumn, dbChooser);
+                }
+
+                // 设置表分片策略
+                builder.tableShardingStrategy(new TableShardingStrategy(shardingColumns, new ModShardingTableWithMultikeyAlgorithm()));
+
+                // 设置物理库
+                builder.dataSourceRule(new DataSourceRule(dsMap, defaultDs));
+
+                // 设置数据库分组策略
+                builder.databaseShardingStrategy(new RangeGroupSchemeMultikeyAlgorithm(shardingColumnRuleMap, dbChooserFactory).toShardingStrategy(shardingColumns));
+
+                rules.add(builder.build());
+
+                log.info("已创建规则, 类型: {}, 表名: {}, 实际表: {}, 实际库: {}", "按库分组，按表取模", rule.getLogicTable(), tables, dsMap.keySet());
+            }
+        }
         return rules;
     }
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.joindata.inf.common.support.disconf.util.DisconfUtil;
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingDataSourceProperties;
+import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupByColumnRule;
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupRule;
 import com.joindata.inf.common.util.basic.BeanUtil;
 
@@ -22,6 +23,18 @@ public class ShardingJdbcConf implements InitializingBean
 
     /** 用库分组、用表取模规则列表 */
     private ShardingWithGroupRule[] shardingWithGroupRule;
+    
+    private ShardingWithGroupByColumnRule[] shardingWithGroupByColumnRule;
+
+    public ShardingWithGroupByColumnRule[] getShardingWithGroupByColumnRule()
+    {
+        return shardingWithGroupByColumnRule;
+    }
+
+    public void setShardingWithGroupByColumnRule(ShardingWithGroupByColumnRule[] shardingWithGroupByColumnRule)
+    {
+        this.shardingWithGroupByColumnRule = shardingWithGroupByColumnRule;
+    }
 
     public ShardingDataSourceProperties[] getDataSources()
     {

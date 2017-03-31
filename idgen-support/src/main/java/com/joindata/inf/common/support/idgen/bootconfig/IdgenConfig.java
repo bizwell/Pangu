@@ -29,7 +29,7 @@ public class IdgenConfig
     @Autowired
     private IdgenProperties properties;
 
-    @Bean(ZK_CLIENT_BEAN_NAME)
+    @Bean(name=ZK_CLIENT_BEAN_NAME, destroyMethod="close")
     public CuratorFramework zkClient()
     {
         log.info("zkHOSTS: {}", properties.getZkHosts());

@@ -1,7 +1,5 @@
 package com.joindata.inf.common.support.mybatis.bootconfig;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +8,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.joindata.inf.common.sterotype.jdbc.support.DataSourceRoutingHolder;
+import com.joindata.inf.common.sterotype.jdbc.support.DataSourceType;
+import com.joindata.inf.common.sterotype.jdbc.support.RoutingDataSource;
 import com.joindata.inf.common.support.mybatis.support.properties.DataSourceProperties;
 import com.joindata.inf.common.util.log.Logger;
 
@@ -22,24 +23,16 @@ public class TransactionConfig
     @Autowired
     private DataSourceProperties properties;
 
-    @Bean
-    public DataSource dataSource()
-    {
-        DruidDataSource ds = new DruidDataSource();
-        ds.setUrl(properties.getUrl());
-        ds.setUsername(properties.getUsername());
-        ds.setPassword(properties.getPassword());
-        ds.setInitialSize(properties.getInitialSize());
-        ds.setMinIdle(properties.getMinIdle());
-        ds.setMaxActive(properties.getMaxActive());
-        ds.setMaxWait(properties.getMaxWait());
-        ds.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRunsMillis());
-        ds.setMinEvictableIdleTimeMillis(properties.getMinEvictableIdleTimeMillis());
-        ds.setValidationQuery(properties.getValidationQuery());
-        ds.setTestWhileIdle(properties.isTestWhileIdle());
-        ds.setTestOnBorrow(properties.isTestOnBorrow());
-        ds.setTestOnReturn(properties.isTestOnReturn());
+    /** 大 DataSource，唯一的，暴露给 TX 的 */
+    @Autowired
+    private RoutingDataSource dataSource;
 
+    @Bean
+    public DruidDataSource mybatisDatasource()
+    {
+        DruidDataSource ds = properties.toDataSource();
+        DataSourceRoutingHolder.addDataSource(DataSourceType.SINGLE, ds);
+        
         log.info("Druid 数据源连接地址: {}, 用户: {}, 最大活动连接数: {}, 初始化大小: {}", properties.getUrl(), properties.getUsername(), properties.getMaxActive(), properties.getInitialSize());
 
         return ds;
@@ -48,7 +41,7 @@ public class TransactionConfig
     @Bean
     public DataSourceTransactionManager dataSourceTransactionManager()
     {
-        DataSourceTransactionManager manager = new DataSourceTransactionManager(dataSource());
+        DataSourceTransactionManager manager = new DataSourceTransactionManager(dataSource);
         return manager;
     }
 

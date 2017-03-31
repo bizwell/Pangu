@@ -61,6 +61,6 @@ public class JdbcConn
     @Override
     public String toString()
     {
-        return "jdbc: " + this.dbType + ", HostPort: " + this.hostPort + ", DB: " + this.dbName + ", Param: " + this.params;
+        return "JDBC - type: " + this.dbType + ", HostPort: " + this.hostPort + ", DB: " + this.dbName + ", Param: " + this.params;
     }
 }

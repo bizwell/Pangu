@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.mybatis;
+package com.joindata.inf.common.support.shardingjdbc;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -6,19 +6,19 @@ import org.springframework.context.annotation.Import;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.sterotype.jdbc.bootconfig.DataSourceConfig;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
-import com.joindata.inf.common.support.mybatis.bootconfig.CustomMapperScannerRegistrar;
-import com.joindata.inf.common.support.mybatis.bootconfig.MyBatisConfig;
-import com.joindata.inf.common.support.mybatis.bootconfig.TransactionConfig;
+import com.joindata.inf.common.support.mybatis.EnableMyBatis;
+import com.joindata.inf.common.support.shardingjdbc.bootconfig.ShardingJdbcConfig;
 
 /**
- * MyBatis 支持配置器
+ * ShardingJDBC 支持配置器
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date 2016年12月2日 下午5:32:55
+ * @date Mar 20, 2017 5:40:03 PM
  */
 @Configuration
-@Import({DataSourceConfig.class, TransactionConfig.class, MyBatisConfig.class, CustomMapperScannerRegistrar.class})
+@Import({DataSourceConfig.class, ShardingJdbcConfig.class})
 @EnableDisconf
+@EnableMyBatis
 public class ConfigHub extends AbstractConfigHub
 {
     @Override

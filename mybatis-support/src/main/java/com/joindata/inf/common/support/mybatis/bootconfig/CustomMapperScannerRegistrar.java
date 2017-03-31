@@ -41,7 +41,7 @@ public class CustomMapperScannerRegistrar extends MapperScannerRegistrar
         {
             scanner.setResourceLoader(resourceLoader);
         }
-
+        
         log.info("MyBatis 扫描包为: " + ArrayUtil.join(Util.getScanPackage()));
 
         scanner.registerFilters();

@@ -3,11 +3,14 @@ package com.joindata.inf.common.support.mybatis.support.properties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
+import com.joindata.inf.common.sterotype.jdbc.sterotype.DruidDataSourceProperties;
 
 /**
- * 数据源配置变量类
+ * 数据源配置变量类<br />
+ * <i>Disconf 我草你妈！</i>
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date 2016年12月1日 上午11:40:23
@@ -15,47 +18,49 @@ import com.baidu.disconf.client.common.annotations.DisconfFileItem;
 @Service
 @Scope("singleton")
 @DisconfFile(filename = "jdbc.properties")
-public class DataSourceProperties
+public class DataSourceProperties extends DruidDataSourceProperties
 {
+    protected String name;
+
     /** URL */
-    private String url;
+    protected String url;
 
     /** 用户名 */
-    private String username;
+    protected String username;
 
     /** 密码 */
-    private String password;
+    protected String password;
 
     /** 初始化大小 */
-    private int initialSize;
+    protected int initialSize;
 
     /** 最小空闲数 */
-    private int minIdle;
+    protected int minIdle;
 
     /** 最大连接数 */
-    private int maxActive;
+    protected int maxActive;
 
     /** 连接等待超时时间 */
-    private long maxWait;
+    protected long maxWait;
 
     /** 检测关闭空闲连接的间隔时间毫秒数 */
-    private int timeBetweenEvictionRunsMillis;
+    protected int timeBetweenEvictionRunsMillis;
 
     /** 最小生存时间毫秒数 */
-    private int minEvictableIdleTimeMillis;
+    protected int minEvictableIdleTimeMillis;
 
     /** 验证语句 */
-    private String validationQuery;
+    protected String validationQuery;
 
     /** 是否在空闲时检测 */
-    private boolean testWhileIdle;
+    protected boolean testWhileIdle;
 
     /** 是否在取得时检测 */
-    private boolean testOnBorrow;
+    protected boolean testOnBorrow;
 
     /** 是否在归还时检测 */
-    private boolean testOnReturn;
-
+    protected boolean testOnReturn;
+    
     @DisconfFileItem(name = "jdbc.url", associateField = "url")
     public String getUrl()
     {
@@ -199,4 +204,24 @@ public class DataSourceProperties
         this.testOnReturn = testOnReturn;
     }
 
+    @Override
+    public DruidDataSource toDataSource()
+    {
+        DruidDataSource ds = new DruidDataSource();
+        ds.setUrl(this.getUrl());
+        ds.setUsername(this.getUsername());
+        ds.setPassword(this.getPassword());
+        ds.setInitialSize(this.getInitialSize());
+        ds.setMinIdle(this.getMinIdle());
+        ds.setMaxActive(this.getMaxActive());
+        ds.setMaxWait(this.getMaxWait());
+        ds.setTimeBetweenEvictionRunsMillis(this.getTimeBetweenEvictionRunsMillis());
+        ds.setMinEvictableIdleTimeMillis(this.getMinEvictableIdleTimeMillis());
+        ds.setValidationQuery(this.getValidationQuery());
+        ds.setTestWhileIdle(this.isTestWhileIdle());
+        ds.setTestOnBorrow(this.isTestOnBorrow());
+        ds.setTestOnReturn(this.isTestOnReturn());
+
+        return ds;
+    }
 }

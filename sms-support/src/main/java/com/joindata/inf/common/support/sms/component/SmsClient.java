@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.joindata.inf.common.support.sms.bootconfig.SmsConfig;
-import com.joindata.inf.common.support.sms.pojo.SmsTemplete;
+import com.joindata.inf.common.support.sms.pojo.SmsTemplate;
 import com.joindata.inf.common.util.log.Logger;
 import com.joindata.inf.common.util.tools.UuidUtil;
 import com.niwodai.inf.notification.client.JmsSender;
@@ -30,7 +30,7 @@ public class SmsClient
      * @param template 短信模板实例
      * @param mobile 目标手机号，可以传多个
      */
-    public void send(SmsTemplete template, String... mobile)
+    public void send(SmsTemplate template, String... mobile)
     {
         log.info("发送短信给 {} 个手机, 使用模板: {}, 参数: {}", mobile.length, template.getTemplateId(), template.getData());
 

@@ -51,6 +51,9 @@ public class ShardingJdbcConfig
     private ShardingJdbcConf conf;
 
     private Map<String, DataSource> DS_MAP;
+    
+    //{datasourceName}.{tbName}
+    private static final String DELIMITER = ".";
 
     // @PostConstruct
     // public void init()
@@ -160,30 +163,33 @@ public class ShardingJdbcConfig
                 TableRuleBuilder builder = new TableRuleBuilder(logicTable);
                 List<ShardingColumnRule> shardingColumnRules = rule.getShardingColumnRules();
                 // 设置物理表
-                List<String> tables = CollectionUtil.newList();
-                for(int i = 0; i < rule.getShardingCount(); i++)
-                {
-                    tables.add(logicTable + "_" + i);
-                }
-                builder.actualTables(tables);
                 List<String> shardingColumns = new ArrayList<>();
                 // 挑选适当的数据源
                 Map<String, DataSource> dsMap = CollectionUtil.newMap();
                 Map<String, ShardingColumnRule> shardingColumnRuleMap = CollectionUtil.newMap();
                 Map<String, GroupRangeSuffixChooser> dbChooserFactory = CollectionUtil.newMap();
                 String defaultDs = null;
+                List<String> tables = CollectionUtil.newList();
                 for(ShardingColumnRule shardingColumnRule: shardingColumnRules)
                 {
                     String shardingColumn = shardingColumnRule.getColumnName();
                     shardingColumns.add(shardingColumn);
                     shardingColumnRuleMap.put(shardingColumn, shardingColumnRule);
                     Set<String> dbNames = getDataSourceMap().keySet();
+                    String schemaName = shardingColumnRule.getSchemaName();
+                    String tableName = shardingColumnRule.getTableName();
+                    builder.actualTables(tables);
+                    
                     for(String dbName: dbNames)
                     {
                         // 分组库
-                        if(ValidateUtil.isPureNumberText(StringUtil.replaceAll(dbName.toUpperCase(), shardingColumnRule.getSchemaName().toUpperCase() + "_", "")))
+                        if(ValidateUtil.isPureNumberText(StringUtil.replaceAll(dbName.toUpperCase(), schemaName.toUpperCase() + "_", "")))
                         {
                             dsMap.put(dbName, getDataSourceMap().get(dbName));
+                            for(int i = 0; i < shardingColumnRule.getShardingCount(); i++)
+                            {
+                                tables.add(dbName + DELIMITER + tableName + "_" + i);
+                            }
                         }
                         // 默认库
                         if(StringUtil.isEqualsIgnoreCase(dbName, shardingColumnRule.getSchemaName()))
@@ -191,14 +197,17 @@ public class ShardingJdbcConfig
                             defaultDs = dbName;
                             dsMap.put(defaultDs, getDataSourceMap().get(dbName));
                         }
+                        
                     }
+                    
                  // 针对每个分库分表键, 构造所属的db选择器
                     GroupRangeSuffixChooser dbChooser = new GroupRangeSuffixChooser(defaultDs, shardingColumnRule.getGroupVolum(), shardingColumnRule.getKeyEnob());
                     dbChooserFactory.put(shardingColumn, dbChooser);
                 }
-
+                
+                builder.actualTables(tables);
                 // 设置表分片策略
-                builder.tableShardingStrategy(new TableShardingStrategy(shardingColumns, new ModShardingTableWithMultikeyAlgorithm()));
+                builder.tableShardingStrategy(new TableShardingStrategy(shardingColumns, new ModShardingTableWithMultikeyAlgorithm(shardingColumnRuleMap)));
 
                 // 设置物理库
                 builder.dataSourceRule(new DataSourceRule(dsMap, defaultDs));

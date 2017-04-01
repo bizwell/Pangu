@@ -16,7 +16,6 @@ public class ShardingWithGroupByColumnRule
      * 逻辑表名
      */
     private String logicTable;
-    private int shardingCount;
     /**
      * 每个分表键对应的规则
      */

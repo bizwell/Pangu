@@ -14,6 +14,9 @@ public class ShardingColumnRule
     /** 数据库名 */
     private String schemaName;
 
+    private int shardingCount;
+    
+    private String tableName;
     /**
      * 分组容量，表示在 <strong>分组键</strong> 增长到 <strong>每多少</strong> 的时候需要数据库分组递增
      */

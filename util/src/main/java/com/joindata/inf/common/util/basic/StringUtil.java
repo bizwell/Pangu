@@ -113,7 +113,7 @@ public class StringUtil
         }
         return str.trim();
     }
-    
+
     /**
      * 将字符串左边去指定字符
      * 
@@ -127,12 +127,12 @@ public class StringUtil
         {
             return null;
         }
-        
-        while (str.startsWith(String.valueOf(c)))
+
+        while(str.startsWith(String.valueOf(c)))
         {
             str = str.substring(1);
         }
-        
+
         return str.trim();
     }
 
@@ -150,11 +150,11 @@ public class StringUtil
             return null;
         }
 
-        while (str.endsWith(String.valueOf(c)))
+        while(str.endsWith(String.valueOf(c)))
         {
-            str = str.substring(0, str.length()-1);
+            str = str.substring(0, str.length() - 1);
         }
-        
+
         return str.trim();
     }
 
@@ -171,13 +171,13 @@ public class StringUtil
         {
             return null;
         }
-        
+
         str = trimLeft(str, c);
         str = trimRight(str, c);
-        
+
         return str;
     }
-    
+
     /**
      * 将字符串左右去空格
      * 
@@ -692,6 +692,51 @@ public class StringUtil
     }
 
     /**
+     * 删除字符串最后几位
+     * 
+     * @param str 要操作的字符串<i>如果是 null 或 空字符串，原样返回</i>
+     * @param count 最后几位？<i>如果小于等于 0，返回原字符串</i>
+     * @return 截取后的字符串！<i>如果超出字符串长度，返回空字符串</i>
+     */
+    public static final String removeLast(String str, int count)
+    {
+        if(str == null || str.equals("") || count <= 0)
+        {
+            return str;
+        }
+
+        if(str.length() < count)
+        {
+            return "";
+        }
+
+        return str.substring(0, str.length() - count);
+    }
+
+    /**
+     * 删除字符串前几位
+     * 
+     * @param str 要操作的字符串<i>如果是 null 或 空字符串，原样返回</i>
+     * @param count 最后几位？<i>如果小于等于 0，返回原字符串，如果大于字符串长度，返回空字符串</i>
+     * @return 删除前几位后的字符串
+     */
+    public static String removeFirst(String str, int count)
+    {
+        if(str == null || str.equals("") || count <= 0)
+        {
+            return str;
+        }
+
+        if(count > str.length())
+        {
+            return "";
+        }
+
+        return str.substring(count);
+
+    }
+
+    /**
      * 查找指定字符串出现了几次
      * 
      * @param str 原始字符串
@@ -881,10 +926,11 @@ public class StringUtil
         System.out.println(toString(null));
 
         System.out.println(Long.parseLong(getLast(String.valueOf(Long.MAX_VALUE), 12)));
+        System.out.println(removeLast("12345", 3));
+        System.out.println(removeFirst("12345", 2));
 
         System.out.println(trim("0012300", '0'));
         System.out.println(trimLeft("0012300", '0'));
         System.out.println(trimRight("0012300", '0'));
     }
-
 }

@@ -2,6 +2,8 @@ package com.joindata.inf.common.util.basic;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import com.xiaoleilu.hutool.util.ObjectUtil;
+
 /**
  * 数组工具类
  * 
@@ -82,12 +84,96 @@ public class ArrayUtil
         return ArrayUtils.isEmpty(arr);
     }
 
+    /**
+     * 输出数组
+     * 
+     * @return 每个数组元素的字符串表示
+     */
+    @SafeVarargs
+    public static final String toString(Object... arr)
+    {
+        return ArrayUtils.toString(arr);
+    }
+
+    /**
+     * 输出字符串数组
+     * 
+     * @return 每个数组元素的字符串表示
+     */
+    @SafeVarargs
+    public static final String toString(String... arr)
+    {
+        return ArrayUtils.toString(arr);
+    }
+
+    /**
+     * 在数组中是否包含指定字符串
+     * 
+     * @param caseSensitive 是否区分大小写
+     * @param arr 数组
+     * @param str 要检测的字符串
+     * @return true, 如果包含
+     */
+    public static boolean contains(boolean caseSensitive, String[] arr, String str)
+    {
+        if(arr == null)
+        {
+            return false;
+        }
+
+        for(String item: arr)
+        {
+            if(caseSensitive)
+            {
+                if(StringUtil.isEqualsIgnoreCase(item, str))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if(StringUtil.isEquals(item, str))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 在数组中是否包含指定元素<br />
+     * <i>如果数组中有 null，而判断的对象是 null，也返回 true</i>
+     * 
+     * @param arr 数组
+     * @param str 要检测的对象
+     * @return true, 如果包含
+     */
+    public static boolean contains(Object[] arr, Object obj)
+    {
+        if(arr == null)
+        {
+            return false;
+        }
+
+        for(Object item: arr)
+        {
+            if(ObjectUtil.equals(item, obj))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void main(String[] args)
     {
         System.out.println(join("A", "B", "C"));
         System.out.println(merge(new String[]{"a", "b"}, "c", "d"));
         System.out.println(join(deleteNulls(new String[]{"a", "b", null}, new String[]{"a", null, null, "c"})));
         System.out.println(isEmpty(new String[]{}));
+        System.out.println(toString("A", "B", "C"));
     }
-
 }

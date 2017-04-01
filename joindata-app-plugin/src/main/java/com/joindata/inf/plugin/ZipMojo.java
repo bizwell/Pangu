@@ -28,6 +28,7 @@ import org.springframework.util.StreamUtils;
 
 import com.joindata.inf.boot.annotation.JoindataApp;
 import com.joindata.inf.boot.annotation.JoindataWebApp;
+import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.FileUtil;
@@ -236,6 +237,10 @@ public class ZipMojo extends AbstractMojo
         {
             getLog().error("无法解析依赖", e);
         }
+        catch(InterruptedException e)
+        {
+            getLog().error("线程错误", e);
+        }
 
     }
 
@@ -254,13 +259,26 @@ public class ZipMojo extends AbstractMojo
      * @throws DependencyResolutionRequiredException
      * @throws MalformedURLException
      * @throws MojoFailureException
+     * @throws InterruptedException
      */
-    private Class<?> findBootClass() throws MalformedURLException, DependencyResolutionRequiredException, MojoFailureException
+    private Class<?> findBootClass() throws MalformedURLException, DependencyResolutionRequiredException, MojoFailureException, InterruptedException
     {
         Set<Class<?>> clzSet = CollectionUtil.newHashSet();
 
-        clzSet.addAll(ClassUtil.scanTypeAnnotations(loadProjectClasses(), JoindataApp.class));
-        clzSet.addAll(ClassUtil.scanTypeAnnotations(loadProjectClasses(), JoindataWebApp.class));
+        // 可能在 Linux 下不能很快读取到类，重试几次，不行就滚蛋
+        for(int i = 0; i < 3; i++)
+        {
+            clzSet.addAll(ClassUtil.scanTypeAnnotations(loadProjectClasses(), JoindataApp.class));
+            clzSet.addAll(ClassUtil.scanTypeAnnotations(loadProjectClasses(), JoindataWebApp.class));
+
+            if(!CollectionUtil.isNullOrEmpty(clzSet))
+            {
+                break;
+            }
+
+            getLog().debug("正在重试第 " + (i + 1) + " 次，文件夹里有 " + ArrayUtil.toString(new File(project.getBuild().getOutputDirectory()).list()));
+            Thread.sleep(400);
+        }
 
         if(CollectionUtil.isNullOrEmpty(clzSet))
         {
@@ -294,9 +312,7 @@ public class ZipMojo extends AbstractMojo
 
         classSet.addAll(ClassUtil.findClasses(new File(project.getBuild().getOutputDirectory())));
 
-        getLog().info("=============不要逼我");
-        getLog().info(new File(project.getBuild().getOutputDirectory()).getPath());
-        getLog().info(classSet.toString());
+        getLog().debug("已编译 " + classSet.toString());
 
         return classSet;
     }

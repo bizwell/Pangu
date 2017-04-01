@@ -162,18 +162,6 @@
 			<artifactId>hutool</artifactId>
 		</dependency>
 
-		<!-- Class 文件查找器 -->
-		<dependency>
-			<groupId>com.offbytwo.class-finder</groupId>
-			<artifactId>class-finder</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- 要用到一些密码工具 -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>

@@ -24,7 +24,6 @@ import org.springframework.core.io.ClassPathResource;
 import com.joindata.inf.common.util.basic.entities.MethodArgReflectInfo;
 import com.joindata.inf.common.util.basic.entities.MethodReflectInfo;
 import com.joindata.inf.common.util.log.Logger;
-import com.offbytwo.class_finder.ClassFinder;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -606,11 +605,27 @@ public class ClassUtil
 
         URLClassLoader loader = new URLClassLoader(new URL[]{file.toURI().toURL()}, ClassUtil.getClassLoader());
 
-        List<String> list = new ClassFinder().getClassesInDirectory(file);
+        String dirPath = file.getAbsolutePath();
+        List<String> list = FileUtil.getFileTree(dirPath, true, "class");
+
         for(String item: list)
         {
-            String className = StringUtil.replaceAll(item, "\\", ".").substring(1);
+            // 删掉绝对路径前缀
+            String className = StringUtil.replaceFirst(item, dirPath + File.separator, "");
+            // 删掉 .class 扩展名
+            className = StringUtil.removeLast(className, ".class".length());
+            // 生成类名，替换文件路径为 .
+            className = StringUtil.replaceAll(className, File.separator, ".");
             Class<?> clz = ClassUtil.parseClass(loader, className);
+
+            if (clz == null)
+            {
+                log.debug("无法加载的类: {}", className);
+                continue;
+            }
+            
+            log.debug("找到的类: {}", className);
+
             set.add(clz);
         }
         try
@@ -621,6 +636,8 @@ public class ClassUtil
         {
             log.error("关闭类加载器时发生 IO 异常: {}", e.getMessage(), e);
         }
+
+        log.debug("在 {} 中查找到 {} 个可用类", dirPath, list.size());
 
         return set;
     }
@@ -633,11 +650,11 @@ public class ClassUtil
      */
     public static Class<?> parseClass(String clzName)
     {
-        if (clzName==null)
+        if(clzName == null)
         {
             return null;
         }
-        
+
         switch(clzName)
         {
             case "boolean":
@@ -681,11 +698,11 @@ public class ClassUtil
      */
     public static Class<?> parseClass(ClassLoader loader, String clzName)
     {
-        if (clzName==null)
+        if(clzName == null)
         {
             return null;
         }
-        
+
         switch(clzName)
         {
             case "boolean":
@@ -732,7 +749,7 @@ public class ClassUtil
         return (Class<T>)((ParameterizedType)(clz.getGenericInterfaces()[0])).getActualTypeArguments()[0];
     }
 
-    public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException
+    public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException, MalformedURLException
     {
         {
             String str = new String("abcdefg");
@@ -753,9 +770,9 @@ public class ClassUtil
 
         // TODO 添加单元测试 getFieldAnnotationMap();
 
-        System.out.println(scanPackage("com.wuyintong"));
+        System.out.println(scanPackage("com.joindata"));
 
-        System.out.println(getClassPaths("com.wuyintong"));
+        System.out.println(getClassPaths("com.joindata"));
 
         {
             for(String str: getJavaClassPaths())
@@ -769,10 +786,12 @@ public class ClassUtil
         System.out.println(getContextClassLoader());
         System.out.println(getClassLoader());
 
-        System.out.println(loadClass("com.joindata.server.platform.common.utils.basic.WordUtil", true));
+        System.out.println(loadClass("com.joindata.inf.common.util.basic.WordUtil", true));
         System.out.println(newInstance(WordUtil.class));
-        Object obj = newInstance("com.joindata.server.platform.common.utils.basic.WordUtil");
+        Object obj = newInstance("com.joindata.inf.common.util.basic.WordUtil");
         System.out.println(obj);
+        
+        System.out.println(findClasses(new File("E:/DEVELOP/WORKSPACE/GitWorkspace/Passport/passport-service-app/target/classes")));
     }
 
 }

@@ -18,7 +18,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -159,7 +158,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter
         successHandler.setAlwaysUseDefaultTargetUrl(true);
         successHandler.setDefaultTargetUrl(properties.getDefaultTargetUrl());
         filter.setAuthenticationSuccessHandler(successHandler);
-        
+
         // Session 管理策略（来自 session 组件）
         filter.setSessionAuthenticationStrategy(new CustomConcurrentSessionControlAuthenticationStrategy(redisConcurrentSessionRegistry));
 

@@ -6,10 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import com.joindata.inf.common.util.tools.UuidUtil;
 import com.xiaoleilu.hutool.util.ZipUtil;
@@ -776,7 +780,94 @@ public class FileUtil
         return UuidUtil.make() + "." + FileUtil.getExtension(fileName);
     }
 
-    public static void main(String[] args) throws IOException
+    /**
+     * 递归目录<br />
+     * <i>如果给的 dir 是相对路径，返回也是相对路径</i>
+     * 
+     * @param dir 目录
+     * @return 过滤后的结果
+     */
+    public static final List<String> getFileTree(String dir, boolean fileOnly, String... extensions)
+    {
+        boolean isAbsolutePath = new File(dir).isAbsolute();
+        List<String> files = CollectionUtil.newList();
+        Iterator<File> iter = FileUtils.iterateFilesAndDirs(new File(dir), new IOFileFilter()
+        {
+            @Override
+            public boolean accept(File dir, String name)
+            {
+                return ArrayUtil.contains(false, extensions, FileUtil.getExtension(name));
+            }
+
+            @Override
+            public boolean accept(File file)
+            {
+                return ArrayUtil.contains(false, extensions, FileUtil.getExtension(file.getName()));
+            }
+        }, TrueFileFilter.INSTANCE);
+
+        while(iter.hasNext())
+        {
+            File f = iter.next();
+
+            if(fileOnly && f.isDirectory())
+            {
+                continue;
+            }
+
+            if (isAbsolutePath)
+            {
+                files.add(f.getAbsolutePath());
+            }
+            else
+            {
+                files.add(f.getPath());
+            }
+        }
+
+        return files;
+    }
+
+    /**
+     * 递归目录
+     * 
+     * @param dir 目录
+     * @return 过滤后的结果
+     */
+    public static final List<File> getFileTree(File dir, boolean fileOnly, String... extensions)
+    {
+        List<File> files = CollectionUtil.newList();
+        Iterator<File> iter = FileUtils.iterateFilesAndDirs(dir, new IOFileFilter()
+        {
+            @Override
+            public boolean accept(File dir, String name)
+            {
+                return ArrayUtil.contains(false, extensions, FileUtil.getExtension(name));
+            }
+
+            @Override
+            public boolean accept(File file)
+            {
+                return ArrayUtil.contains(false, extensions, FileUtil.getExtension(file.getName()));
+            }
+        }, TrueFileFilter.INSTANCE);
+
+        while(iter.hasNext())
+        {
+            File f = iter.next();
+
+            if(fileOnly && f.isDirectory())
+            {
+                continue;
+            }
+
+            files.add(f);
+        }
+
+        return files;
+    }
+
+    public static void main1(String[] args) throws IOException
     {
         System.out.println(readFile("/temp/test/read.txt"));
         System.out.println(readFileToBytes("/temp/test/read.txt").length);
@@ -881,6 +972,13 @@ public class FileUtil
         {
             System.out.println(zip("/temp/test/zip/src-dir", "/temp/test/zip/dest.zip"));
             System.out.println(unzip("/temp/test/zip/src.zip", "/temp/test/zip/dest-dir"));
+        }
+
+        {
+            for(String f: getFileTree("E:/data", false, "log"))
+            {
+                System.out.println(f);
+            }
         }
 
     }

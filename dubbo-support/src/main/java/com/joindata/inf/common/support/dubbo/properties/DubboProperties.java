@@ -50,6 +50,9 @@ public class DubboProperties
     /** 远程调用负载均衡方式 */
     private String consumerLoadbalance;
 
+    /** 默认是否检测服务是否存在 */
+    private boolean consumerCheck;
+
     @DisconfFileItem(name = "app.owner", associateField = "appOwner")
     public String getAppOwner()
     {
@@ -191,6 +194,17 @@ public class DubboProperties
     public void setConsumerLoadbalance(String consumerLoadbalance)
     {
         this.consumerLoadbalance = consumerLoadbalance;
+    }
+
+    @DisconfFileItem(name = "consumer.check", associateField = "consumerCheck")
+    public boolean isConsumerCheck()
+    {
+        return consumerCheck;
+    }
+
+    public void setConsumerCheck(boolean consumerCheck)
+    {
+        this.consumerCheck = consumerCheck;
     }
 
 }

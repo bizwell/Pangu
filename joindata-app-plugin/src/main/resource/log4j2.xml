@@ -14,14 +14,5 @@
 		<root level="INFO">
 			<appender-ref ref="DefaultConsole" />
 		</root>
-		<logger name="org.springframework.web.servlet" additivity="false" level="INFO">
-			<appender-ref ref="Console" />
-		</logger>
-		<logger name="com.baidu.disconf.core.common.zookeeper.inner.ConnectionWatcher" additivity="false" level="INFO">
-			<appender-ref ref="Console"/>
-		</logger>
-		<logger name="com.joindata" additivity="false" level="DEBUG">
-			<appender-ref ref="Console"/>
-		</logger>
 	</loggers>
 </configuration>

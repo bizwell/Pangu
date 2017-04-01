@@ -33,7 +33,7 @@
 		<servlet.version>3.1.0</servlet.version>
 		<fastjson.version>1.2.21</fastjson.version>
 		<javassist.version>3.20.0-GA</javassist.version>
-		<log4j2.version>2.7</log4j2.version>
+		<log4j2.version>2.8.1</log4j2.version>
 		<commons-logging.version>1.2</commons-logging.version>
 		<slf4j.version>1.7.21</slf4j.version>
 		<jetty.version>9.3.14.v20161028</jetty.version>
@@ -57,7 +57,6 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<javax-mail.version>1.5.0-b01</javax-mail.version>
 		<hutool.version>2.15.19</hutool.version>
-		<class-finder.version>1.0.0</class-finder.version>
 		<aspectj.version>1.8.9</aspectj.version>
 		<disconf.version>2.6.36</disconf.version>
 		<netty.version>4.1.6.Final</netty.version>
@@ -402,13 +401,6 @@
 				<version>${hutool.version}</version>
 			</dependency>
 
-			<!-- Class 文件查找器 -->
-			<dependency>
-				<groupId>com.offbytwo.class-finder</groupId>
-				<artifactId>class-finder</artifactId>
-				<version>${class-finder.version}</version>
-			</dependency>
-
 			<!-- AspectJ -->
 			<dependency>
 				<groupId>org.aspectj</groupId>
@@ -722,9 +714,9 @@
 				<artifactId>activemq-spring</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
-			
+
 			<!-- ons -->
-			
+
 			<dependency>
 				<groupId>com.aliyun.openservices</groupId>
 				<artifactId>ons-client</artifactId>
@@ -732,7 +724,7 @@
 				<exclusions>
 					<exclusion>
 						<groupId>org.slf4j</groupId>
-	    				<artifactId>slf4j-api</artifactId>
+						<artifactId>slf4j-api</artifactId>
 					</exclusion>
 					<exclusion>
 						<groupId>org.slf4j</groupId>
@@ -753,7 +745,7 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			
+
 			<!-- 你我贷邮件服务 -->
 			<dependency>
 				<groupId>com.niwodai.inf</groupId>
@@ -839,6 +831,7 @@
 				<version>${javadoc.version}</version>
 				<executions>
 					<execution>
+						<id>attach-javadocs</id>
 						<phase>deploy</phase>
 						<goals>
 							<goal>jar</goal>
@@ -856,6 +849,20 @@
 						<addMavenDescriptor>false</addMavenDescriptor>
 					</archive>
 				</configuration>
+			</plugin>
+			
+			<!-- 不知道为毛加了这个就可以部署 JavaDoc 了 -->
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 

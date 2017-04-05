@@ -11,6 +11,7 @@ import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisCommands;
 
 /**
  * 集群版本实现
@@ -26,6 +27,17 @@ public class ClusterRedisClient implements RedisClient
     public ClusterRedisClient(JedisCluster jedisCluster)
     {
         jedis = jedisCluster;
+    }
+
+    /**
+     * 获取JedisCluster 对象
+     * 
+     * @return JedisCluster 对象
+     */
+    @Override
+    public JedisCommands getJedis()
+    {
+        return jedis;
     }
 
     /**
@@ -821,5 +833,34 @@ public class ClusterRedisClient implements RedisClient
         }
 
         return BeanUtil.deserializeObject(jedis.getSet(StringUtil.toBytes(key), BeanUtil.serializeObject(newValue)));
+    }
+
+    @Override
+    public long leftPush(String key, String... value)
+    {
+        if(key == null)
+        {
+            return 0;
+        }
+
+        return jedis.lpush(key, value);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Serializable> long leftPush(String key, T... value)
+    {
+        if(key == null)
+        {
+            return 0;
+        }
+
+        byte[][] bs = new byte[value.length][];
+        for(int i = 0; i < bs.length; i++)
+        {
+            bs[i] = BeanUtil.serializeObject(value[i]);
+        }
+
+        return jedis.lpush(StringUtil.toBytes(key), bs);
     }
 }

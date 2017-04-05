@@ -83,6 +83,16 @@ public class DateUtil
     /** 默认的时间格式对象 HH:mm:ss */
     public static final DateFormat DEFAULT_TIME_FORMATTER = new SimpleDateFormat(DEFAULT_TIME_FORMAT);
 
+    public static final long SECOND_MILLIS = 1000;
+
+    public static final long MINUTE_MILLIS = SECOND_MILLIS * 60;
+
+    public static final long HOUR_MILLIS = MINUTE_MILLIS * 60;
+
+    public static final long DAY_MILLIS = HOUR_MILLIS * 24;
+
+    public static final long WEEK_MILLIS = DAY_MILLIS * 7;
+
     static
     {
         DEFAULT_DATE_FORMATTER.setLenient(false);

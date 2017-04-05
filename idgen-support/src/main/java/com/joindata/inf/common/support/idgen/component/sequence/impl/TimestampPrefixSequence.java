@@ -5,25 +5,31 @@ package com.joindata.inf.common.support.idgen.component.sequence.impl;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.joindata.inf.common.support.idgen.core.IDGeneratorException;
 import com.joindata.inf.common.support.idgen.core.SequenceRepository;
 import com.joindata.inf.common.support.idgen.core.attacher.PrefixAttacher;
+import com.joindata.inf.common.support.idgen.core.attacher.TimestampAttacher;
 import com.joindata.inf.common.support.idgen.core.util.IdKeyBuilder;
 
 import lombok.Setter;
 
 /**
  * 
- * 带有两位命名空间的sequence生成器。 作用在保证同一应用的多张表生成 的id不重复
+ * 5位时间戳+2位命名空间+序号的递增序列
  * 
  * @author <a href="mailto:gaowei1@joindata.com">高伟</a>
  * @date 2017年3月24日
  */
 @Setter
-public class PrefixSequence extends AbstractBaseSequence
+public class TimestampPrefixSequence extends AbstractBaseSequence
 {
-    @Resource(name = "prefixAttacherOffset17")
-    private PrefixAttacher attacher;
+    @Resource(name = "prefixAttacherOffset12")
+    private PrefixAttacher prefixAttacher;
+
+    @Autowired
+    private TimestampAttacher timestampAttacher;
 
     @Resource(name = "sequenceRepositoryZookeeper")
     private SequenceRepository sequenceRepository;
@@ -31,8 +37,8 @@ public class PrefixSequence extends AbstractBaseSequence
     @Override
     public long next()
     {
-        int prefix = getPrefix();
-        return attacher.attach(this.increase(), prefix);
+        int prefix = this.getPrefix();
+        return timestampAttacher.attach(prefixAttacher.attach(this.increase(), prefix));
     }
 
     /**
@@ -62,4 +68,5 @@ public class PrefixSequence extends AbstractBaseSequence
 
         return prefix;
     }
+
 }

@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import redis.clients.jedis.JedisCommands;
+
 /**
  * Redis 客户端工具
  * 
@@ -13,6 +15,8 @@ import java.util.Map;
  */
 public interface RedisClient
 {
+    public JedisCommands getJedis();
+
     /**
      * 设置字符串
      * 
@@ -355,6 +359,25 @@ public interface RedisClient
      * @return 旧值
      */
     public <T extends Serializable> T getSet(String key, T newValue);
+
+    /**
+     * 推入队列
+     * 
+     * @param key 队列名
+     * @param value 队列元素，可传多个
+     * @return 推了几个
+     */
+    public long leftPush(String key, String... value);
+
+    /**
+     * 推入队列
+     * 
+     * @param key 队列名
+     * @param value 队列元素，可传多个
+     * @return 推了几个
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Serializable> long leftPush(String key, T... value);
 
     public static void main(String[] args) throws IOException
     {

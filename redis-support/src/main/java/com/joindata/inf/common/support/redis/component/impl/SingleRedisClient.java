@@ -11,6 +11,7 @@ import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCommands;
 
 /**
  * 单机版本实现
@@ -33,7 +34,8 @@ public class SingleRedisClient implements RedisClient
      * 
      * @return Jedis 对象
      */
-    public Jedis getJedis()
+    @Override
+    public JedisCommands getJedis()
     {
         return jedis;
     }
@@ -58,7 +60,7 @@ public class SingleRedisClient implements RedisClient
      */
     public String putWithExpire(String key, int seconds, String value)
     {
-       return jedis.setex(key, seconds, value);
+        return jedis.setex(key, seconds, value);
     }
 
     /**
@@ -161,9 +163,9 @@ public class SingleRedisClient implements RedisClient
     {
         if(jedis.exists(key))
         {
-           return jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
+            return jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
         }
-        
+
         return null;
     }
 
@@ -821,5 +823,34 @@ public class SingleRedisClient implements RedisClient
         }
 
         return BeanUtil.deserializeObject(jedis.getSet(StringUtil.toBytes(key), BeanUtil.serializeObject(newValue)));
+    }
+
+    @Override
+    public long leftPush(String key, String... value)
+    {
+        if(key == null)
+        {
+            return 0;
+        }
+
+        return jedis.lpush(key, value);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Serializable> long leftPush(String key, T... value)
+    {
+        if(key == null)
+        {
+            return 0;
+        }
+
+        byte[][] bs = new byte[value.length][];
+        for(int i = 0; i < bs.length; i++)
+        {
+            bs[i] = BeanUtil.serializeObject(value[i]);
+        }
+
+        return jedis.lpush(StringUtil.toBytes(key), bs);
     }
 }

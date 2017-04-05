@@ -26,15 +26,4 @@ public class ShardingDsConfig
 
         return shardingDs;
     }
-
-    // @Bean
-//    public DataSource shardingDataSourceTODO() throws IOException
-//    {
-//        DataSource shardingDs = new YamlShardingDataSource(DisconfUtil.getFile("shardingjdbc.yml"));
-//
-//        DataSourceRoutingHolder.addDataSource(DataSourceType.SHARDINGJDBC, shardingDs);
-//
-//        return shardingDs;
-//    }
-
 }

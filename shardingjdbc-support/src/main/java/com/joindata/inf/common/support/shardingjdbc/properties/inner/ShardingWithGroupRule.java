@@ -2,12 +2,15 @@ package com.joindata.inf.common.support.shardingjdbc.properties.inner;
 
 import com.joindata.inf.common.util.basic.JsonUtil;
 
+import lombok.Data;
+
 /**
  * 用库分组、表取模的规则
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Mar 29, 2017 2:13:16 PM
  */
+@Data
 public class ShardingWithGroupRule
 {
     /** 数据库名 */

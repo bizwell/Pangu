@@ -22,4 +22,6 @@ import com.joindata.inf.common.basic.annotation.JoindataComponent;
 @JoindataComponent(bind = ConfigHub.class, name = "分表分库支持")
 public @interface EnableShardingJdbc
 {
+    // TODO LIST
+    // - 实现多分库分表建查询去重问题
 }

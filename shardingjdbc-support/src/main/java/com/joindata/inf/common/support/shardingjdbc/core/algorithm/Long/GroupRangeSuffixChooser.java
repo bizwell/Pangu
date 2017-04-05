@@ -48,7 +48,8 @@ public class GroupRangeSuffixChooser
         {
             if(this.enob != -1)
             {
-                value = Long.parseLong(StringUtil.trimLeft(StringUtil.getLast(String.valueOf(value), this.enob), '0'));
+                String trimmedValue = StringUtil.trimLeft(StringUtil.getLast(String.valueOf(value), this.enob), '0');
+                value = StringUtil.isBlank(trimmedValue) ? 0 : Long.parseLong(trimmedValue);
             }
             for(String str: checkStrings)
             {
@@ -81,7 +82,8 @@ public class GroupRangeSuffixChooser
     {
         if(this.enob != -1)
         {
-            value = Long.parseLong(StringUtil.trimLeft(StringUtil.getLast(String.valueOf(value), this.enob), '0'));
+            String trimmedValue = StringUtil.trimLeft(StringUtil.getLast(String.valueOf(value), this.enob), '0');
+            value = StringUtil.isBlank(trimmedValue) ? 0 : Long.parseLong(trimmedValue);
         }
 
         for(String str: checkStrings)
@@ -115,7 +117,8 @@ public class GroupRangeSuffixChooser
         {
             if(this.enob != -1)
             {
-                value = Long.parseLong(StringUtil.trimLeft(StringUtil.getLast(String.valueOf(value), this.enob), '0'));
+                String trimmedValue = StringUtil.trimLeft(StringUtil.getLast(String.valueOf(value), this.enob), '0');
+                value = StringUtil.isBlank(trimmedValue) ? 0 : Long.parseLong(trimmedValue);
             }
 
             for(String str: checkStrings)

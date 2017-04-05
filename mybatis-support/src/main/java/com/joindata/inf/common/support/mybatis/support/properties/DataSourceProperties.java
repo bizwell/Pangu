@@ -1,12 +1,14 @@
 package com.joindata.inf.common.support.mybatis.support.properties;
 
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
-import com.joindata.inf.common.sterotype.jdbc.sterotype.DruidDataSourceProperties;
+import com.joindata.inf.common.sterotype.jdbc.sterotype.BaseDataSourceProperties;
 
 /**
  * 数据源配置变量类<br />
@@ -18,7 +20,7 @@ import com.joindata.inf.common.sterotype.jdbc.sterotype.DruidDataSourcePropertie
 @Service
 @Scope("singleton")
 @DisconfFile(filename = "jdbc.properties")
-public class DataSourceProperties extends DruidDataSourceProperties
+public class DataSourceProperties extends BaseDataSourceProperties
 {
     protected String name;
 
@@ -60,7 +62,7 @@ public class DataSourceProperties extends DruidDataSourceProperties
 
     /** 是否在归还时检测 */
     protected boolean testOnReturn;
-    
+
     @DisconfFileItem(name = "jdbc.url", associateField = "url")
     public String getUrl()
     {
@@ -205,7 +207,7 @@ public class DataSourceProperties extends DruidDataSourceProperties
     }
 
     @Override
-    public DruidDataSource toDataSource()
+    public DataSource toDataSource()
     {
         DruidDataSource ds = new DruidDataSource();
         ds.setUrl(this.getUrl());

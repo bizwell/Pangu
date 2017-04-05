@@ -6,6 +6,7 @@ import lombok.Data;
 
 /**
  * 针对多个分库分表键的rule
+ * 
  * @author <a href="mailto:gaowei1@joindata.com">高伟</a>
  * @date 2017年3月31日
  */
@@ -16,9 +17,10 @@ public class ShardingWithGroupByColumnRule
      * 逻辑表名
      */
     private String logicTable;
+
     /**
      * 每个分表键对应的规则
      */
-    private List<ShardingColumnRule> shardingColumnRules;
+    private List<ShardingWithGroupRule> shardingColumnRules;
 
 }

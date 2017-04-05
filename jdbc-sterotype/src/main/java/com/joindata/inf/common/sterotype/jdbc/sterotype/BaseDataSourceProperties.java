@@ -1,5 +1,7 @@
 package com.joindata.inf.common.sterotype.jdbc.sterotype;
 
+import javax.sql.DataSource;
+
 import com.alibaba.druid.pool.DruidDataSource;
 
 /**
@@ -8,7 +10,7 @@ import com.alibaba.druid.pool.DruidDataSource;
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Mar 28, 2017 12:13:32 PM
  */
-public abstract class DruidDataSourceProperties
+public abstract class BaseDataSourceProperties
 {
     protected String name;
 
@@ -50,6 +52,8 @@ public abstract class DruidDataSourceProperties
 
     /** 是否在归还时检测 */
     protected boolean testOnReturn;
+
+    private SlaveDataSourceProperties[] slaves;
 
     public String getName()
     {
@@ -191,7 +195,17 @@ public abstract class DruidDataSourceProperties
         this.testOnReturn = testOnReturn;
     }
 
-    public DruidDataSource toDataSource()
+    public SlaveDataSourceProperties[] getSlaves()
+    {
+        return slaves;
+    }
+
+    public void setSlaves(SlaveDataSourceProperties[] slaves)
+    {
+        this.slaves = slaves;
+    }
+
+    public DataSource toDataSource()
     {
         DruidDataSource ds = new DruidDataSource();
         ds.setUrl(this.getUrl());
@@ -210,5 +224,4 @@ public abstract class DruidDataSourceProperties
 
         return ds;
     }
-
 }

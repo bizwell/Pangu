@@ -104,7 +104,6 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, B
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException
     {
-
         // 给 Sequence 依赖对象赋值
         {
             Set<Field> annoFlds = ClassUtil.getAnnotationFields(bean.getClass(), Sequence.class);
@@ -112,7 +111,6 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, B
             for(Field fld: annoFlds)
             {
                 Sequence sequence = fld.getAnnotation(Sequence.class);
-
                 // Sequence Bean 名字
                 String seqBeanName = fld.getType().getCanonicalName() + "-" + sequence.value();
                 Object seqBean = this.applicationContext.getBean(seqBeanName);
@@ -120,7 +118,7 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, B
                 try
                 {
                     // 注入
-                    fld.set(this.applicationContext.getBean(beanName), seqBean);
+                    fld.set(bean, seqBean);
                 }
                 catch(IllegalArgumentException | IllegalAccessException e)
                 {

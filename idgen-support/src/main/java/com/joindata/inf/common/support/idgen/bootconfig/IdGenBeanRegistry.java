@@ -110,7 +110,6 @@ public class IdGenBeanRegistry extends CommonAnnotationBeanPostProcessor impleme
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException
     {
-
         // 给 Sequence 依赖对象赋值
         {
             Set<Field> annoFlds = ClassUtil.getAnnotationFields(bean.getClass(), Sequence.class);
@@ -118,7 +117,6 @@ public class IdGenBeanRegistry extends CommonAnnotationBeanPostProcessor impleme
             for(Field fld: annoFlds)
             {
                 Sequence sequence = fld.getAnnotation(Sequence.class);
-
                 // Sequence Bean 名字
                 String seqBeanName = fld.getType().getCanonicalName() + "-" + sequence.value();
                 Object seqBean = this.applicationContext.getBean(seqBeanName);

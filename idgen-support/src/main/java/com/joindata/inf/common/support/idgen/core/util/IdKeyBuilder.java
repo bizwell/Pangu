@@ -14,4 +14,14 @@ public class IdKeyBuilder
     {
         return getSequenceKeySpace() + "/" + name;
     }
+
+    /**
+     * 对于带有prefix的序列， 获取存储prefix值对应的path
+     * @param name sequence name
+     * @return
+     */
+    public static final String getPrefixKey(String name)
+    {
+        return getSequenceKey(name) + Constant.PREFIX;
+    }
 }

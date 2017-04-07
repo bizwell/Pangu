@@ -17,4 +17,6 @@ public class Constant
     public static final int ID_RANGE_DEFAULT_SIZE = 200;
 
     public static final String SEQUENCE = "/sequence";
+
+    public static final String PREFIX = "/prefix";
 }

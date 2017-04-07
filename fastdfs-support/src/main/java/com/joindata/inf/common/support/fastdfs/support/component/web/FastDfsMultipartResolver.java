@@ -83,6 +83,7 @@ public class FastDfsMultipartResolver extends CommonsMultipartResolver
                 {
                     value = fileItem.getString();
                 }
+
                 String[] curParam = multipartParameters.get(fileItem.getFieldName());
                 if(curParam == null)
                 {
@@ -119,6 +120,8 @@ public class FastDfsMultipartResolver extends CommonsMultipartResolver
     @Override
     protected void cleanupFileItems(MultiValueMap<String, MultipartFile> multipartFiles)
     {
+        super.cleanupFileItems(multipartFiles);
+
         for(List<MultipartFile> files: multipartFiles.values())
         {
             for(MultipartFile file: files)

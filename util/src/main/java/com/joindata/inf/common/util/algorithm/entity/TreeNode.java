@@ -105,10 +105,10 @@ public class TreeNode implements Serializable
     {
         if(pretty)
         {
-            return JsonUtil.toPrettyJSON(this);
+            return JsonUtil.toPrettyJSON(this, true);
         }
 
-        return JsonUtil.toJSON(this);
+        return JsonUtil.toJSON(this, true);
     }
 
     /**

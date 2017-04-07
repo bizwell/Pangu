@@ -12,6 +12,7 @@ import com.joindata.inf.common.support.redis.component.impl.ClusterRedisClient;
 import com.joindata.inf.common.support.redis.component.impl.SingleRedisClient;
 import com.joindata.inf.common.support.redis.support.RedisProperties;
 import com.joindata.inf.common.util.basic.CollectionUtil;
+import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
 import com.joindata.inf.common.util.network.NetworkUtil;
 import com.joindata.inf.common.util.network.entity.HostPort;
@@ -57,7 +58,11 @@ public class RedisConfig
         }
         else
         {
-            Jedis jedis = new Jedis(hostPorts[0].getHost(), hostPorts[1].getPort());
+            Jedis jedis = new Jedis(hostPorts[0].getHost(), hostPorts[0].getPort());
+            if(!StringUtil.isNullOrEmpty(properties.getPassword()))
+            {
+                jedis.auth(properties.getPassword());
+            }
             // TODO 考虑维护 POOL JedisPool jedis = new JedisPool(config, hostPorts[0].getHost(), hostPorts[1].getPort());
             redisClient = new SingleRedisClient(jedis);
         }

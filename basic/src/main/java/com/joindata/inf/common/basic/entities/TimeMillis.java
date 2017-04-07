@@ -1,36 +1,27 @@
 package com.joindata.inf.common.basic.entities;
 
-import java.text.ParseException;
-
-import com.joindata.inf.common.basic.cst.DateFormatterCst;
-
 /**
- * 用于表示 日期+时间格式<br />
+ * 用于表示毫秒时间戳格式<br />
  * <i>java.sql.Timestamp 的包装</i>
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date 2015年11月5日 下午1:04:31
+ * @date 2017-4-7 16:39:00
  */
-public class DateTime extends java.sql.Timestamp
+public class TimeMillis extends java.sql.Timestamp
 {
-    private static final long serialVersionUID = 5418236686740971118L;
+    private static final long serialVersionUID = -4787991367611091125L;
 
-    public DateTime()
+    public TimeMillis()
     {
         super(System.currentTimeMillis());
     }
 
-    public DateTime(long date)
+    public TimeMillis(long date)
     {
         super(date);
     }
 
-    public DateTime(String date) throws ParseException
-    {
-        this(DateFormatterCst.DEFAULT_DATETIME_FORMATTER.parse(date));
-    }
-
-    public DateTime(java.util.Date date)
+    public TimeMillis(java.util.Date date)
     {
         this(date.getTime());
     }
@@ -43,7 +34,7 @@ public class DateTime extends java.sql.Timestamp
     @Override
     public String toString()
     {
-        return DateFormatterCst.DEFAULT_DATETIME_FORMATTER.format(this);
+        return String.valueOf(this.getTime());
     }
 
     /**

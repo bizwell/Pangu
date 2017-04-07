@@ -9,11 +9,17 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.joindata.inf.common.basic.entities.Date;
 import com.joindata.inf.common.basic.entities.DateTime;
 import com.joindata.inf.common.basic.entities.Time;
+import com.joindata.inf.common.basic.entities.TimeMillis;
 import com.joindata.inf.common.util.basic.support.CustomJsonDateDeserizer;
+import com.joindata.inf.common.util.basic.support.CustomJsonDateSerializer;
+import com.joindata.inf.common.util.basic.support.CustomJsonDateTimeDeserizer;
+import com.joindata.inf.common.util.basic.support.CustomJsonTimeDeserizer;
+import com.joindata.inf.common.util.basic.support.CustomJsonTimeMillisDeserizer;
 
 /**
  * JSON 处理相关工具
@@ -25,11 +31,34 @@ public class JsonUtil
 {
     static
     {
-        CustomJsonDateDeserizer deserializer = new CustomJsonDateDeserizer();
+        CustomJsonDateDeserizer dateDeserializer = new CustomJsonDateDeserizer();
+        CustomJsonTimeDeserizer timeDeserializer = new CustomJsonTimeDeserizer();
+        CustomJsonDateTimeDeserizer dateTimeDeserializer = new CustomJsonDateTimeDeserizer();
+        CustomJsonTimeMillisDeserizer timeMillisDeserializer = new CustomJsonTimeMillisDeserizer();
 
-        ParserConfig.getGlobalInstance().putDeserializer(Date.class, deserializer);
-        ParserConfig.getGlobalInstance().putDeserializer(Time.class, deserializer);
-        ParserConfig.getGlobalInstance().putDeserializer(DateTime.class, deserializer);
+        ParserConfig.getGlobalInstance().putDeserializer(Date.class, dateDeserializer);
+        ParserConfig.getGlobalInstance().putDeserializer(Time.class, timeDeserializer);
+        ParserConfig.getGlobalInstance().putDeserializer(DateTime.class, dateTimeDeserializer);
+        ParserConfig.getGlobalInstance().putDeserializer(TimeMillis.class, timeMillisDeserializer);
+
+        CustomJsonDateSerializer serializer = new CustomJsonDateSerializer();
+        SerializeConfig.getGlobalInstance().put(Date.class, serializer);
+        SerializeConfig.getGlobalInstance().put(Time.class, serializer);
+        SerializeConfig.getGlobalInstance().put(DateTime.class, serializer);
+        SerializeConfig.getGlobalInstance().put(TimeMillis.class, serializer);
+    }
+
+    /**
+     * 把对象转换成 JSON 字符串<br />
+     * <i>需要转换的对象属性必须要有配套的 getter 方法</i><br />
+     * <i>如果值为 null，将不输出</i>
+     * 
+     * @param obj 要转换的对象
+     * @return JSON 字符串
+     */
+    public static final String toJSON(Object obj)
+    {
+        return JSON.toJSONString(obj);
     }
 
     /**
@@ -37,11 +66,17 @@ public class JsonUtil
      * <i>需要转换的对象属性必须要有配套的 getter 方法</i>
      * 
      * @param obj 要转换的对象
+     * @param writeNull 如果值为 null，是否输出 null
      * @return JSON 字符串
      */
-    public static final String toJSON(Object obj)
+    public static final String toJSON(Object obj, boolean writeNull)
     {
-        return JSON.toJSONString(obj, SerializerFeature.WriteMapNullValue);
+        if(writeNull)
+        {
+            return JSON.toJSONString(obj, SerializerFeature.WriteMapNullValue);
+        }
+
+        return JSON.toJSONString(obj);
     }
 
     /**
@@ -49,11 +84,17 @@ public class JsonUtil
      * <i>需要转换的对象属性必须要有配套的 getter 方法</i>
      * 
      * @param obj 要转换的对象
+     * @param writeNull 如果值为 null，是否输出 null
      * @return JSON 字符串
      */
-    public static final String toPrettyJSON(Object obj)
+    public static final String toPrettyJSON(Object obj, boolean writeNull)
     {
-        return JSON.toJSONString(obj, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+        if(writeNull)
+        {
+            return JSON.toJSONString(obj, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+        }
+
+        return JSON.toJSONString(obj, SerializerFeature.PrettyFormat);
     }
 
     /**
@@ -120,6 +161,8 @@ public class JsonUtil
             DateTime birthDateTime = new DateTime();
 
             Time birthTime = new Time();
+
+            TimeMillis birthTimeMillis = new TimeMillis();
 
             boolean inShanghai;
 
@@ -193,6 +236,16 @@ public class JsonUtil
             public void setInShanghai(boolean inShanghai)
             {
                 this.inShanghai = inShanghai;
+            }
+
+            public TimeMillis getBirthTimeMillis()
+            {
+                return birthTimeMillis;
+            }
+
+            public void setBirthTimeMillis(TimeMillis birthTimeMillis)
+            {
+                this.birthTimeMillis = birthTimeMillis;
             }
 
             public Map<String, Object> getSkill()

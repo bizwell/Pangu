@@ -34,10 +34,6 @@
 			<groupId>com.dangdang</groupId>
 			<artifactId>sharding-jdbc-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.dangdang</groupId>
-			<artifactId>sharding-jdbc-transaction</artifactId>
-		</dependency>
 
 	</dependencies>
 

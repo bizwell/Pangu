@@ -220,7 +220,15 @@ public class ClassUtil
 
             if(used)
             {
-                return ClassUtil.parseClass(ste.getClassName());
+                try
+                {
+                    return Class.forName(ste.getClassName());
+                }
+                catch(ClassNotFoundException e)
+                {
+                    System.err.print("找不到类: " + ste.getClassName());
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -241,8 +249,15 @@ public class ClassUtil
         {
             if(!StringUtil.isEquals(ste.getClassName(), "java.lang.Thread") && !StringUtil.isEquals(ste.getClassName(), ClassUtil.class.getName()) && !StringUtil.isEquals(ste.getClassName(), upon.getName()))
             {
-                System.err.println("------: " + ste.getClassName());
-                return ClassUtil.parseClass(ste.getClassName());
+                try
+                {
+                    return Class.forName(ste.getClassName());
+                }
+                catch(ClassNotFoundException e)
+                {
+                    System.err.print("找不到类: " + ste.getClassName());
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -385,6 +400,9 @@ public class ClassUtil
     @SafeVarargs
     public static Set<Class<?>> scanTypeAnnotations(String scanPackage, Class<? extends Annotation> annoClz, Class<? extends Annotation>... excludeAnnoClz)
     {
+        log.debug("准备包中的注解： {}", annoClz.getCanonicalName());
+        log.debug("在哪个包中扫描: {}", scanPackage);
+
         Set<Class<?>> classSet = scanPackage(scanPackage);
 
         Set<Class<?>> set = CollectionUtil.newHashSet();
@@ -400,6 +418,7 @@ public class ClassUtil
                     {
                         if(clz.isAnnotationPresent(excludeItem))
                         {
+                            log.debug("由于包含 {} 这个注解，便排除在扫描结果之外", excludeItem.getCanonicalName());
                             excluded = true;
                             break;
                         }
@@ -412,6 +431,7 @@ public class ClassUtil
                     continue;
                 }
 
+                log.debug("扫描到 {} 是包含 {} 注解的，收了", annoClz.getCanonicalName());
                 // 剩下的都是符合要求的精英
                 set.add(clz);
             }
@@ -431,6 +451,8 @@ public class ClassUtil
     @SafeVarargs
     public static Set<Class<?>> scanTypeAnnotations(Set<Class<?>> classSet, Class<? extends Annotation> annoClz, Class<? extends Annotation>... excludeAnnoClz)
     {
+        log.debug("准备扫描类中的注解： {}", annoClz.getCanonicalName());
+        log.debug("在哪些类中扫描: {}", classSet);
         Set<Class<?>> set = CollectionUtil.newHashSet();
         for(Class<?> clz: classSet)
         {
@@ -449,6 +471,7 @@ public class ClassUtil
                     {
                         if(clz.isAnnotationPresent(excludeItem))
                         {
+                            log.debug("由于包含 {} 这个注解，便排除在扫描结果之外", excludeItem.getCanonicalName());
                             excluded = true;
                             break;
                         }
@@ -461,6 +484,7 @@ public class ClassUtil
                     continue;
                 }
 
+                log.debug("扫描到 {} 是包含 {} 注解的，收了", annoClz.getCanonicalName());
                 // 剩下的都是符合要求的精英
                 set.add(clz);
             }
@@ -618,12 +642,12 @@ public class ClassUtil
             className = StringUtil.replaceAll(className, File.separator, ".");
             Class<?> clz = ClassUtil.parseClass(loader, className);
 
-            if (clz == null)
+            if(clz == null)
             {
-                log.debug("无法加载的类: {}", className);
+                log.warn("无法加载的类: {}", className);
                 continue;
             }
-            
+
             log.debug("找到的类: {}", className);
 
             set.add(clz);
@@ -650,8 +674,10 @@ public class ClassUtil
      */
     public static Class<?> parseClass(String clzName)
     {
+        log.debug("准备解析 Class: {}", clzName);
         if(clzName == null)
         {
+            log.warn("解析 Class 错误，提供的类名 null");
             return null;
         }
 
@@ -680,10 +706,12 @@ public class ClassUtil
                 }
                 catch(ClassNotFoundException e)
                 {
+                    log.warn("Class {} 找不到", clzName);
                     return null;
                 }
                 catch(NoClassDefFoundError e)
                 {
+                    log.warn("Class {} 没有定义: ", clzName);
                     return null;
                 }
         }
@@ -698,8 +726,10 @@ public class ClassUtil
      */
     public static Class<?> parseClass(ClassLoader loader, String clzName)
     {
+        log.debug("准备解析 Class: {}", clzName);
         if(clzName == null)
         {
+            log.warn("解析 Class 错误，提供的类名 null");
             return null;
         }
 
@@ -728,10 +758,12 @@ public class ClassUtil
                 }
                 catch(ClassNotFoundException e)
                 {
+                    log.warn("Class {} 找不到", clzName);
                     return null;
                 }
                 catch(NoClassDefFoundError e)
                 {
+                    log.warn("Class {} 没有定义: ", clzName);
                     return null;
                 }
         }
@@ -746,7 +778,11 @@ public class ClassUtil
     @SuppressWarnings("unchecked")
     public static <T> Class<T> getNestedGenericType(Class<?> clz)
     {
-        return (Class<T>)((ParameterizedType)(clz.getGenericInterfaces()[0])).getActualTypeArguments()[0];
+        log.debug("准备解析 Class {} 的第一个泛型参数实际类型");
+        Class<T> t = (Class<T>)((ParameterizedType)(clz.getGenericInterfaces()[0])).getActualTypeArguments()[0];
+
+        log.warn("解析出了个 {}", t);
+        return t;
     }
 
     public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException, MalformedURLException
@@ -790,7 +826,7 @@ public class ClassUtil
         System.out.println(newInstance(WordUtil.class));
         Object obj = newInstance("com.joindata.inf.common.util.basic.WordUtil");
         System.out.println(obj);
-        
+
         System.out.println(findClasses(new File("E:/DEVELOP/WORKSPACE/GitWorkspace/Passport/passport-service-app/target/classes")));
     }
 

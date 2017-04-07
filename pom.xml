@@ -87,6 +87,7 @@
 		<smack.version>3.2.1</smack.version>
 		<lombok.version>1.16.4</lombok.version>
 		<ons.version>1.1.8</ons.version>
+		<c3p0.version>0.9.5.2</c3p0.version>
 	</properties>
 
 	<dependencyManagement>
@@ -461,6 +462,13 @@
 				<version>${druid.version}</version>
 			</dependency>
 
+			<!-- C3P0 -->
+			<dependency>
+				<groupId>com.mchange</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>${c3p0.version}</version>
+			</dependency>
+
 			<!-- Jetty 基本服务器 -->
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
@@ -716,7 +724,6 @@
 			</dependency>
 
 			<!-- ons -->
-
 			<dependency>
 				<groupId>com.aliyun.openservices</groupId>
 				<artifactId>ons-client</artifactId>
@@ -850,7 +857,7 @@
 					</archive>
 				</configuration>
 			</plugin>
-			
+
 			<!-- 不知道为毛加了这个就可以部署 JavaDoc 了 -->
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>

@@ -848,6 +848,18 @@ public class StringUtil
         return org.springframework.util.StringUtils.trimAllWhitespace(str);
     }
 
+    /**
+     * 给指定字符串左右添加指定字符串
+     * 
+     * @param str 要添加的字符串
+     * @param wrapStr 左右要添加的字符串
+     * @return 添加后的字符串
+     */
+    public static String wrap(String str, String wrapStr)
+    {
+        return new StringBuilder().append(wrapStr).append(str).append(wrapStr).toString();
+    }
+
     public static void main(String[] args)
     {
         {

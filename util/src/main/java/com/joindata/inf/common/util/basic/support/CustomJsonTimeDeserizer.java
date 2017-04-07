@@ -6,7 +6,7 @@ import java.text.ParseException;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.parser.deserializer.AbstractDateDeserializer;
-import com.joindata.inf.common.basic.entities.Date;
+import com.joindata.inf.common.basic.entities.Time;
 import com.joindata.inf.common.util.log.Logger;
 
 /**
@@ -15,7 +15,7 @@ import com.joindata.inf.common.util.log.Logger;
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date 2016年11月30日 上午9:27:21
  */
-public class CustomJsonDateDeserizer extends AbstractDateDeserializer
+public class CustomJsonTimeDeserizer extends AbstractDateDeserializer
 {
     private static final Logger log = Logger.get();
 
@@ -36,7 +36,7 @@ public class CustomJsonDateDeserizer extends AbstractDateDeserializer
 
         try
         {
-            return (T)new Date((String)value);
+            return (T)new Time((String)value);
         }
         catch(ParseException e)
         {

@@ -1,5 +1,7 @@
 package com.joindata.inf.common.basic.entities;
 
+import java.text.ParseException;
+
 import com.joindata.inf.common.basic.cst.DateFormatterCst;
 
 /**
@@ -21,6 +23,11 @@ public class Time extends java.sql.Time
     public Time(long date)
     {
         super(date);
+    }
+
+    public Time(String time) throws ParseException
+    {
+        this(DateFormatterCst.DEFAULT_TIME_FORMATTER.parse(time));
     }
 
     public Time(java.util.Date date)

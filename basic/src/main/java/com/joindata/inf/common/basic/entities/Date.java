@@ -1,5 +1,7 @@
 package com.joindata.inf.common.basic.entities;
 
+import java.text.ParseException;
+
 import com.joindata.inf.common.basic.cst.DateFormatterCst;
 
 /**
@@ -21,6 +23,11 @@ public class Date extends java.sql.Date
     public Date(long date)
     {
         super(date);
+    }
+
+    public Date(String date) throws ParseException
+    {
+        this(DateFormatterCst.DEFAULT_DATE_FORMATTER.parse(date));
     }
 
     public Date(java.util.Date date)

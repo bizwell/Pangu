@@ -1,6 +1,7 @@
 package com.joindata.inf.common.support.idgen.bootconfig;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 
 import com.joindata.inf.common.basic.support.BootInfoHolder;
@@ -30,8 +32,10 @@ import com.joindata.inf.common.util.log.Logger;
  * @date Mar 24, 2017 4:19:44 PM
  */
 @Configuration
-public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, BeanPostProcessor, ApplicationContextAware
+public class IdGenBeanRegistry extends CommonAnnotationBeanPostProcessor implements BeanDefinitionRegistryPostProcessor, BeanPostProcessor, ApplicationContextAware
 {
+    private static final long serialVersionUID = 9067044716238627933L;
+
     private static final Logger log = Logger.get();
 
     private ApplicationContext applicationContext;
@@ -39,35 +43,37 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, B
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException
     {
-        Set<Class<?>> clzsses = CollectionUtil.newHashSet();
+        Map<Class<?>, BeanDefinition> beanDefMap = CollectionUtil.newMap();
         for(String beanName: registry.getBeanDefinitionNames())
         {
-            BeanDefinition bean = registry.getBeanDefinition(beanName);
+            BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 
             // 只解析应用包里的
-            if(!StringUtil.startsWith(bean.getBeanClassName(), BootInfoHolder.getAppPackage()))
+            if(!StringUtil.startsWith(beanDef.getBeanClassName(), BootInfoHolder.getAppPackage()))
             {
                 continue;
             }
 
-            Class<?> clz = ClassUtil.parseClass(bean.getBeanClassName());
+            Class<?> clz = ClassUtil.parseClass(beanDef.getBeanClassName());
             if(clz == null)
             {
                 continue;
             }
 
-            clzsses.add(clz);
-
+            beanDefMap.put(clz, beanDef);
         }
 
-        for(Class<?> clz: clzsses)
+        for(Class<?> clz: beanDefMap.keySet())
         {
+            Set<Field> annoFlds = ClassUtil.getAnnotationFields(clz, Sequence.class);
+
             // 注册 Sequence Bean
             {
-                Set<Field> annoFlds = ClassUtil.getAnnotationFields(clz, Sequence.class);
 
                 for(Field fld: annoFlds)
                 {
+                    log.info("正在处理: {}", clz.getCanonicalName());
+
                     Sequence sequence = fld.getAnnotation(Sequence.class);
 
                     String seqBeanName = fld.getType().getCanonicalName() + "-" + sequence.value();
@@ -120,7 +126,7 @@ public class IdGenBeanRegistry implements BeanDefinitionRegistryPostProcessor, B
                 try
                 {
                     // 注入
-                    fld.set(this.applicationContext.getBean(beanName), seqBean);
+                    fld.set(bean, seqBean);
                 }
                 catch(IllegalArgumentException | IllegalAccessException e)
                 {

@@ -41,7 +41,7 @@ public class RangeGroupSchemeMultikeyAlgorithm implements MultipleKeysDatabaseSh
             ShardingWithGroupRule shardingColumnRule = shardingColumnRuleMap.get(shardingValue.getColumnName());
             if(shardingColumnRule == null)
             {
-                log.warn("分库分表键:{}没有配置对应的rule!", shardingValue.getColumnName());
+                log.warn("分库分表键 {} 没有配置对应的rule!", shardingValue.getColumnName());
                 continue;
             }
             String schema = shardingColumnRule.getSchemaName();
@@ -52,12 +52,14 @@ public class RangeGroupSchemeMultikeyAlgorithm implements MultipleKeysDatabaseSh
             GroupRangeSuffixChooser dbChooser = dbChooserFactory.get(shardingColumnName);
             if(dbChooser == null)
             {
-                log.warn("分库分表键:{}没有对应的rule!", shardingValue.getColumnName());
+                log.warn("分库分表键 {} 没有对应的rule!", shardingValue.getColumnName());
                 continue;
             }
             String targeDb = dbChooser.choose(dbNameList, value);
             dbNames.add(targeDb);
         }
+
+        log.info("多分表 {} 键命中库: {}", shardingValues.stream().map(ShardingValue::getValue).collect(Collectors.toList()), dbNames);
 
         return dbNames;
     }

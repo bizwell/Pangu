@@ -124,6 +124,12 @@ public class ShardingJdbcConfig
                     }
                 }
 
+                if(CollectionUtil.isNullOrEmpty(dsMap))
+                {
+                    log.fatal("没有设置 {} 的分片数据源，也没有默认数据源。也就是说啥数据源都没有配置，再见！", rule.getSchemaName());
+                    System.exit(1);
+                }
+
                 // 设置物理库
                 builder.dataSourceRule(new DataSourceRule(dsMap, defaultDs));
 

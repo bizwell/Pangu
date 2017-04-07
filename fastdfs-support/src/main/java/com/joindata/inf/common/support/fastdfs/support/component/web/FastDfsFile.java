@@ -21,16 +21,32 @@ public class FastDfsFile extends File
 
     /** 上传后文件 ID */
     private CompletableFuture<FileId> fileIdFuture;
-    
+
+    /** 组 */
+    private String group;
+
     /**
-     * 创建一个 FastDFS 文件
+     * 创建一个 FastDFS 文件， 使用默认 group
      * 
-     * @param pathname 保存路径
+     * @param savePath 保存路径
      */
-    public FastDfsFile(String pathname)
+    public FastDfsFile(String savePath)
     {
-        super(pathname);
-        log.info("定义 FastDFS 文件, 远程路径: {}", pathname);
+        super(savePath);
+        log.info("定义 FastDFS 文件, group: 默认, 远程路径: {}", savePath);
+    }
+
+    /**
+     * 创建一个 FastDFS 文件，指定 group
+     * 
+     * @param group 文件保存在哪个组
+     * @param savePath 保存路径
+     */
+    public FastDfsFile(String group, String savePath)
+    {
+        super(savePath);
+        this.group = group;
+        log.info("定义 FastDFS 文件, group: {}, 远程路径: {}", group, savePath);
     }
 
     void setUploadFuture(CompletableFuture<FileId> fileIdFuture)
@@ -48,5 +64,22 @@ public class FastDfsFile extends File
     public String getId() throws InterruptedException, ExecutionException
     {
         return fileIdFuture.get().toString();
+    }
+
+    public String getGroup()
+    {
+        return group;
+    }
+
+    /**
+     * 获取上传后的远程文件 ID 对象
+     * 
+     * @return 文件 ID 对象
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    public FileId getFileId() throws InterruptedException, ExecutionException
+    {
+        return fileIdFuture.get();
     }
 }

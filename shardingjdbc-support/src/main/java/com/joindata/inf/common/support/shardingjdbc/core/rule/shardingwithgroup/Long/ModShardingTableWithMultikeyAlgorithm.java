@@ -41,12 +41,12 @@ public class ModShardingTableWithMultikeyAlgorithm implements MultipleKeysTableS
         Set<String> tableNames = new HashSet<>();
         for(ShardingValue<?> shardingValue: shardingValues)
         {
-            long shardingValId = (long)shardingValue.getValue();
+            long shardingValId = (Long)shardingValue.getValue();
 
             ShardingWithGroupRule shardingColumnRule = shardingColumnRuleMap.get(shardingValue.getColumnName());
             if(shardingColumnRule == null)
             {
-                log.warn("分库分表键:{}没有配置对应的rule!", shardingValue.getColumnName());
+                log.warn("分库分表键 {} 没有配置对应的rule!", shardingValue.getColumnName());
                 continue;
             }
             String tableName = shardingColumnRule.getTableName();
@@ -55,7 +55,8 @@ public class ModShardingTableWithMultikeyAlgorithm implements MultipleKeysTableS
 
             tableNames.add(tableChooser.choose(tbNames, shardingValId));
         }
-        log.info("sharding tables: {}", tableNames);
+
+        log.info("多分表键命中表: {}", tableNames);
         return tableNames;
     }
 

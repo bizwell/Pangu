@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.joindata.inf.common.basic.annotation.FilterComponent;
 import com.joindata.inf.common.util.basic.ClassUtil;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * 自定义的注解 Bean 名称生成器
@@ -16,11 +17,15 @@ import com.joindata.inf.common.util.basic.ClassUtil;
  */
 public class JoindataAnnotationBeanNameGenerator extends AnnotationBeanNameGenerator
 {
+    private static final Logger log = Logger.get();
+
     @Override
     public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry)
     {
         String beanName = null;
         Class<?> clz = ClassUtil.parseClass(definition.getBeanClassName());
+
+        log.debug("创建 {} 的 Bean 名字, Class 对象是: {}", definition.getBeanClassName(), clz);
         if(clz.getAnnotation(Configuration.class) != null)
         {
             beanName = definition.getBeanClassName();

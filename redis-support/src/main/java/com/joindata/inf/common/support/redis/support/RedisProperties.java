@@ -23,6 +23,9 @@ public class RedisProperties
     /** 主机（可设置多个，格式为 host1:port,host2:port） */
     private String host;
 
+    /** 密码，可设置也可不设置，如果要求授权必须设置（RedisCluster 不支持密码） */
+    private String password;
+
     /** 最多活动数 */
     private int maxActive;
 
@@ -113,6 +116,17 @@ public class RedisProperties
     public void setTestOnReturn(boolean testOnReturn)
     {
         this.testOnReturn = testOnReturn;
+    }
+
+    @DisconfFileItem(name = "redis.password", associateField = "password")
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
     }
 
 }

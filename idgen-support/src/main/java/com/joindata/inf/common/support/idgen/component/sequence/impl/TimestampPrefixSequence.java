@@ -49,17 +49,21 @@ public class TimestampPrefixSequence extends AbstractBaseSequence
     // TODO 这个功能有代码重复，考虑单独拿出来
     private int getPrefix()
     {
-        String prefixDataId = IdKeyBuilder.getSequenceKeySpace();
+        String sequenceKeySpace = IdKeyBuilder.getSequenceKeySpace();
+        String prefixKey = IdKeyBuilder.getPrefixKey(this.name);
 
         int prefix = 0;
         try
         {
             if(!sequenceRepository.exist(IdKeyBuilder.getSequenceKey(this.name)))
             {
-                prefix = (int)sequenceRepository.increaseAndGet(prefixDataId, 1);
+                prefix = (int)sequenceRepository.increaseAndGet(sequenceKeySpace, 1);
+                // 保存到对应的prefix节点上
+                sequenceRepository.set(prefixKey, prefix);
+                return prefix;
             }
 
-            prefix = (int)sequenceRepository.get(prefixDataId);
+            prefix = (int)sequenceRepository.get(prefixKey);
         }
         catch(Exception e)
         {

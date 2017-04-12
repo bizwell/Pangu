@@ -5,8 +5,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import redis.clients.jedis.JedisCommands;
-
 /**
  * Redis 客户端工具
  * 
@@ -15,7 +13,13 @@ import redis.clients.jedis.JedisCommands;
  */
 public interface RedisClient
 {
-    public JedisCommands getJedis();
+    /**
+     * 获取 Jedis 原生对象 <br />
+     * <i>由于 Jedis 操蛋的 API 影响，这个返回值只能设置成泛型，所以在取的时候，请确认你的返回值是用的 JedisCluster 还是单点</i>
+     * 
+     * @return
+     */
+    public <T> T getJedis();
 
     /**
      * 设置字符串

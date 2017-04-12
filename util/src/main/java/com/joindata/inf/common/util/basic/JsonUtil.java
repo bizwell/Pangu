@@ -168,6 +168,8 @@ public class JsonUtil
 
             Map<String, Object> skill = new HashMap<String, Object>();
 
+            private java.util.Date fuckDate = new java.util.Date();
+
             public String getName()
             {
                 return name;
@@ -273,6 +275,16 @@ public class JsonUtil
             public void setSkill(Map<String, Object> skill)
             {
                 this.skill = skill;
+            }
+
+            public java.util.Date getFuckDate()
+            {
+                return fuckDate;
+            }
+
+            public void setFuckDate(java.util.Date fuckDate)
+            {
+                this.fuckDate = fuckDate;
             }
 
         }

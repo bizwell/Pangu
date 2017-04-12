@@ -11,14 +11,15 @@ import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCommands;
 
 /**
  * 单机版本实现
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Mar 24, 2017 3:43:13 PM
+ * @deprecated 不建议使用，这个没有连接池，丢失连接后就惨了
  */
+@Deprecated
 public class SingleRedisClient implements RedisClient
 {
     /** Jedis 对象 */
@@ -34,10 +35,11 @@ public class SingleRedisClient implements RedisClient
      * 
      * @return Jedis 对象
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public JedisCommands getJedis()
+    public synchronized <T> T getJedis()
     {
-        return jedis;
+        return (T)jedis;
     }
 
     /**

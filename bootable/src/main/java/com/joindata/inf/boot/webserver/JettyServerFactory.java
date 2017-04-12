@@ -106,7 +106,8 @@ public class JettyServerFactory
         handler.setMinMemoryMappedContentLength(minCacheLength);
         handler.setDirectoriesListed(enableListDir);
         handler.setResourceBase(resourceDir);
-        
+        handler.setWelcomeFiles(new String[]{"index.html"});
+
         log.info("添加静态目录: {}, {}, 内存最小缓存数: {}, {}", resourceDir, enableListDir ? "显示目录" : "不显示目录", minCacheLength, cacheControl == null ? "不缓存" : "缓存控制指令: " + cacheControl);
 
         if(cacheControl == null)
@@ -149,7 +150,7 @@ public class JettyServerFactory
     {
         log.info("配置 Server - 开始");
         Server server = new Server(port);
-        
+
         // 这里用 HandlerList，可以使 handler 短路，有 handler 处理过就不再处理，而不至于所有去处理所有 handler
         HandlerList handlerList = new HandlerList();
 

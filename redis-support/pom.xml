@@ -28,6 +28,13 @@
 			<artifactId>jedis</artifactId>
 		</dependency>
 
+		<!-- Spring 的 Redis 客户端 -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+		</dependency>
+
+
 	</dependencies>
-	
+
 </project>

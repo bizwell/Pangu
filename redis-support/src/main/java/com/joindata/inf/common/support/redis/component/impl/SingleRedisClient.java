@@ -855,4 +855,18 @@ public class SingleRedisClient implements RedisClient
 
         return jedis.lpush(StringUtil.toBytes(key), bs);
     }
+
+    @Override
+    public String leftPop(String key)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T extends Serializable> T leftPop(String key, Class<T> clz)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

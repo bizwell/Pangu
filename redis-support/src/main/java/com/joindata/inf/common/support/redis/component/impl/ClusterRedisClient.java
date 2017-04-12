@@ -863,4 +863,27 @@ public class ClusterRedisClient implements RedisClient
 
         return jedis.lpush(StringUtil.toBytes(key), bs);
     }
+
+    @Override
+    public String leftPop(String key)
+    {
+        if(key == null)
+        {
+            return null;
+        }
+
+        return jedis.lpop(key);
+    }
+
+    @Override
+    public <T extends Serializable> T leftPop(String key, Class<T> clz)
+    {
+        if(key == null)
+        {
+            return null;
+        }
+
+        byte data[] = jedis.lpop(StringUtil.toBytes(key));
+        return BeanUtil.deserializeObject(data, clz);
+    }
 }

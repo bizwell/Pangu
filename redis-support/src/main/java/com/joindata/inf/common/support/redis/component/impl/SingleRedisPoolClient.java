@@ -1,3 +1,4 @@
+
 package com.joindata.inf.common.support.redis.component.impl;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import com.joindata.inf.common.util.log.Logger;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisException;
 
 /**
  * 单机版本实现
@@ -63,53 +65,30 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public Jedis getJedisRes()
     {
-        Jedis jedis = null;
         /*
          * 这个辣鸡玩意太不高级了
          */
         try
         {
-            jedis = this.jedisPool.getResource();
+            Jedis jedis = this.jedisPool.getResource();
 
             if(!jedis.isConnected())
             {
                 jedis.connect();
             }
+
+            return jedis;
+        }
+        catch(JedisException e)
+        {
+            log.error("Jedis 连接池资源不足, 当前连接数: {}, 错误信息: {}", this.jedisPool.getNumActive(), e.getMessage());
+            throw new ResourceException(ResourceErrors.CANNOT_ACCESS, "Redis 连接池资源不足");
         }
         catch(Exception e)
         {
-            // 释放redis对象
-            this.jedisPool.close();
             log.error("Jedis 连接池获取连接出错, {}", e.getMessage(), e);
-            log.info("Jedis 连接池释放 ...");
+            throw new ResourceException(ResourceErrors.RESOURCE_ERROR, e.getMessage());
         }
-
-        if(jedis == null)
-        {
-            try
-            {
-                jedis = this.jedisPool.getResource();
-
-                if(!jedis.isConnected())
-                {
-                    jedis.connect();
-                }
-            }
-            catch(Exception e)
-            {
-                // 释放redis对象
-                this.jedisPool.close();
-                log.error("Jedis 连接池获取连接出错, {}", e.getMessage(), e);
-                log.info("Jedis 连接池释放 ...");
-            }
-
-            if(jedis == null)
-            {
-                throw new ResourceException(ResourceErrors.BROKEN, "无法获取 Redis 连接，未知原因");
-            }
-        }
-
-        return jedis;
     }
 
     /**
@@ -120,7 +99,10 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void put(String key, String value)
     {
-        this.getJedisRes().set(key, value);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            jedis.set(key, value);
+        }
     }
 
     /**
@@ -132,7 +114,12 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public String putWithExpire(String key, int seconds, String value)
     {
-        return this.getJedisRes().setex(key, seconds, value);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            String ret = jedis.setex(key, seconds, value);
+
+            return ret;
+        }
     }
 
     /**
@@ -143,7 +130,12 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public long putIfNone(String key, String value)
     {
-        return this.getJedisRes().setnx(key, value);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            long ret = jedis.setnx(key, value);
+
+            return ret;
+        }
     }
 
     /**
@@ -157,12 +149,17 @@ public class SingleRedisPoolClient implements RedisClient
     // TODO 考虑调用原生 API 做成安全的
     public String putWithExpireIfNone(String key, int seconds, String value)
     {
-        if(this.getJedisRes().exists(key))
+        try (Jedis jedis = this.getJedisRes())
         {
-            return this.getJedisRes().setex(key, seconds, value);
-        }
+            if(jedis.exists(key))
+            {
+                String ret = jedis.setex(key, seconds, value);
 
-        return null;
+                return ret;
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -172,9 +169,12 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public String getString(String key)
     {
-        String ret = this.getJedisRes().get(key);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            String ret = jedis.get(key);
 
-        return ret;
+            return ret;
+        }
     }
 
     /**
@@ -184,8 +184,11 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void delete(String key)
     {
-        this.getJedisRes().del(key);
-        this.getJedisRes().del(StringUtil.toBytes(key));
+        try (Jedis jedis = this.getJedisRes())
+        {
+            jedis.del(key);
+            jedis.del(StringUtil.toBytes(key));
+        }
     }
 
     /**
@@ -196,7 +199,10 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void put(String key, Serializable obj)
     {
-        this.getJedisRes().set(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
+        try (Jedis jedis = this.getJedisRes())
+        {
+            jedis.set(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
+        }
     }
 
     /**
@@ -208,7 +214,12 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public String putWithExpire(String key, int seconds, Serializable obj)
     {
-        return this.getJedisRes().setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
+        try (Jedis jedis = this.getJedisRes())
+        {
+            String ret = jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
+
+            return ret;
+        }
     }
 
     /**
@@ -219,7 +230,12 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public long putIfNone(String key, Serializable obj)
     {
-        return this.getJedisRes().setnx(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
+        try (Jedis jedis = this.getJedisRes())
+        {
+            Long ret = jedis.setnx(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
+
+            return ret;
+        }
     }
 
     /**
@@ -233,12 +249,17 @@ public class SingleRedisPoolClient implements RedisClient
     // TODO 考虑调用原生 API 做成安全的
     public String putWithExpireIfNone(String key, int seconds, Serializable obj)
     {
-        if(this.getJedisRes().exists(key))
+        try (Jedis jedis = this.getJedisRes())
         {
-            return this.getJedisRes().setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
-        }
+            if(jedis.exists(key))
+            {
+                String ret = jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
 
-        return null;
+                return ret;
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -250,15 +271,17 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public <T extends Serializable> T get(String key, Class<T> clz)
     {
-
-        byte[] objByte = this.getJedisRes().get(StringUtil.toBytes(key));
-
-        if(objByte == null)
+        try (Jedis jedis = this.getJedisRes())
         {
-            return null;
-        }
+            byte[] objByte = jedis.get(StringUtil.toBytes(key));
 
-        return BeanUtil.deserializeObject(objByte, clz);
+            if(objByte == null)
+            {
+                return null;
+            }
+
+            return BeanUtil.deserializeObject(objByte, clz);
+        }
     }
 
     /**
@@ -270,19 +293,20 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void prependToList(String key, List<String> values)
     {
-
         if(StringUtil.isBlank(key) || CollectionUtil.isNullOrEmpty(values))
         {
             return;
         }
 
-        CollectionUtil.reverse(values);
-
-        for(String value: values)
+        try (Jedis jedis = this.getJedisRes())
         {
-            this.getJedisRes().rpush(key, value);
-        }
+            CollectionUtil.reverse(values);
 
+            for(String value: values)
+            {
+                jedis.rpush(key, value);
+            }
+        }
     }
 
     /**
@@ -294,18 +318,19 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void prependToList(String key, String... values)
     {
-
         if(StringUtil.isBlank(key) || values == null)
         {
             return;
         }
 
-        int size = values.length;
-        for(int i = size - 1; i >= 0; i--)
+        try (Jedis jedis = this.getJedisRes())
         {
-            this.getJedisRes().rpush(key, values[i]);
+            int size = values.length;
+            for(int i = size - 1; i >= 0; i--)
+            {
+                jedis.rpush(key, values[i]);
+            }
         }
-
     }
 
     /**
@@ -317,17 +342,18 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void appendToList(String key, List<String> values)
     {
-
         if(StringUtil.isBlank(key) || CollectionUtil.isNullOrEmpty(values))
         {
             return;
         }
 
-        for(String value: values)
+        try (Jedis jedis = this.getJedisRes())
         {
-            this.getJedisRes().rpush(key, value);
+            for(String value: values)
+            {
+                jedis.rpush(key, value);
+            }
         }
-
     }
 
     /**
@@ -339,17 +365,18 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void appendToList(String key, String... values)
     {
-
         if(StringUtil.isBlank(key) || values == null)
         {
             return;
         }
 
-        for(String value: values)
+        try (Jedis jedis = this.getJedisRes())
         {
-            this.getJedisRes().rpush(key, value);
+            for(String value: values)
+            {
+                jedis.rpush(key, value);
+            }
         }
-
     }
 
     /**
@@ -362,14 +389,17 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public List<String> getList(String key, int start, int end)
     {
-
         if(StringUtil.isBlank(key))
         {
             return null;
         }
-        List<String> ret = this.getJedisRes().lrange(key, start, end);
 
-        return ret;
+        try (Jedis jedis = this.getJedisRes())
+        {
+            List<String> ret = jedis.lrange(key, start, end);
+
+            return ret;
+        }
     }
 
     /**
@@ -380,14 +410,17 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public List<String> getList(String key)
     {
-
         if(StringUtil.isBlank(key))
         {
             return null;
         }
-        List<String> ret = this.getJedisRes().lrange(key, 0, -1);
 
-        return ret;
+        try (Jedis jedis = this.getJedisRes())
+        {
+            List<String> ret = jedis.lrange(key, 0, -1);
+
+            return ret;
+        }
     }
 
     /**
@@ -405,9 +438,12 @@ public class SingleRedisPoolClient implements RedisClient
             return null;
         }
 
-        List<String> ret = this.getJedisRes().lrange(key, start, -1);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            List<String> ret = jedis.lrange(key, start, -1);
 
-        return ret;
+            return ret;
+        }
     }
 
     /**
@@ -418,10 +454,12 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public long getListSize(String key)
     {
+        try (Jedis jedis = this.getJedisRes())
+        {
+            long ret = jedis.llen(key);
 
-        long ret = this.getJedisRes().llen(key);
-
-        return ret;
+            return ret;
+        }
     }
 
     /**
@@ -442,9 +480,12 @@ public class SingleRedisPoolClient implements RedisClient
 
         byte keyBytes[] = StringUtil.toBytes(key);
 
-        for(Serializable value: values)
+        try (Jedis jedis = this.getJedisRes())
         {
-            this.getJedisRes().rpush(keyBytes, BeanUtil.serializeObject(value));
+            for(Serializable value: values)
+            {
+                jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
+            }
         }
     }
 
@@ -465,11 +506,14 @@ public class SingleRedisPoolClient implements RedisClient
         byte keyBytes[] = StringUtil.toBytes(key);
 
         int size = values.length;
-        for(int i = size - 1; i >= 0; i--)
-        {
-            this.getJedisRes().rpush(keyBytes, BeanUtil.serializeObject(values[i]));
-        }
 
+        try (Jedis jedis = this.getJedisRes())
+        {
+            for(int i = size - 1; i >= 0; i--)
+            {
+                jedis.rpush(keyBytes, BeanUtil.serializeObject(values[i]));
+            }
+        }
     }
 
     /**
@@ -481,7 +525,6 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void appendObjectToList(String key, List<? extends Serializable> values)
     {
-
         if(StringUtil.isBlank(key) || CollectionUtil.isNullOrEmpty(values))
         {
             return;
@@ -489,11 +532,13 @@ public class SingleRedisPoolClient implements RedisClient
 
         byte keyBytes[] = StringUtil.toBytes(key);
 
-        for(Serializable value: values)
+        try (Jedis jedis = this.getJedisRes())
         {
-            this.getJedisRes().rpush(keyBytes, BeanUtil.serializeObject(value));
+            for(Serializable value: values)
+            {
+                jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
+            }
         }
-
     }
 
     /**
@@ -505,7 +550,6 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void appendObjectToList(String key, Serializable... values)
     {
-
         if(StringUtil.isBlank(key) || values == null)
         {
             return;
@@ -513,11 +557,13 @@ public class SingleRedisPoolClient implements RedisClient
 
         byte keyBytes[] = StringUtil.toBytes(key);
 
-        for(Serializable value: values)
+        try (Jedis jedis = this.getJedisRes())
         {
-            this.getJedisRes().rpush(keyBytes, BeanUtil.serializeObject(value));
+            for(Serializable value: values)
+            {
+                jedis.rpush(keyBytes, BeanUtil.serializeObject(value));
+            }
         }
-
     }
 
     /**
@@ -531,29 +577,31 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public <T extends Serializable> List<T> getObjectList(String key, int start, int end, Class<T> clz)
     {
-
         if(StringUtil.isBlank(key))
         {
             return null;
         }
 
-        List<byte[]> byteList = this.getJedisRes().lrange(StringUtil.toBytes(key), start, end);
-
-        List<T> list = CollectionUtil.newList();
-        if(byteList != null)
+        try (Jedis jedis = this.getJedisRes())
         {
-            for(byte[] bs: byteList)
+            List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(key), start, end);
+
+            List<T> list = CollectionUtil.newList();
+            if(byteList != null)
             {
-                if(bs == null)
+                for(byte[] bs: byteList)
                 {
-                    return null;
+                    if(bs == null)
+                    {
+                        return null;
+                    }
+
+                    list.add(BeanUtil.deserializeObject(bs, clz));
                 }
-
-                list.add(BeanUtil.deserializeObject(bs, clz));
             }
-        }
 
-        return list;
+            return list;
+        }
     }
 
     /**
@@ -565,29 +613,31 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public <T extends Serializable> List<T> getObjectList(String key, Class<T> clz)
     {
-
         if(StringUtil.isBlank(key))
         {
             return null;
         }
 
-        List<byte[]> byteList = this.getJedisRes().lrange(StringUtil.toBytes(key), 0, -1);
-
-        List<T> list = CollectionUtil.newList();
-        if(byteList != null)
+        try (Jedis jedis = this.getJedisRes())
         {
-            for(byte[] bs: byteList)
+            List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(key), 0, -1);
+
+            List<T> list = CollectionUtil.newList();
+            if(byteList != null)
             {
-                if(bs == null)
+                for(byte[] bs: byteList)
                 {
-                    return null;
+                    if(bs == null)
+                    {
+                        return null;
+                    }
+
+                    list.add(BeanUtil.deserializeObject(bs, clz));
                 }
-
-                list.add(BeanUtil.deserializeObject(bs, clz));
             }
-        }
 
-        return list;
+            return list;
+        }
     }
 
     /**
@@ -599,27 +649,30 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public <T extends Serializable> List<T> getObjectSubList(String key, int start, Class<T> clz)
     {
-
         if(StringUtil.isBlank(key))
         {
             return null;
         }
-        List<byte[]> byteList = this.getJedisRes().lrange(StringUtil.toBytes(key), start, -1);
 
-        List<T> list = CollectionUtil.newList();
-        if(byteList != null)
+        try (Jedis jedis = this.getJedisRes())
         {
-            for(byte[] bs: byteList)
-            {
-                if(bs == null)
-                {
-                    return null;
-                }
-                list.add(BeanUtil.deserializeObject(bs, clz));
-            }
-        }
+            List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(key), start, -1);
 
-        return list;
+            List<T> list = CollectionUtil.newList();
+            if(byteList != null)
+            {
+                for(byte[] bs: byteList)
+                {
+                    if(bs == null)
+                    {
+                        return null;
+                    }
+                    list.add(BeanUtil.deserializeObject(bs, clz));
+                }
+            }
+
+            return list;
+        }
     }
 
     /**
@@ -630,14 +683,15 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void putMap(String key, Map<String, String> map)
     {
-
         if(StringUtil.isBlank(key) || map == null)
         {
             return;
         }
 
-        this.getJedisRes().hmset(key, map);
-
+        try (Jedis jedis = this.getJedisRes())
+        {
+            jedis.hmset(key, map);
+        }
     }
 
     /**
@@ -649,15 +703,17 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public String getMapValue(String key, String entry)
     {
-
         if(StringUtil.isBlank(key) || StringUtil.isBlank(entry))
         {
             return null;
         }
 
-        String ret = this.getJedisRes().hget(key, entry);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            String ret = jedis.hget(key, entry);
 
-        return ret;
+            return ret;
+        }
     }
 
     /**
@@ -669,15 +725,17 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public List<String> getMapValues(String key, String... entries)
     {
-
         if(StringUtil.isBlank(key) || entries == null)
         {
             return null;
         }
 
-        List<String> ret = this.getJedisRes().hmget(key, entries);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            List<String> ret = jedis.hmget(key, entries);
 
-        return ret;
+            return ret;
+        }
     }
 
     /**
@@ -688,15 +746,17 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public Map<String, String> getMap(String key)
     {
-
         if(StringUtil.isBlank(key))
         {
             return null;
         }
 
-        Map<String, String> ret = this.getJedisRes().hgetAll(key);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            Map<String, String> ret = jedis.hgetAll(key);
 
-        return ret;
+            return ret;
+        }
     }
 
     /**
@@ -707,21 +767,22 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void deleteMapItem(String key, String... entries)
     {
-
         if(StringUtil.isBlank(key) || entries == null)
         {
             return;
         }
 
-        this.getJedisRes().hdel(key, entries);
-
-        byte[][] bytes = new byte[entries.length][];
-        for(int i = 0; i < entries.length; i++)
+        try (Jedis jedis = this.getJedisRes())
         {
-            bytes[i] = StringUtil.toBytes(entries[i]);
-        }
-        this.getJedisRes().hdel(StringUtil.toBytes(key), bytes);
+            jedis.hdel(key, entries);
 
+            byte[][] bytes = new byte[entries.length][];
+            for(int i = 0; i < entries.length; i++)
+            {
+                bytes[i] = StringUtil.toBytes(entries[i]);
+            }
+            jedis.hdel(StringUtil.toBytes(key), bytes);
+        }
     }
 
     /**
@@ -732,7 +793,6 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public void putObjectMap(String key, Map<String, ? extends Serializable> map)
     {
-
         if(StringUtil.isBlank(key) || map == null)
         {
             return;
@@ -747,8 +807,10 @@ public class SingleRedisPoolClient implements RedisClient
             bytesMap.put(name.getBytes(), BeanUtil.serializeObject(map.get(name)));
         }
 
-        this.getJedisRes().hmset(StringUtil.toBytes(key), bytesMap);
-
+        try (Jedis jedis = this.getJedisRes())
+        {
+            jedis.hmset(StringUtil.toBytes(key), bytesMap);
+        }
     }
 
     /**
@@ -761,7 +823,6 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public <T extends Serializable> List<T> getObjectMapValues(String key, Class<T> clz, String... entries)
     {
-
         if(StringUtil.isBlank(key) || entries == null)
         {
             return null;
@@ -773,21 +834,25 @@ public class SingleRedisPoolClient implements RedisClient
             entriesBytes[i] = entries[i].getBytes();
         }
 
-        List<byte[]> bytesList = this.getJedisRes().hmget(StringUtil.toBytes(key), entriesBytes);
-        List<T> list = CollectionUtil.newList();
-
-        for(byte[] bytes: bytesList)
+        try (Jedis jedis = this.getJedisRes())
         {
-            if(bytes == null)
+            List<byte[]> bytesList = jedis.hmget(StringUtil.toBytes(key), entriesBytes);
+
+            List<T> list = CollectionUtil.newList();
+
+            for(byte[] bytes: bytesList)
             {
-                list.add(null);
-                continue;
+                if(bytes == null)
+                {
+                    list.add(null);
+                    continue;
+                }
+
+                list.add(BeanUtil.deserializeObject(bytes, clz));
             }
 
-            list.add(BeanUtil.deserializeObject(bytes, clz));
+            return list;
         }
-
-        return list;
     }
 
     /**
@@ -799,35 +864,38 @@ public class SingleRedisPoolClient implements RedisClient
      */
     public <T extends Serializable> Map<String, T> getObjectMap(String key, Class<T> clz)
     {
-
         if(StringUtil.isBlank(key) || clz == null)
         {
             return null;
         }
 
-        Map<byte[], byte[]> bytesMap = this.getJedisRes().hgetAll(StringUtil.toBytes(key));
-        Map<String, T> map = CollectionUtil.newMap();
-
-        Iterator<byte[]> iter = CollectionUtil.iteratorMapKey(bytesMap);
-        if(iter == null)
+        try (Jedis jedis = this.getJedisRes())
         {
-            return map;
-        }
+            Map<byte[], byte[]> bytesMap = jedis.hgetAll(StringUtil.toBytes(key));
 
-        while(iter.hasNext())
-        {
-            byte[] entryBytes = iter.next();
-            byte[] valueBytes = bytesMap.get(entryBytes);
-            if(valueBytes == null)
+            Map<String, T> map = CollectionUtil.newMap();
+
+            Iterator<byte[]> iter = CollectionUtil.iteratorMapKey(bytesMap);
+            if(iter == null)
             {
-                map.put(key, null);
-                continue;
+                return map;
             }
 
-            map.put(StringUtil.toString(entryBytes), BeanUtil.deserializeObject(valueBytes, clz));
-        }
+            while(iter.hasNext())
+            {
+                byte[] entryBytes = iter.next();
+                byte[] valueBytes = bytesMap.get(entryBytes);
+                if(valueBytes == null)
+                {
+                    map.put(key, null);
+                    continue;
+                }
 
-        return map;
+                map.put(StringUtil.toString(entryBytes), BeanUtil.deserializeObject(valueBytes, clz));
+            }
+
+            return map;
+        }
     }
 
     /**
@@ -846,14 +914,17 @@ public class SingleRedisPoolClient implements RedisClient
             return null;
         }
 
-        byte bytes[] = this.getJedisRes().hget(StringUtil.toBytes(key), entry.getBytes());
-
-        if(bytes == null)
+        try (Jedis jedis = this.getJedisRes())
         {
-            return null;
-        }
+            byte bytes[] = jedis.hget(StringUtil.toBytes(key), entry.getBytes());
 
-        return BeanUtil.deserializeObject(bytes, clz);
+            if(bytes == null)
+            {
+                return null;
+            }
+
+            return BeanUtil.deserializeObject(bytes, clz);
+        }
     }
 
     /**
@@ -870,9 +941,12 @@ public class SingleRedisPoolClient implements RedisClient
             return null;
         }
 
-        Long ret = this.getJedisRes().incr(key);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            Long ret = jedis.incr(key);
 
-        return ret;
+            return ret;
+        }
     }
 
     @Override
@@ -883,7 +957,12 @@ public class SingleRedisPoolClient implements RedisClient
             return null;
         }
 
-        return this.getJedisRes().getSet(key, newValue);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            String ret = jedis.getSet(key, newValue);
+
+            return ret;
+        }
     }
 
     @Override
@@ -894,7 +973,11 @@ public class SingleRedisPoolClient implements RedisClient
             return null;
         }
 
-        return BeanUtil.deserializeObject(this.getJedisRes().getSet(StringUtil.toBytes(key), BeanUtil.serializeObject(newValue)));
+        try (Jedis jedis = this.getJedisRes())
+        {
+            T ret = BeanUtil.deserializeObject(jedis.getSet(StringUtil.toBytes(key), BeanUtil.serializeObject(newValue)));
+            return ret;
+        }
     }
 
     @Override
@@ -905,7 +988,12 @@ public class SingleRedisPoolClient implements RedisClient
             return 0;
         }
 
-        return this.getJedisRes().lpush(key, value);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            Long ret = jedis.lpush(key, value);
+
+            return ret;
+        }
     }
 
     @Override
@@ -923,6 +1011,43 @@ public class SingleRedisPoolClient implements RedisClient
             bs[i] = BeanUtil.serializeObject(value[i]);
         }
 
-        return this.getJedisRes().lpush(StringUtil.toBytes(key), bs);
+        try (Jedis jedis = this.getJedisRes())
+        {
+            Long ret = jedis.lpush(StringUtil.toBytes(key), bs);
+
+            return ret;
+        }
+    }
+
+    @Override
+    public String leftPop(String key)
+    {
+        if(key == null)
+        {
+            return null;
+        }
+
+        try (Jedis jedis = this.getJedisRes())
+        {
+            String ret = jedis.lpop(key);
+
+            return ret;
+        }
+    }
+
+    @Override
+    public <T extends Serializable> T leftPop(String key, Class<T> clz)
+    {
+        if(key == null)
+        {
+            return null;
+        }
+
+        try (Jedis jedis = this.getJedisRes())
+        {
+            byte data[] = jedis.lpop(StringUtil.toBytes(key));
+
+            return BeanUtil.deserializeObject(data, clz);
+        }
     }
 }

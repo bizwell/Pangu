@@ -383,6 +383,24 @@ public interface RedisClient
     @SuppressWarnings("unchecked")
     public <T extends Serializable> long leftPush(String key, T... value);
 
+    /**
+     * 弹出队列
+     * 
+     * @param key 队列名
+     * @param value 队列元素，可传多个
+     * @return 弹出的值
+     */
+    public String leftPop(String key);
+
+    /**
+     * 弹出队列
+     * 
+     * @param key 队列名
+     * @param clz 弹出后的对象 Class
+     * @return 弹出的对象
+     */
+    public <T extends Serializable> T leftPop(String key, Class<T> clz);
+
     public static void main(String[] args) throws IOException
     {
         // class Dog implements Serializable

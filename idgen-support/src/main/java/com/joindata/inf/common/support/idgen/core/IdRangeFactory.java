@@ -32,11 +32,11 @@ public class IdRangeFactory
         this.sequenceRepository = sequenceRepository;
     }
 
-    public IdRange getCurrentIdRange(String appId, String sequenceName)
+    public IdRange getCurrentIdRange(String sequenceName)
     {
         String key = getCacheKey(sequenceName);
 
-        IdRange idRange = null;
+        IdRange idRange;
         if(idRangeCacheMap.containsKey(key))
         {
             idRange = idRangeCacheMap.get(key);
@@ -47,20 +47,20 @@ public class IdRangeFactory
             else
             {
                 log.debug("区间{}id 不够了， 需要重建下一个区间", idRange);
-                idRange = rebuildRange(appId, sequenceName);
+                idRange = rebuildRange(sequenceName);
                 idRangeCacheMap.put(key, idRange);
             }
         }
         else
         {
-            idRange = rebuildRange(appId, sequenceName);
+            idRange = rebuildRange(sequenceName);
             idRangeCacheMap.put(key, idRange);
         }
 
         return idRangeCacheMap.get(key);
     }
 
-    private IdRange rebuildRange(String appId, String sequenceName)
+    private IdRange rebuildRange(String sequenceName)
     {
         String dataId = IdKeyBuilder.getSequenceKey(sequenceName);
         try

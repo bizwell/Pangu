@@ -2,7 +2,6 @@ package com.joindata.inf.common.support.idgen.component.sequence.impl;
 
 import javax.annotation.Resource;
 
-import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.idgen.component.Sequence;
 import com.joindata.inf.common.support.idgen.core.IdRangeFactory;
 
@@ -21,7 +20,7 @@ public abstract class AbstractBaseSequence implements Sequence
         synchronized(this)
         {
 
-            return idRangeFactory.getCurrentIdRange(BootInfoHolder.getAppId(), name).next();
+            return idRangeFactory.getCurrentIdRange(name).next();
         }
     }
 }

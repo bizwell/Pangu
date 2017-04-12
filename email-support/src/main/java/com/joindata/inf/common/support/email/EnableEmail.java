@@ -13,6 +13,7 @@ import com.joindata.inf.common.support.email.cst.SmsSystemId;
 /**
  * 
  * 启用邮件服务
+ * 
  * @author <a href="mailto:gaowei1@joindata.com">高伟</a>
  * @date 2017-03-29
  */
@@ -28,5 +29,5 @@ public @interface EnableEmail
      * 
      * @see SmsSystemId
      */
-    String systemId();
+    String systemId() default SmsSystemId.E_PARTY;
 }

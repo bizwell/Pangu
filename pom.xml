@@ -800,6 +800,12 @@
 
 	<dependencies>
 
+		<!-- Lombok 可以有 -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+
 		<!-- Spring 是必须的 -->
 		<dependency>
 			<groupId>org.springframework</groupId>

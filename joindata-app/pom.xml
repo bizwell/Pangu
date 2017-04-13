@@ -140,6 +140,13 @@
 				<version>${pangu.version}</version>
 			</dependency>
 
+			<!-- 支持 RabbitMQ -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>rabbitmq-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+			
 		</dependencies>
 	</dependencyManagement>
 

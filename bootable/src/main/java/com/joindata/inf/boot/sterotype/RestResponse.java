@@ -58,7 +58,7 @@ public class RestResponse<T>
 
     public static final <TT> RestResponse<TT> success(TT model, String message, Map<String, Object> extra)
     {
-        return new RestResponse<TT>(200, model, message);
+        return new RestResponse<TT>(200, model, message, extra);
     }
 
     public static final <TT> RestResponse<TT> fail(String message)

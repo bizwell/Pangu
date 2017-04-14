@@ -25,6 +25,8 @@ public class RabbitMqProperties
 
     private String password;
 
+    private String virtualHost;
+
     @DisconfFileItem(name = "rabbitmq.host", associateField = "host")
     public String getHost()
     {
@@ -67,5 +69,16 @@ public class RabbitMqProperties
     public void setPassword(String password)
     {
         this.password = password;
+    }
+
+    @DisconfFileItem(name = "rabbitmq.vhost", associateField = "virtualHost")
+    public String getVirtualHost()
+    {
+        return virtualHost;
+    }
+
+    public void setVirtualHost(String virtualHost)
+    {
+        this.virtualHost = virtualHost;
     }
 }

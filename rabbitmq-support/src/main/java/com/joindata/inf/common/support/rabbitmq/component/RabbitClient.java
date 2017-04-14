@@ -10,11 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.joindata.inf.common.basic.entities.Pair;
 import com.joindata.inf.common.basic.exceptions.ResourceException;
-import com.joindata.inf.common.support.rabbitmq.bootconfig.RabbitMqConfig;
+import com.joindata.inf.common.support.rabbitmq.cst.RabbitDefault;
 import com.joindata.inf.common.support.rabbitmq.enums.RabbitFeature;
 import com.joindata.inf.common.util.basic.BeanUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.EnumUtil;
+import com.joindata.inf.common.util.basic.JsonUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
 import com.rabbitmq.client.BuiltinExchangeType;
@@ -35,7 +36,7 @@ import com.rabbitmq.client.MessageProperties;
  * @date Apr 11, 2017 3:09:43 PM
  */
 @Component
-public class RabbitMqClient
+public class RabbitClient
 {
     private static final Logger log = Logger.get();
 
@@ -57,10 +58,10 @@ public class RabbitMqClient
      */
     public void sendDirect(String queue, String content, String directExchange, String routingKey, RabbitFeature... feature)
     {
-        directExchange = directExchange == null ? RabbitMqConfig.DEFAULT_DIRECT_EXCHANGE : directExchange;
-        routingKey = routingKey == null ? RabbitMqConfig.DEFAULT_ROUTING_KEY : routingKey;
+        directExchange = directExchange == null ? RabbitDefault.DEFAULT_DIRECT_EXCHANGE : directExchange;
+        routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
 
-        log.info("发送直接消息到 {}, 绑定交换机: {}, 路由键: {}", queue, directExchange, routingKey.equals(RabbitMqConfig.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
+        log.info("发送直接消息到 {}, 绑定交换机: {}, 路由键: {}", queue, directExchange, routingKey.equals(RabbitDefault.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
@@ -130,10 +131,10 @@ public class RabbitMqClient
      */
     public void sendBroadcast(String queue, String content, String fanoutExchange, String routingKey, RabbitFeature... feature)
     {
-        fanoutExchange = fanoutExchange == null ? RabbitMqConfig.DEFAULT_FANOUT_EXCHANGE : fanoutExchange;
-        routingKey = routingKey == null ? RabbitMqConfig.DEFAULT_ROUTING_KEY : routingKey;
+        fanoutExchange = fanoutExchange == null ? RabbitDefault.DEFAULT_FANOUT_EXCHANGE : fanoutExchange;
+        routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
 
-        log.info("发送广播消息到 {}, 绑定交换机: {}, 路由键: {}", queue, fanoutExchange, routingKey.equals(RabbitMqConfig.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
+        log.info("发送广播消息到 {}, 绑定交换机: {}, 路由键: {}", queue, fanoutExchange, routingKey.equals(RabbitDefault.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
@@ -203,10 +204,10 @@ public class RabbitMqClient
      */
     public void sendTopic(String queue, String content, String topicExchange, String routingKey, RabbitFeature... feature)
     {
-        topicExchange = topicExchange == null ? RabbitMqConfig.DEFAULT_TOPIC_EXCHANGE : topicExchange;
-        routingKey = routingKey == null ? RabbitMqConfig.DEFAULT_ROUTING_KEY : routingKey;
+        topicExchange = topicExchange == null ? RabbitDefault.DEFAULT_TOPIC_EXCHANGE : topicExchange;
+        routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
 
-        log.info("发送主题消息到 {}, 绑定交换机: {}, 路由键: {}", queue, topicExchange, routingKey.equals(RabbitMqConfig.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
+        log.info("发送主题消息到 {}, 绑定交换机: {}, 路由键: {}", queue, topicExchange, routingKey.equals(RabbitDefault.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
@@ -274,10 +275,17 @@ public class RabbitMqClient
      */
     public void sendDirect(String queue, Serializable content, String directExchange, String routingKey, RabbitFeature... feature)
     {
-        directExchange = directExchange == null ? RabbitMqConfig.DEFAULT_DIRECT_EXCHANGE : directExchange;
-        routingKey = routingKey == null ? RabbitMqConfig.DEFAULT_ROUTING_KEY : routingKey;
+        // 如果用 JSON，直接算字符串的
+        if(EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization))
+        {
+            sendDirect(queue, JsonUtil.toJSON(content), directExchange, routingKey, feature);
+            return;
+        }
 
-        log.info("发送直接消息到 {}, 绑定交换机: {}, 路由键: {}", queue, directExchange, routingKey.equals(RabbitMqConfig.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
+        directExchange = directExchange == null ? RabbitDefault.DEFAULT_DIRECT_EXCHANGE : directExchange;
+        routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
+
+        log.info("发送直接消息到 {}, 绑定交换机: {}, 路由键: {}", queue, directExchange, routingKey.equals(RabbitDefault.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
@@ -347,10 +355,17 @@ public class RabbitMqClient
      */
     public void sendBroadcast(String queue, Serializable content, String fanoutExchange, String routingKey, RabbitFeature... feature)
     {
-        fanoutExchange = fanoutExchange == null ? RabbitMqConfig.DEFAULT_FANOUT_EXCHANGE : fanoutExchange;
-        routingKey = routingKey == null ? RabbitMqConfig.DEFAULT_ROUTING_KEY : routingKey;
+        // 如果用 JSON，直接算字符串的
+        if(EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization))
+        {
+            sendBroadcast(queue, JsonUtil.toJSON(content), fanoutExchange, routingKey, feature);
+            return;
+        }
 
-        log.info("发送广播消息到 {}, 绑定交换机: {}, 路由键: {}", queue, fanoutExchange, routingKey.equals(RabbitMqConfig.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
+        fanoutExchange = fanoutExchange == null ? RabbitDefault.DEFAULT_FANOUT_EXCHANGE : fanoutExchange;
+        routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
+
+        log.info("发送广播消息到 {}, 绑定交换机: {}, 路由键: {}", queue, fanoutExchange, routingKey.equals(RabbitDefault.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
@@ -420,10 +435,17 @@ public class RabbitMqClient
      */
     public void sendTopic(String queue, Serializable content, String topicExchange, String routingKey, RabbitFeature... feature)
     {
-        topicExchange = topicExchange == null ? RabbitMqConfig.DEFAULT_TOPIC_EXCHANGE : topicExchange;
-        routingKey = routingKey == null ? RabbitMqConfig.DEFAULT_ROUTING_KEY : routingKey;
+        // 如果用 JSON，直接算字符串的
+        if(EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization))
+        {
+            sendTopic(queue, JsonUtil.toJSON(content), topicExchange, routingKey, feature);
+            return;
+        }
 
-        log.info("发送主题消息到 {}, 绑定交换机: {}, 路由键: {}", queue, topicExchange, routingKey.equals(RabbitMqConfig.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
+        topicExchange = topicExchange == null ? RabbitDefault.DEFAULT_TOPIC_EXCHANGE : topicExchange;
+        routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
+
+        log.info("发送主题消息到 {}, 绑定交换机: {}, 路由键: {}", queue, topicExchange, routingKey.equals(RabbitDefault.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 

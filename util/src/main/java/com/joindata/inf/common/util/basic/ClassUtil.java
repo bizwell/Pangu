@@ -781,7 +781,7 @@ public class ClassUtil
         log.debug("准备解析 Class {} 的第一个泛型参数实际类型");
         Class<T> t = (Class<T>)((ParameterizedType)(clz.getGenericInterfaces()[0])).getActualTypeArguments()[0];
 
-        log.warn("解析出了个 {}", t);
+        log.debug("解析出了个 {}", t);
         return t;
     }
 

@@ -7,7 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.joindata.inf.common.support.rabbitmq.enums.ExchangeType;
+import com.joindata.inf.common.support.rabbitmq.cst.RabbitDefault;
+import com.joindata.inf.common.support.rabbitmq.enums.RabbitFeature;
 
 /**
  * 标记一个 RabbitMQ 队列设置
@@ -19,20 +20,14 @@ import com.joindata.inf.common.support.rabbitmq.enums.ExchangeType;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface RabbitQueue
+public @interface RabbitAttr
 {
-    /** Exchange 类型 */
-    ExchangeType value() default ExchangeType.DIRECT;
-
-    /** Exchange 名字 */
+    /** Exchange 名字，默认值参见 {@link RabbitDefault} */
     String exchangeName() default "";
 
-    /** 是否持久化队列 */
-    boolean durable() default false;
+    /** 路由键，默认值参见 {@link RabbitDefault#DEFAULT_ROUTING_KEY} */
+    String routingKey() default RabbitDefault.DEFAULT_ROUTING_KEY;
 
-    /** 是否自动删除交换机 */
-    boolean autoDelete() default false;
-
-    /** 连接是否独占 */
-    boolean exclusive() default false;
+    /** 一些性质，参见 {@link RabbitFeature} */
+    RabbitFeature[] features() default {};
 }

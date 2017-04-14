@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.rabbitmq;
+package com.joindata.inf.common.sterotype.mq.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,19 +7,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.joindata.inf.common.basic.annotation.JoindataComponent;
-
 /**
- * 启用 RabbitMQ
+ * 标记一个广播
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date Apr 11, 2017 2:38:30 PM
+ * @date Apr 14, 2017 9:42:47 AM
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(bind = ConfigHub.class, name = "RabbitMQ 消息队列")
-public @interface EnableRabbitMQ
+public @interface Broadcast
 {
+    /** 队列名 */
+    String value();
 }

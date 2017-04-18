@@ -42,7 +42,24 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
-
+		
+		<!-- 创建mock服务依赖胡组件 -->
+		<dependency>
+		    <groupId>org.mbtest.javabank</groupId>
+		    <artifactId>javabank-core</artifactId>
+		    <version>0.4.10</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.mbtest.javabank</groupId>
+		    <artifactId>javabank-client</artifactId>
+		    <version>0.4.10</version>
+		</dependency>
+		
+		<!-- 文件上传插件 -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>

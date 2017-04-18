@@ -5,11 +5,13 @@ import java.util.Set;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.swagger.EnableSwagger;
+import com.joindata.inf.common.support.swagger.core.MountebankClient;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
 
@@ -83,11 +85,31 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
-        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-        
-        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/static/");
+
+        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/", "classpath:/static/js/", "classpath:/static/css/");
 
         log.info("Swagger 页面: {}", "swagger-ui.html");
+    }
+
+    @Bean
+    public MountebankClient mountebankClient()
+    {
+        EnableSwagger enableSwagger = BootInfoHolder.getBootClass().getAnnotation(EnableSwagger.class);
+        return new MountebankClient(enableSwagger.mockServerPort());
+    }
+
+    /**
+     * 文件上传
+     * 
+     * @return
+     */
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver createMultipartResolver()
+    {
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("utf-8");
+        return resolver;
     }
 
 }

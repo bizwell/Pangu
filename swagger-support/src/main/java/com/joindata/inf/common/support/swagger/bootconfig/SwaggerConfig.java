@@ -86,7 +86,6 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/static/");
-
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/", "classpath:/static/js/", "classpath:/static/css/");
 
         log.info("Swagger 页面: {}", "swagger-ui.html");

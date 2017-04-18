@@ -53,8 +53,32 @@
 			<artifactId>plexus-classworlds</artifactId>
 			<version>2.5.2</version>
 		</dependency>
+		
+		
+		<dependency>
+			<groupId>org.sonatype.sisu</groupId>
+			<artifactId>sisu-inject-plexus</artifactId>
+			<version>2.6.0</version>
+		</dependency>
 
-
+<!-- 
+		<dependency>
+			<groupId>org.sonatype.sisu</groupId>
+			<artifactId>sisu-guice</artifactId>
+			<version>3.2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sonatype.sisu</groupId>
+			<artifactId>sisu-inject-plexus</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>4.1.0</version>
+		</dependency>
+ -->
+ 
 		<!-- 可以启动的应用 -->
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>

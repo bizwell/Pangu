@@ -35,6 +35,9 @@ public class RedisProperties
     /** 最多等待时间（毫秒） */
     private long maxWait;
 
+    /** 连接超时时间 */
+    private int timeout;
+
     /** 取到连接时测试 */
     private boolean testOnBorrow;
 
@@ -94,6 +97,17 @@ public class RedisProperties
     public void setMaxWait(long maxWait)
     {
         this.maxWait = maxWait;
+    }
+
+    @DisconfFileItem(name = "redis.timeout", associateField = "timeout")
+    public int getTimeout()
+    {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout)
+    {
+        this.timeout = timeout;
     }
 
     @DisconfFileItem(name = "redis.testOnBorrow", associateField = "testOnBorrow")

@@ -11,7 +11,6 @@ import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisCommands;
 
 /**
  * 集群版本实现
@@ -34,10 +33,11 @@ public class ClusterRedisClient implements RedisClient
      * 
      * @return JedisCluster 对象
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public JedisCommands getJedis()
+    public <T> T getJedis()
     {
-        return jedis;
+        return (T)jedis;
     }
 
     /**
@@ -862,5 +862,28 @@ public class ClusterRedisClient implements RedisClient
         }
 
         return jedis.lpush(StringUtil.toBytes(key), bs);
+    }
+
+    @Override
+    public String leftPop(String key)
+    {
+        if(key == null)
+        {
+            return null;
+        }
+
+        return jedis.lpop(key);
+    }
+
+    @Override
+    public <T extends Serializable> T leftPop(String key, Class<T> clz)
+    {
+        if(key == null)
+        {
+            return null;
+        }
+
+        byte data[] = jedis.lpop(StringUtil.toBytes(key));
+        return BeanUtil.deserializeObject(data, clz);
     }
 }

@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -96,19 +95,6 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter
     {
         EnableSwagger enableSwagger = BootInfoHolder.getBootClass().getAnnotation(EnableSwagger.class);
         return new MountebankClient(enableSwagger.mockServerPort());
-    }
-
-    /**
-     * 文件上传
-     * 
-     * @return
-     */
-    @Bean(name = "multipartResolver")
-    public CommonsMultipartResolver createMultipartResolver()
-    {
-        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-        resolver.setDefaultEncoding("utf-8");
-        return resolver;
     }
 
 }

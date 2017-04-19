@@ -21033,35 +21033,50 @@
             window.open(t.href, "_blank"))
         },
         onExportButtonClick: function(e) {
-        	var a = document.createElement('A');
-        	a.href = "mockserver/export";
+        	var imposterModel = new SwaggerUi.Models.ImposterModel();
+        	var port = $("#mockserver").val().split(":")[1];
+            var imposter = imposterModel.getImposters(port);
+            var data = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(imposter));
+            var a = document.createElement('A');
+        	a.href = data;
+        	a.target = '_blank';
+        	a.download = "mock-" + port + ".ejs";
         	document.body.appendChild(a);
         	a.click();
         	document.body.removeChild(a);
         },
         
         onImportFileChange: function(e) {
-        	var formData = new FormData();
         	
-        	formData.append('file', $(e.target)[0].files[0]);
-        	$.ajax({
-        	    url: '/mockserver/import',
-        	    type: 'POST',
-        	    cache: false,
-        	    data: formData,
-        	    processData: false,
-        	    contentType: false
-        	}).done(function(data) {
-        		if (!!data.code) {
-        			alert(data.message);
-        		} else {
-        			alert('导入mock数据成功');
-        		}
-        		
-        	}).fail(function(res) {
-        		alert('导入失败! res = ' + res);
-        	});
-        },
+        	if (!(window.File || window.FileReader || window.FileList || window.Blob)) {
+        	    alert('你妈喊你换Chrome浏览器啦');
+        	}
+        	var files = $(e.target).prop('files');//获取到文件列表
+            var fileName = $(e.target).val();
+            if (!fileName.endsWith('.ejs')) {
+            	alert('文件格式不正确');
+            	return;
+            }
+        	if(files.length == 0){
+        	    alert('请选择文件');
+        	    return;
+        	}else{
+        	    var reader = new FileReader();//新建一个FileReader
+        	    reader.readAsText(files[0], "UTF-8");//读取文件 
+        	    reader.onload = function(evt){ //读取完文件之后会回来这里
+        	        var fileString = evt.target.result;
+        	        var imposter = JSON.parse(fileString);
+        	        var imposterModel = new SwaggerUi.Models.ImposterModel();
+        	        imposterModel.replaceImposter(imposter, function(data) {
+            		 if (data.stubs) {
+            			 alert('导入mock数据成功');
+            		 } else {
+            			 alert('导入mock数据失败');
+            		 }
+            	 });
+        	    }
+        	}
+         },
         
         onImportButtonClick: function(e) {
         	 $(".mock_import_file").trigger('click');
@@ -21452,6 +21467,18 @@
             //recover
             this.model.serverType = "server";
         },
+        
+        getImposter: function(port) {
+	       	 var response = JSON.parse($.ajax({
+	      		    type: "GET",
+	      		    url: "http://mockserver:2525/imposters/" + port,
+	      		    // The key needs to match your method's input parameter (case-sensitive).
+	      		    dataType: "json",
+	      		    async: false
+	      		 }).responseText);
+	       	 return response.errors ? {} : response;
+        },
+        
         addMock: function(e) {
         	 var t, n, r, i, a;
         	 if (!this.checkInputParam(e)) {
@@ -21507,26 +21534,32 @@
              }
              
              function _createMockApi(requestData) {
-            	 console.log(JSON.stringify(requestData));
-            	 $.ajax({
-            		    type: "POST",
-            		    url: "/mockserver/mockApi",
-            		    // The key needs to match your method's input parameter (case-sensitive).
-            		    data: JSON.stringify(requestData),
-            		    contentType: "application/json; charset=utf-8",
-            		    dataType: "json",
-            		    success: function(data){
-            		    	if (data.code != 500) {
-            		    		alert("创建mock数据成功!");
-            		    	} else {
-            		    		alert("创建mock数据失败!");
-            		    	}
-            		    	
-            		    },
-            		    failure: function(errMsg) {
-            		        alert(errMsg);
-            		    }
-            		});
+            	 var port = $("#mockserver").val().split(":")[1];
+            	 var imposterModel = new SwaggerUi.Models.ImposterModel();
+            	 
+            	 var imposter = imposterModel.getImposters(port);
+            	 var stubs = [];
+            	 if (imposter.stubs) {
+            		 stubs = imposter.stubs;
+            	 }
+            	 if (stubs && stubs.length == 0) {
+            		 requestData.allowOrigin = true;
+            	 } else {
+            		 imposterModel.deleteImposter(port);
+            	 }
+            	 
+            	 var imposterInfo = imposterModel.buildImposter(requestData);
+            	 stubs = imposterInfo.stubs.concat(stubs);
+            	 imposter.stubs = stubs;
+            	 imposter.protocol = "http";
+            	 imposter.port = port;
+            	 imposterModel.addImposter(imposter, function(data) {
+            		 if (data.stubs) {
+            			 alert('创建mock数据成功');
+            		 } else {
+            			 alert('创建mock数据失败');
+            		 }
+            	 });
              }
         },
         
@@ -22476,6 +22509,81 @@
             }),
             $(".model-signature", this.$el).append(t.render().el),
             this
+        }
+    }),
+    SwaggerUi.Models.ImposterModel = Backbone.Model.extend({
+        defaults: {
+            "host": "mockserver",
+            "port": "2525"
+        },
+        getImposters: function(port) {
+        	var response = JSON.parse($.ajax({
+      		    type: "GET",
+      		    url: "http://mockserver:2525/imposters/" + port,
+      		    // The key needs to match your method's input parameter (case-sensitive).
+      		    dataType: "json",
+      		    async: false
+      		 }).responseText);
+       	     return response.errors ? {} : response;
+        },
+        
+        buildImposter: function(requestData) {
+        	var responseData = {}; 
+       	    $.ajax({
+    		    type: "POST",
+    		    url: "/mockserver/mockApi",
+    		    // The key needs to match your method's input parameter (case-sensitive).
+    		    data: JSON.stringify(requestData),
+    		    contentType: "application/json; charset=utf-8",
+    		    dataType: "json",
+    		    async: false,
+    		    success: function(data){
+    		    	if (data.code != 500) {
+    		    		responseData = data;
+    		    	} else {
+    		    		alert("创建mock数据失败!");
+    		    	}
+    		    },
+    		    failure: function(errMsg) {
+    		        alert(errMsg);
+    		    }
+    		});
+       	    return responseData;
+        },
+        
+        deleteImposter: function(port) {
+        	var response = JSON.parse($.ajax({
+    		    type: "DELETE",
+    		    url: "http://mockserver:2525/imposters/" + port,
+    		    // The key needs to match your method's input parameter (case-sensitive).
+    		    dataType: "json",
+    		    async: false
+    		 }).responseText);
+    	     console.log(response);
+        },
+        
+        addImposter: function(imposter, callback) {
+        	$.ajax({
+       		    type: "POST",
+       		    url: "http://mockserver:2525/imposters",
+       		    // The key needs to match your method's input parameter (case-sensitive).
+       		    data: JSON.stringify(imposter),
+       		    contentType: "application/json; charset=utf-8",
+       		    dataType: "json",
+       		    success: function(data){
+       		    	if (callback) {
+       		    	    callback(data);
+       		    	}
+       		    },
+       		    failure: function(errMsg) {
+       		        alert(errMsg);
+       		    }
+       		});
+        },
+        
+        replaceImposter: function(imposter, callback) {
+        	this.deleteImposter(imposter.port);
+        	this.addImposter(imposter, callback);
         }
     })
 }

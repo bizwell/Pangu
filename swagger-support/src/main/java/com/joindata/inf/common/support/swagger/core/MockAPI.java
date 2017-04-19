@@ -30,4 +30,11 @@ public class MockAPI
      * mock 的端口号
      */
     private int port;
+
+    private boolean allowOrigin;
+
+    public void setAllowOrigin(boolean allowOrigin)
+    {
+        this.allowOrigin = allowOrigin;
+    }
 }

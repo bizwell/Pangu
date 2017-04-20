@@ -1,0 +1,25 @@
+.addMock {
+	padding: 6px 8px;
+	margin-left: 11px;
+}
+
+.tryMock {
+	padding: 6px 8px;
+	margin-left: 11px;
+}
+
+.responseInput {
+	height: 126px;
+	width: 100%;
+	display: inline-block;
+}
+
+.mock_export {
+	float: right;
+}
+
+.mock_import {
+	float: right;
+	width: 80px;
+	margin-right: 10px;
+}

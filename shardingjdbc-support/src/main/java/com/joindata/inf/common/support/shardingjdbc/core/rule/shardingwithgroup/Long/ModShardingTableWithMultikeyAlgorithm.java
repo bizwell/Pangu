@@ -41,7 +41,6 @@ public class ModShardingTableWithMultikeyAlgorithm implements MultipleKeysTableS
         Set<String> tableNames = new HashSet<>();
         for(ShardingValue<?> shardingValue: shardingValues)
         {
-            long shardingValId = (Long)shardingValue.getValue();
 
             ShardingWithGroupRule shardingColumnRule = shardingColumnRuleMap.get(shardingValue.getColumnName());
             if(shardingColumnRule == null)
@@ -51,9 +50,24 @@ public class ModShardingTableWithMultikeyAlgorithm implements MultipleKeysTableS
             }
             String tableName = shardingColumnRule.getTableName();
             // 根据schema的值过滤取得该分表键对应的数据库的列表
-            Collection<String> tbNames = availableTargetNames.stream().filter(p -> StringUtil.substringBeforeLast(p, "_").equalsIgnoreCase(tableName)).collect(Collectors.toList());
+            Set<String> tbNames = availableTargetNames.stream().filter(p -> StringUtil.substringBeforeLast(p, "_").equalsIgnoreCase(tableName)).collect(Collectors.toSet());
 
-            tableNames.add(tableChooser.choose(tbNames, shardingValId));
+            switch(shardingValue.getType())
+            {
+                case SINGLE:
+                    tableNames.add(tableChooser.choose(tbNames, (Long)shardingValue.getValue()));
+                    break;
+                case LIST:
+                    @SuppressWarnings("unchecked")
+                    Collection<Long> inValues = (Collection<Long>)shardingValue.getValues();
+                    tableNames.addAll(tableChooser.choose(tbNames, inValues));
+                    break;
+                case RANGE:
+                    tableNames.addAll(tableChooser.choose(tbNames, (long)shardingValue.getValueRange().lowerEndpoint(), (long)shardingValue.getValueRange().upperEndpoint()));
+                    break;
+                default:
+                    throw new UnsupportedOperationException(shardingValue.getType().getClass().getName());
+            }
         }
 
         log.info("多分表键命中表: {}", tableNames);

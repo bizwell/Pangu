@@ -127,7 +127,7 @@ public class ResourceUtil
                     continue;
                 }
 
-                InputStream resIn = ClassUtil.getRootResourceAsStream(name);
+                InputStream resIn = getRootResourceAsStream(name);
                 FileUtil.delete(targetPath + "/" + StringUtil.replaceFirst(name, resource, ""));
                 FileUtil.writeTo(targetPath + "/" + StringUtil.replaceFirst(name, resource, ""), resIn);
                 resIn.close();
@@ -140,4 +140,33 @@ public class ResourceUtil
         return targetPath;
     }
 
+    /**
+     * 获取运行时中根目录下的某作为输入流返回
+     * 
+     * @return 该文件的输入流
+     * @throws IOException 输入输出异常
+     */
+    public static final InputStream getRootResourceAsStream(String fileName) throws IOException
+    {
+        return new ClassPathResource(fileName).getInputStream();
+    }
+
+    /**
+     * 返回第一个存在的资源路径
+     * 
+     * @param resources 指定一些文件名
+     * @return 第一个存在的资源，都不存在，返回 null
+     */
+    public static final String getFirstExistResource(String... resources)
+    {
+        for(String resource: resources)
+        {
+            if(ResourceUtil.getResourcePath(resource) != null)
+            {
+                return resource;
+            }
+        }
+
+        return null;
+    }
 }

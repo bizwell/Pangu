@@ -46,10 +46,10 @@ public class DataSourceProperties extends BaseDataSourceProperties
     protected long maxWait;
 
     /** 检测关闭空闲连接的间隔时间毫秒数 */
-    protected int timeBetweenEvictionRunsMillis;
+    protected long timeBetweenEvictionRunsMillis;
 
     /** 最小生存时间毫秒数 */
-    protected int minEvictableIdleTimeMillis;
+    protected long minEvictableIdleTimeMillis;
 
     /** 验证语句 */
     protected String validationQuery;
@@ -141,23 +141,23 @@ public class DataSourceProperties extends BaseDataSourceProperties
     }
 
     @DisconfFileItem(name = "jdbc.timeBetweenEvictionRunsMillis", associateField = "timeBetweenEvictionRunsMillis")
-    public int getTimeBetweenEvictionRunsMillis()
+    public long getTimeBetweenEvictionRunsMillis()
     {
         return timeBetweenEvictionRunsMillis;
     }
 
-    public void setTimeBetweenEvictionRunsMillis(int timeBetweenEvictionRunsMillis)
+    public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis)
     {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
     }
 
     @DisconfFileItem(name = "jdbc.minEvictableIdleTimeMillis", associateField = "minEvictableIdleTimeMillis")
-    public int getMinEvictableIdleTimeMillis()
+    public long getMinEvictableIdleTimeMillis()
     {
         return minEvictableIdleTimeMillis;
     }
 
-    public void setMinEvictableIdleTimeMillis(int minEvictableIdleTimeMillis)
+    public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis)
     {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }

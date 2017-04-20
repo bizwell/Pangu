@@ -15,11 +15,12 @@ cd $dir
 
 appdir=/opt/__APPID__
 appconfigdir=$appdir/__APPVERSION__/CONFIG
-targetconfigdir=/var/config/__APPID__/__APPVERSION__
+targetconfigdir=/var/config/__APPID__
+targetverconfigdir=$targetconfigdir/__APPVERSION__
 tmpdir="/data/tmp/__APPID__/__APPVERSION__"
 logdir="/data/log/__APPID__"
 
-userconfigfile=$appdir/__APPVERSION__/CONFIG/LINUX_USER
+userconfigfile=$targetconfigdir/LINUX_USER
 user=`cat $userconfigfile`
 
 echo -e "${SUCCESS}准备卸载${RES}  应用ID __APPID__, 版本号 __APPVERSION__"
@@ -86,7 +87,6 @@ echo "------------------------------------------------------------"
 echo -e "${SUCCESS}已卸载${RES}"
 echo ""
 echo -e "已移除临时目录: ${HIGHLIGHT}$tmpdir${RES}"
-# 不删除 echo -e "已移除配置目录: ${HIGHLIGHT}$targetconfigdir${RES}"
 echo -e "已移除程序目录: ${HIGHLIGHT}$appdir/__APPVERSION__${RES}"
 echo ""
 echo -e "${DANGER}请注意！！！${RES}日志目录、配置文件和程序用户不删除，请自行决定"

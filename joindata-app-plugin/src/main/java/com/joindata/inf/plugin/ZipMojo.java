@@ -28,11 +28,13 @@ import org.springframework.util.StreamUtils;
 
 import com.joindata.inf.boot.annotation.JoindataApp;
 import com.joindata.inf.boot.annotation.JoindataWebApp;
-import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.FileUtil;
+import com.joindata.inf.common.util.basic.ResourceUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
+
+import javassist.CtClass;
 
 //////////////////////////////////////////////////////////////////
 //                                                              //
@@ -105,12 +107,12 @@ public class ZipMojo extends AbstractMojo
         try
         {
             // 获取主类信息
-            Class<?> mainClass = findBootClass();
+            CtClass mainClass = findBootClass();
             String appId = null;
             String appVersion = null;
             {
 
-                JoindataApp app = mainClass.getAnnotation(JoindataApp.class);
+                JoindataApp app = (JoindataApp)mainClass.getAnnotation(JoindataApp.class);
                 if(app != null)
                 {
                     appId = app.id();
@@ -118,7 +120,7 @@ public class ZipMojo extends AbstractMojo
                 }
             }
             {
-                JoindataWebApp app = mainClass.getAnnotation(JoindataWebApp.class);
+                JoindataWebApp app = (JoindataWebApp)mainClass.getAnnotation(JoindataWebApp.class);
                 if(app != null)
                 {
                     appId = app.id();
@@ -178,11 +180,11 @@ public class ZipMojo extends AbstractMojo
 
             // 依赖 JAR 包名字
             StringBuffer libJars = new StringBuffer();
-
+            // 解压依赖
+            List<File> dependencyJars = extractDependencyFiles(artifacts);
             // 最终的 zip 文件 (target/xxx-x.x.x.zip，包括 packRoot 下所有的资源)
             File zipFile = new File(outputDirectory, appId + "-" + appVersion + ".zip");
             // 复制依赖
-            List<File> dependencyJars = extractDependencyFiles(artifacts);
             getLog().info("工程依赖 JAR 包数: " + dependencyJars.size());
             for(File jar: dependencyJars)
             {
@@ -209,8 +211,8 @@ public class ZipMojo extends AbstractMojo
             // 写配置文件和脚本
             for(String file: moduleFiles)
             {
-                String content = StreamUtils.copyToString(ClassUtil.getRootResourceAsStream("_MODULE/" + file), Charset.forName("UTF-8"));
-                content = StringUtil.replaceAll(content, "__MAINCLASS__", mainClass.getCanonicalName());
+                String content = StreamUtils.copyToString(ResourceUtil.getRootResourceAsStream("_MODULE/" + file), Charset.forName("UTF-8"));
+                content = StringUtil.replaceAll(content, "__MAINCLASS__", mainClass.getName());
                 content = StringUtil.replaceAll(content, "__LIBJARS__", libJars.toString());
                 content = StringUtil.replaceAll(content, "__APPID__", appId);
                 content = StringUtil.replaceAll(content, "__APPVERSION__", appVersion);
@@ -231,15 +233,19 @@ public class ZipMojo extends AbstractMojo
         }
         catch(IOException e)
         {
-            getLog().error("IO 错误", e);
+            getLog().error("IO 错误, ", e);
         }
         catch(DependencyResolutionRequiredException e)
         {
-            getLog().error("无法解析依赖", e);
+            getLog().error("无法解析依赖, ", e);
         }
         catch(InterruptedException e)
         {
-            getLog().error("线程错误", e);
+            getLog().error("线程错误, ", e);
+        }
+        catch(ClassNotFoundException e)
+        {
+            getLog().error("找不到类, ", e);
         }
 
     }
@@ -249,36 +255,28 @@ public class ZipMojo extends AbstractMojo
         getLog().info("打包应用为 ZIP 包");
         getLog().info("应用名: " + project.getName());
         getLog().info("应用构件名: " + project.getArtifactId());
-        getLog().info("应用版本号: " + implementationVersion);
+        getLog().info("工程版本号: " + implementationVersion);
         getLog().info("如需帮助请联系: " + adminName);
+        getLog().info("");
     }
 
     /**
-     * 查找启动类类名
+     * 查找启动类
+     * 
+     * @param dependencyJars
      * 
      * @throws DependencyResolutionRequiredException
      * @throws MalformedURLException
      * @throws MojoFailureException
      * @throws InterruptedException
      */
-    private Class<?> findBootClass() throws MalformedURLException, DependencyResolutionRequiredException, MojoFailureException, InterruptedException
+    private CtClass findBootClass() throws MalformedURLException, DependencyResolutionRequiredException, MojoFailureException, InterruptedException
     {
-        Set<Class<?>> clzSet = CollectionUtil.newHashSet();
+        Set<CtClass> clzSet = CollectionUtil.newHashSet();
 
-        // 可能在 Linux 下不能很快读取到类，重试几次，不行就滚蛋
-        for(int i = 0; i < 3; i++)
-        {
-            clzSet.addAll(ClassUtil.scanTypeAnnotations(loadProjectClasses(), JoindataApp.class));
-            clzSet.addAll(ClassUtil.scanTypeAnnotations(loadProjectClasses(), JoindataWebApp.class));
-
-            if(!CollectionUtil.isNullOrEmpty(clzSet))
-            {
-                break;
-            }
-
-            getLog().debug("正在重试第 " + (i + 1) + " 次，文件夹里有 " + ArrayUtil.toString(new File(project.getBuild().getOutputDirectory()).list()));
-            Thread.sleep(400);
-        }
+        File classDir = new File(project.getBuild().getOutputDirectory());
+        clzSet.addAll(ClassUtil.scanTypeAnnotations(classDir, JoindataApp.class));
+        clzSet.addAll(ClassUtil.scanTypeAnnotations(classDir, JoindataWebApp.class));
 
         if(CollectionUtil.isNullOrEmpty(clzSet))
         {
@@ -291,30 +289,14 @@ public class ZipMojo extends AbstractMojo
             throw new MojoFailureException("源代码中有" + clzSet.size() + "处标注了 @JoindataApp 或 @JoindataWebApp，无法分辨哪个是启动类");
         }
 
-        Class<?> bootClz = null;
-        for(Class<?> clz: clzSet)
+        CtClass bootClz = null;
+        for(CtClass clz: clzSet)
         {
             bootClz = clz;
             getLog().info("启动类为: " + clz.getName());
         }
 
         return bootClz;
-    }
-
-    /**
-     * 加载编译后的类，以便读取项目代码中的一些信息
-     * 
-     * @return 项目所有的类
-     */
-    private Set<Class<?>> loadProjectClasses() throws DependencyResolutionRequiredException, MalformedURLException
-    {
-        Set<Class<?>> classSet = CollectionUtil.newHashSet();
-
-        classSet.addAll(ClassUtil.findClasses(new File(project.getBuild().getOutputDirectory())));
-
-        getLog().debug("已编译 " + classSet.toString());
-
-        return classSet;
     }
 
     /**

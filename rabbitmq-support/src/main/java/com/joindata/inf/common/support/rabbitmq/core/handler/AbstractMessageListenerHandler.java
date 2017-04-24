@@ -8,9 +8,11 @@ import java.util.concurrent.TimeoutException;
 import com.joindata.inf.common.basic.entities.Pair;
 import com.joindata.inf.common.basic.exceptions.ResourceException;
 import com.joindata.inf.common.sterotype.mq.MessageListener;
+import com.joindata.inf.common.sterotype.mq.annotation.RollbackFor;
 import com.joindata.inf.common.support.rabbitmq.annotation.RabbitAttr;
 import com.joindata.inf.common.support.rabbitmq.core.RabbitConsumer;
 import com.joindata.inf.common.support.rabbitmq.enums.RabbitFeature;
+import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.EnumUtil;
 import com.joindata.inf.common.util.log.Logger;
@@ -45,6 +47,9 @@ public abstract class AbstractMessageListenerHandler
     /** queue - 队列设置 */
     private Map<String, RabbitAttr> configMap;
 
+    /** queue - 事务设置 */
+    private Map<String, RollbackFor> txMap;
+
     /**
      * 构造二进制消息监听处理器
      */
@@ -58,6 +63,7 @@ public abstract class AbstractMessageListenerHandler
         this.listenerMap = listenerMap;
         this.connectionFactory = connectionFactory;
         this.initConfigMap();
+        this.initTxMap();
         this.initConsumerMap();
     }
 
@@ -67,6 +73,17 @@ public abstract class AbstractMessageListenerHandler
 
         this.listenerMap.forEach((queue, listener) -> {
             this.configMap.put(queue, listener.getClass().getAnnotation(RabbitAttr.class));
+        });
+    }
+
+    private void initTxMap()
+    {
+        this.txMap = CollectionUtil.newMap();
+
+        this.listenerMap.forEach((queue, listener) -> {
+            ClassUtil.getMethodAnnotationMap(listener.getClass(), RollbackFor.class).forEach((method, anno) -> {
+                this.txMap.put(queue, anno);
+            });
         });
     }
 
@@ -104,6 +121,11 @@ public abstract class AbstractMessageListenerHandler
     protected RabbitAttr getQueueConfig(String queue)
     {
         return this.configMap.get(queue);
+    }
+
+    protected RollbackFor getTxAnno(String queue)
+    {
+        return this.txMap.getOrDefault(queue, null);
     }
 
     /**

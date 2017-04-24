@@ -255,6 +255,11 @@ public class BootInfoHolder
             return ENV.equals("UAT");
         }
 
+        public static final boolean isDRILL()
+        {
+            return ENV.equals("DRILL");
+        }
+
         public static final boolean isPROD()
         {
             return ENV.equals("PROD");

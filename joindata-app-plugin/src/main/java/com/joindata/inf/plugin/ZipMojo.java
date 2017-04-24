@@ -152,7 +152,7 @@ public class ZipMojo extends AbstractMojo
             // 依赖输出目录 (target/pack/x.x.x/PROGRAM/lib)
             File libDir = new File(packProgramRoot, libDirName);
 
-            String moduleFiles[] = {"start.sh", "stop.sh", "restart.sh", "status.sh", "install.sh", "uninstall.sh", "log.sh", "service.sh", "deploy.sh", "deploy-logo", "JMX_OPTS", "JVM_OPTS", "LINUX_USER"};
+            String moduleFiles[] = {"start.sh", "stop.sh", "restart.sh", "status.sh", "install.sh", "uninstall.sh", "log.sh", "service.sh", "deploy.sh", "deploy-logo", "JMX_OPTS", "JVM_OPTS", "APP_OPTS", "LINUX_USER"};
             Map<String, File> fileMap = CollectionUtil.newMap();
             for(String file: moduleFiles)
             {

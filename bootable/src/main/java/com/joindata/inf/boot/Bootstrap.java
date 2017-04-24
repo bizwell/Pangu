@@ -45,6 +45,7 @@ import com.joindata.inf.common.util.basic.ResourceUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.basic.SystemUtil;
 import com.joindata.inf.common.util.log.Logger;
+import com.joindata.inf.common.util.network.NetworkUtil;
 
 /**
  * 启动器提供者
@@ -90,7 +91,24 @@ public class Bootstrap
                 configureBootInfo(bootClz, joindataWebApp.id(), joindataWebApp.version());
                 checkEnv();
 
-                context = bootWeb(bootClz, bootClz.getAnnotation(JoindataWebApp.class).port());
+                String portProp = System.getProperty("http.port");
+                if(portProp != null)
+                {
+                    log.info("检测到 http.port 变量, 将忽略注解中的端口号, 使用环境变量配置的端口号: {}", portProp);
+                    port = Integer.parseInt(portProp);
+                }
+                else
+                {
+                    port = bootClz.getAnnotation(JoindataWebApp.class).port();
+                    log.info("使用注解配置的端口号: {}", port);
+                }
+
+                if(!NetworkUtil.isUsableLocalPort(port))
+                {
+                    throw new SystemException("端口 " + port + " 被占用");
+                }
+
+                context = bootWeb(bootClz, port);
 
                 log.info("应用已启动, PID: {}{}", SystemUtil.getProcessId(), ". Web 端口号: " + Bootstrap.port);
 

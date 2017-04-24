@@ -24,7 +24,7 @@ fi
 
 appdir=/opt/__APPID__
 tmpdir="/data/tmp/__APPID__/__APPVERSION__"
-piddir="/var/run/__APPID__"
+piddir="/var/run/app/__APPID__"
 stdoutfile="$tmpdir/nohup.out"
 stderrfile="$tmpdir/nohup.err"
 pidfile="$piddir/__APPVERSION__.pid"

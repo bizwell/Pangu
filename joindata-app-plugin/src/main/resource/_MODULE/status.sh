@@ -18,7 +18,7 @@ echo -e "${SUCCESS}运行状态${RES}  应用ID __APPID__, 版本号 __APPVERSIO
 echo "------------------------------------------------"
 
 # 判断是否在运行
-piddir="/var/run/__APPID__"
+piddir="/var/run/app/__APPID__"
 pidfile="$piddir/__APPVERSION__.pid"
 
 mkdir -p $piddir

@@ -22,28 +22,55 @@ fi
 
 start() {
     echo $"Starting $prog: "
-    su $prog_user -c "$current_path/../start.sh"
+    if [ "$prog_user" == "`whoami`" ]; then
+    	$current_path/../start.sh
+    else
+    	su $prog_user -c "$current_path/../start.sh"
+    fi
     RETVAL=$?
     return $RETVAL
 }
 
 stop() {
     echo -n $"Stopping $prog: "
-    su $prog_user -c "$current_path/../stop.sh"
+    if [ "$prog_user" == "`whoami`" ]; then
+    	$current_path/../stop.sh
+    else
+    	su $prog_user -c "$current_path/../stop.sh"
+    fi
     RETVAL=$?
     return $RETVAL
 }
 
 restart() {
     echo -n $"Restart $prog: "
-    su $prog_user -c "$current_path/../restart.sh"
+    if [ "$prog_user" == "`whoami`" ]; then
+    	$current_path/../restart.sh
+    else
+    	su $prog_user -c "$current_path/../restart.sh"
+    fi
     RETVAL=$?
     return $RETVAL
 }
 
 status() {
     echo -n $"Status $prog: "
-    su $prog_user -c "$current_path/../status.sh"
+    if [ "$prog_user" == "`whoami`" ]; then
+    	$current_path/../status.sh
+    else
+    	su $prog_user -c "$current_path/../status.sh"
+    fi
+    RETVAL=$?
+    return $RETVAL
+}
+
+log() {
+    echo -n $"Tail log of $prog: "
+    if [ "$prog_user" == "`whoami`" ]; then
+    	$current_path/../log.sh
+    else
+    	su $prog_user -c "$current_path/../log.sh"
+    fi
     RETVAL=$?
     return $RETVAL
 }
@@ -61,11 +88,14 @@ case "$1" in
     status)
             status
             ;;
+    log)
+            log
+            ;;
 	dump)
 		dump
 		;;  
     *)
-        echo $"Usage: $0 {start|stop|restart|status}"
+        echo $"Usage: $0 {start|stop|restart|status|log}"
         RETVAL=2
         ;;
 esac

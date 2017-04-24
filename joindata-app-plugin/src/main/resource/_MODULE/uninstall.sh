@@ -43,7 +43,7 @@ echo "------------------------------------------------------------"
 
 echo -en "${INFO}---(STEP 0 )${RES} 检查环境..."
 # 判断是否在运行
-piddir="/var/run/__APPID__"
+piddir="/var/run/app/__APPID__"
 pidfile="$piddir/__APPVERSION__.pid"
 mkdir -p $piddir
 if [ ! -f $pidfile ]; then
@@ -75,7 +75,7 @@ echo -e "${SUCCESS}				OK${RES}"
 # 删除临时文件夹
 echo -en "${INFO}---(STEP 1 )${RES} 删除临时文件..."
 rm -rf $tmpdir
-rm -f $pidfile
+rm -rf $pidfile
 echo -e "${SUCCESS}				OK${RES}"
 
 # 删除应用程序文件夹

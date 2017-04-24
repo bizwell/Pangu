@@ -57,7 +57,7 @@ echo "------------------------------------------------------------"
 
 echo -en "${INFO}---(STEP 0 )${RES} 检查环境..."
 # 判断是否在运行
-piddir="/var/run/__APPID__"
+piddir="/var/run/app/__APPID__"
 pidfile="$piddir/__APPVERSION__.pid"
 mkdir -p $piddir
 if [ ! -f $pidfile ]; then
@@ -89,7 +89,7 @@ echo -e "${SUCCESS}				OK${RES}"
 # 复制应用程序文件夹
 echo -en "${INFO}---(STEP 1 )${RES} 复制程序文件..."
 # 先清理旧的目录，毛都不剩
-rm -r $appdir/__APPVERSION__
+rm -rf $appdir/__APPVERSION__
 mkdir -p $appdir
 cp -Rfp __APPVERSION__ $appdir
 chmod 500 $appdir/__APPVERSION__/*.sh

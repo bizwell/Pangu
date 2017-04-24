@@ -49,7 +49,7 @@ public class PrefixSequence extends AbstractBaseSequence
         int prefix = 0;
         try
         {
-            if(!sequenceRepository.exist(IdKeyBuilder.getSequenceKey(this.name)))
+            if(!sequenceRepository.exist(prefixKey))
             {
                 prefix = (int)sequenceRepository.increaseAndGet(sequenceKeySpace, 1);
                 // 保存到对应的prefix节点上

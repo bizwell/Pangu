@@ -1,11 +1,14 @@
 package com.joindata.inf.common.util.log;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import com.joindata.inf.common.basic.support.BootInfoHolder.Env;
+import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.ResourceUtil;
@@ -30,6 +33,31 @@ public class Logger
         logger = org.apache.logging.log4j.LogManager.getLogger(clz);
     }
 
+    static
+    {
+        String env = "." + Env.get();
+
+        String confFiles[] = {"log4j2" + env + ".xml", "log" + env + ".xml", "log4j2.xml", "log.xml"};
+
+        try
+        {
+            String confFile = ResourceUtil.getFirstExistResource(confFiles);
+
+            if(confFile == null)
+            {
+                throw new FileNotFoundException();
+            }
+
+            Configurator.initialize(null, new ConfigurationSource(ResourceUtil.getRootResourceAsStream(confFile)));
+
+        }
+        catch(IOException e)
+        {
+            System.err.println("没有配置 LOG4J2 的配置文件在工程目录下，将无法正常打印日志");
+            System.out.println("可以配置 " + ArrayUtil.join(confFiles) + " 中的任何一个文件在工程编译根目录下");
+        }
+    }
+
     /**
      * 获取当前类的日志记录器<br />
      * <i>可以在类的任何位置调用本方法，当前类的 Logger 会被创建为单例对象，不会每调用一次创建一次。但还是建议将其定义在类的开头作为该类的公共常量使用，如：</i>
@@ -42,31 +70,6 @@ public class Logger
      */
     public synchronized static final Logger get()
     {
-        ConfigurationSource configurationSource = null;
-
-        try
-        {
-            if(ResourceUtil.isResourceInJar("log4j2.xml"))
-            {
-                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log4j2.xml"));
-            }
-            else if(ResourceUtil.isResourceInJar("log-config.xml"))
-            {
-                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log-config.xml"));
-            }
-            else if(ResourceUtil.isResourceInJar("log.xml"))
-            {
-                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log-config.xml"));
-            }
-
-            Configurator.initialize(ClassUtil.getClassLoader(), configurationSource);
-        }
-        catch(IOException e)
-        {
-            System.err.println("没有配置 LOG4J2 的配置文件在工程目录下，将无法正常打印日志");
-            System.out.println("可以配置 log4j2.xml、 log-config.xml 或 log.xml 在工程编译根目录下");
-        }
-
         Class<?> clz = ClassUtil.getCaller();
         if(!LogMap.containsKey(clz))
         {
@@ -83,30 +86,6 @@ public class Logger
      */
     public synchronized static final Logger newLogger(Class<?> clz)
     {
-        ConfigurationSource configurationSource = null;
-        try
-        {
-            if(ResourceUtil.isResourceInJar("log4j2.xml"))
-            {
-                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log4j2.xml"));
-            }
-            else if(ResourceUtil.isResourceInJar("log-config.xml"))
-            {
-                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log-config.xml"));
-            }
-            else if(ResourceUtil.isResourceInJar("log.xml"))
-            {
-                configurationSource = new ConfigurationSource(ClassUtil.getRootResourceAsStream("log-config.xml"));
-            }
-
-            Configurator.initialize(ClassUtil.getClassLoader(), configurationSource);
-        }
-        catch(IOException e)
-        {
-            System.err.println("没有配置 LOG4J2 的配置文件在工程目录下，将无法正常打印日志");
-            System.out.println("可以配置 log4j2.xml、 log-config.xml 或 log.xml 在工程编译根目录下");
-        }
-
         if(!LogMap.containsKey(clz))
         {
             LogMap.put(clz, new Logger(clz));

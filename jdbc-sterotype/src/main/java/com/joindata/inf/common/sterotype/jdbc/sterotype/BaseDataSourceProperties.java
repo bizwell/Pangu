@@ -10,7 +10,7 @@ import com.alibaba.druid.pool.DruidDataSource;
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Mar 28, 2017 12:13:32 PM
  */
-public abstract class BaseDataSourceProperties
+public class BaseDataSourceProperties
 {
     protected String name;
 
@@ -36,10 +36,10 @@ public abstract class BaseDataSourceProperties
     protected long maxWait;
 
     /** 检测关闭空闲连接的间隔时间毫秒数 */
-    protected int timeBetweenEvictionRunsMillis;
+    protected long timeBetweenEvictionRunsMillis;
 
     /** 最小生存时间毫秒数 */
-    protected int minEvictableIdleTimeMillis;
+    protected long minEvictableIdleTimeMillis;
 
     /** 验证语句 */
     protected String validationQuery;
@@ -135,22 +135,22 @@ public abstract class BaseDataSourceProperties
         this.maxWait = maxWait;
     }
 
-    public int getTimeBetweenEvictionRunsMillis()
+    public long getTimeBetweenEvictionRunsMillis()
     {
         return timeBetweenEvictionRunsMillis;
     }
 
-    public void setTimeBetweenEvictionRunsMillis(int timeBetweenEvictionRunsMillis)
+    public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis)
     {
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
     }
 
-    public int getMinEvictableIdleTimeMillis()
+    public long getMinEvictableIdleTimeMillis()
     {
         return minEvictableIdleTimeMillis;
     }
 
-    public void setMinEvictableIdleTimeMillis(int minEvictableIdleTimeMillis)
+    public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis)
     {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
@@ -223,5 +223,25 @@ public abstract class BaseDataSourceProperties
         ds.setTestOnReturn(this.isTestOnReturn());
 
         return ds;
+    }
+
+    public static BaseDataSourceProperties of(DruidDataSource ds)
+    {
+        BaseDataSourceProperties props = new BaseDataSourceProperties();
+        props.setUrl(ds.getUrl());
+        props.setUsername(ds.getUsername());
+        props.setPassword(ds.getPassword());
+        props.setInitialSize(ds.getInitialSize());
+        props.setMinIdle(ds.getMinIdle());
+        props.setMaxActive(ds.getMaxActive());
+        props.setMaxWait(ds.getMaxWait());
+        props.setTimeBetweenEvictionRunsMillis(ds.getTimeBetweenEvictionRunsMillis());
+        props.setMinEvictableIdleTimeMillis(ds.getMinEvictableIdleTimeMillis());
+        props.setValidationQuery(ds.getValidationQuery());
+        props.setTestWhileIdle(ds.isTestWhileIdle());
+        props.setTestOnBorrow(ds.isTestOnBorrow());
+        props.setTestOnReturn(ds.isTestOnReturn());
+
+        return props;
     }
 }

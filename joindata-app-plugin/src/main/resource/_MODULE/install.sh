@@ -15,9 +15,14 @@ cd $dir
 
 appdir=/opt/__APPID__
 appconfigdir=$appdir/__APPVERSION__/CONFIG
-targetconfigdir=/var/config/__APPID__/__APPVERSION__
+targetconfigdir=/var/config/__APPID__
+targetverconfigdir=$targetconfigdir/__APPVERSION__
 
-userconfigfile=$appdir/__APPVERSION__/CONFIG/LINUX_USER
+addedconfigfile=""
+depredconfigfile=""
+
+userconfigfile=$targetconfigdir/LINUX_USER
+userconfigfile2=$appconfigdir/LINUX_USER
 
 quiet='N'
 restartapp='N'
@@ -94,20 +99,24 @@ echo -e "${SUCCESS}				OK${RES}"
 # 处理配置文件钩子
 echo -en "${INFO}---(STEP 2 )${RES} 处理配置文件钩子..."
 mkdir -p $targetconfigdir
+mkdir -p $targetverconfigdir
 appcfgs=`ls $appconfigdir`
-# 如果有新的配置文件，复制到配置钩子文件夹
+# 如果有新的配置文件，复制到配置钩子文件夹，生成警告
 for appcfg in $appcfgs
 do
 	if [ ! -f "$targetconfigdir/$appcfg" ]; then
 		cp $appconfigdir/$appcfg $targetconfigdir/
+		addedconfigfile="$addedconfigfile $targetconfigdir/$targetcfg"
 	fi
 done
 targetcfgs=`ls $targetconfigdir/`
-# 如果没有该，删除对应配置钩子文件
+# 如果没有该钩子，生成警告
 for targetcfg in $targetcfgs
 do
 	if [ ! -f "$appconfigdir/$targetcfg" ]; then
-		rm -f $targetconfigdir/$targetcfg
+		if [ ! -d "$targetconfigdir/$targetcfg" ]; then
+			depredconfigfile="$depredconfigfile $targetconfigdir/$targetcfg"
+		fi
 	fi
 done
 echo -e "${SUCCESS}			OK${RES}"
@@ -134,6 +143,7 @@ chmod -R 771 $piddir
 chown -R $inputuser $targetconfigdir/ $appconfigdir/
 chown $inputuser $pidfile
 echo $inputuser > $userconfigfile
+echo $inputuser > $userconfigfile2
 echo -e "${SUCCESS}				OK${RES}"
 echo "------------------------------------------------------------"
 
@@ -143,11 +153,40 @@ echo -e "程序目录: ${HIGHLIGHT}$appdir/__APPVERSION__${RES}"
 echo -e "配置目录: ${HIGHLIGHT}$targetconfigdir${RES}"
 echo -e "日志目录: ${HIGHLIGHT}$logdir${RES}"
 echo -e "临时目录: ${HIGHLIGHT}$tmpdir${RES}"
+echo -e "版本专有配置目录: ${HIGHLIGHT}$targetverconfigdir${RES}"
+
+if [ ! -z "$depredconfigfile" ]; then
+	echo ""
+	echo -e "${WARN}注意: 以下配置文件可能已过期，请务必处理，以免误读${RES}"
+	for cfgfile in $depredconfigfile
+	do
+		echo -e "- ${HIGHLIGHT}$cfgfile${RES}"
+	done
+fi
+
+if [ ! -z "$addedconfigfile" ]; then
+	echo ""
+	echo -e "${WARN}注意: 以下配置文件是新增的，请确认是否需要编辑${RES}"
+	for cfgfile in $addedconfigfile
+	do
+		echo -e "- ${HIGHLIGHT}$cfgfile${RES}"
+	done
+fi
+
+if [ ! -z `ls $targetverconfigdir/*_OPTS 2>/dev/null`  ]; then
+	echo ""
+	echo -e "${WARN}注意: 该版本包含专有配置文件，请确认这些文件是否影响此次运行${RES}"
+	for cfgfile in `ls $targetverconfigdir/*_OPTS`
+	do
+		echo -e "- ${HIGHLIGHT}$cfgfile${RES}"
+	done
+fi
 
 echo ""
 echo -e "${INFO}现在可以做这些事: ${RES}"
-echo -e "修改程序用户: ${HIGHLIGHT}$appdir/__APPVERSION__/CONFIG/LINUX_USER${RES}"
-echo -e "修改添加启动参数: ${HIGHLIGHT}$appdir/__APPVERSION__/CONFIG/*_OPTS${RES}"
+echo -e "修改程序用户: ${HIGHLIGHT}$targetconfigdir/LINUX_USER${RES}"
+echo -e "修改添加启动参数: ${HIGHLIGHT}$targetconfigdir/*_OPTS${RES}"
+echo -e "修改添加该版本专有的启动参数: ${HIGHLIGHT}$targetverconfigdir/*_OPTS${RES}"
 echo -e "通过服务脚本启动程序: ${HIGHLIGHT}$appdir/__APPVERSION__/init.d/service.sh${RES}"
 
 if [ $restartapp == 'Y' ]; then

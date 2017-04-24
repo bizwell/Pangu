@@ -2,7 +2,6 @@ package com.joindata.inf.common.util.basic;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -16,14 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.Configuration;
 
 import com.joindata.inf.common.util.basic.entities.MethodArgReflectInfo;
 import com.joindata.inf.common.util.basic.entities.MethodReflectInfo;
-import com.joindata.inf.common.util.log.Logger;
+import com.xiaoleilu.hutool.lang.JarClassLoader;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -32,6 +32,7 @@ import javassist.NotFoundException;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Class 操作相关的工具
@@ -39,9 +40,9 @@ import javassist.bytecode.MethodInfo;
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date 2015年11月3日 下午5:56:41
  */
+@Slf4j
 public class ClassUtil
 {
-    private static final Logger log = Logger.get();
 
     /**
      * 获取对象的 Field 列表，并赋予可访问性
@@ -339,17 +340,6 @@ public class ClassUtil
     }
 
     /**
-     * 获取运行时中根目录下的某作为输入流返回
-     * 
-     * @return 该文件的输入流
-     * @throws IOException 输入输出异常
-     */
-    public static final InputStream getRootResourceAsStream(String fileName) throws IOException
-    {
-        return new ClassPathResource(fileName).getInputStream();
-    }
-
-    /**
      * 创建实例
      * 
      * @param clz Class 对象
@@ -387,6 +377,60 @@ public class ClassUtil
     public static final <T> T newInstance(String className)
     {
         return com.xiaoleilu.hutool.util.ClassUtil.newInstance(className);
+    }
+
+    /**
+     * 扫描指定文件夹下面所有在类或接口上面有指定注解的类或接口<br />
+     * 直接解析字节码，适用于在非运行时查找类的场景，使用的 <strong>javassist</strong> 库
+     * 
+     * @param dir 要扫描的文件夹
+     * @param annoClz 匹配的注解
+     * @param excludeAnnoClz 排除的注解
+     * @return 有该注解的类或接口的 CtClass(Javassist 反射类)
+     */
+    @SafeVarargs
+    public static Set<CtClass> scanTypeAnnotations(File dir, Class<? extends Annotation> annoClz, Class<? extends Annotation>... excludeAnnoClz)
+    {
+        log.debug("准备文件夹中类的注解： {}", annoClz.getCanonicalName());
+        log.debug("在哪个文件夹中扫描: {}", dir);
+
+        ClassPool pool = new ClassPool();
+        Set<CtClass> set = CollectionUtil.newHashSet();
+        try
+        {
+            pool.appendClassPath(dir.getPath());
+
+            set = ClassUtil.findClassNames(dir).stream().map(clzName -> {
+                try
+                {
+                    return pool.getCtClass(clzName);
+                }
+                catch(NotFoundException e)
+                {
+                    log.error("出错，找不到类: {}", e.getMessage(), e);
+                }
+                return null;
+            }).filter(ctClz -> {
+                boolean match = ctClz != null && ctClz.hasAnnotation(annoClz);
+                for(Class<? extends Annotation> exclude: excludeAnnoClz)
+                {
+                    log.debug("由于包含 {} 这个注解，便排除在扫描结果之外", exclude.getCanonicalName());
+                    match = false;
+                }
+                log.debug("扫描到 {} 是包含 {} 注解的，收了", annoClz.getCanonicalName());
+                return match;
+            }).collect(Collectors.toSet());
+        }
+        catch(NotFoundException e)
+        {
+            log.error("出错，找不到类: {}", e.getMessage(), e);
+        }
+        catch(MalformedURLException e)
+        {
+            log.error("出错: {}", e.getMessage(), e);
+        }
+        return set;
+
     }
 
     /**
@@ -611,25 +655,130 @@ public class ClassUtil
     }
 
     /**
-     * 从目录中取到所有的类<br />
-     * 找到的类会被加载，但不会初始化
+     * 加载指定目录下（包括子目录）所有的 Jar 包到运行环境中
      * 
-     * @param file 目录，将扫描该目录下所有文件
+     * @param dir 目录
+     */
+    public static void loadJarInDir(File dir)
+    {
+        if(dir == null || !dir.exists())
+        {
+            return;
+        }
+
+        List<File> files = FileUtil.getFileTree(dir, true, ".jar");
+        log.debug("找到了的 JAR 包: {}", files);
+
+        loadJars(files);
+    }
+
+    /**
+     * 加载指定 Jar 包
+     * 
+     * @param jars JAR 数组
+     */
+    public static void loadJars(File... jars)
+    {
+        if(jars == null || ArrayUtil.isEmpty(jars))
+        {
+            return;
+        }
+
+        for(File f: jars)
+        {
+            JarClassLoader.loadJar(f);
+            log.debug("加载 JAR 包: {}", f);
+        }
+    }
+
+    /**
+     * 加载指定 Jar 包
+     * 
+     * @param jars JAR 列表
+     */
+    public static void loadJars(List<File> jars)
+    {
+        if(jars == null || CollectionUtil.isNullOrEmpty(jars))
+        {
+            return;
+        }
+
+        for(File f: jars)
+        {
+            JarClassLoader.loadJar(f);
+            log.debug("加载 JAR 包: {}", f);
+        }
+    }
+
+    /**
+     * 从目录中取到所有的类的名称<br />
+     * 找到的只会解析类名，不会加载也不会初始化
+     * 
+     * @param dir 目录，将扫描该目录下所有文件
      * @return 查找到的类的集合，不会返回 null
      * @throws MalformedURLException
      */
-    public static Set<Class<?>> findClasses(File file) throws MalformedURLException
+    public static Set<String> findClassNames(File dir) throws MalformedURLException
     {
-        if(file == null || !file.exists())
+        if(dir == null || !dir.exists())
+        {
+            return CollectionUtil.newHashSet();
+        }
+
+        Set<String> set = CollectionUtil.newHashSet();
+
+        URLClassLoader loader = new URLClassLoader(new URL[]{dir.toURI().toURL()}, ClassUtil.getClassLoader());
+
+        String dirPath = dir.getAbsolutePath();
+        List<String> list = FileUtil.getFileTree(dirPath, true, "class");
+
+        for(String item: list)
+        {
+            // 删掉绝对路径前缀
+            String className = StringUtil.replaceFirst(item, dirPath + File.separator, "");
+            // 删掉 .class 扩展名
+            className = StringUtil.removeLast(className, ".class".length());
+            // 生成类名，替换文件路径为 .
+            className = StringUtil.replaceAll(className, File.separator, ".");
+
+            log.debug("找到的类: {}", className);
+
+            set.add(className);
+        }
+        try
+        {
+            loader.close();
+        }
+        catch(IOException e)
+        {
+            log.error("关闭类加载器时发生 IO 异常: {}", e.getMessage(), e);
+        }
+
+        log.debug("在 {} 中查找到 {} 个类", dirPath, list.size());
+
+        return set;
+    }
+
+    /**
+     * 从目录中取到所有的类<br />
+     * 找到的类会被加载，但不会初始化
+     * 
+     * @param dir 目录，将扫描该目录下所有文件
+     * @return 查找到的类的集合，不会返回 null
+     * @throws MalformedURLException
+     */
+    public static Set<Class<?>> findClasses(File dir) throws MalformedURLException
+    {
+        if(dir == null || !dir.exists())
         {
             return CollectionUtil.newHashSet();
         }
 
         Set<Class<?>> set = CollectionUtil.newHashSet();
 
-        URLClassLoader loader = new URLClassLoader(new URL[]{file.toURI().toURL()}, ClassUtil.getClassLoader());
+        URLClassLoader loader = new URLClassLoader(new URL[]{dir.toURI().toURL()}, ClassUtil.getClassLoader());
 
-        String dirPath = file.getAbsolutePath();
+        String dirPath = dir.getAbsolutePath();
         List<String> list = FileUtil.getFileTree(dirPath, true, "class");
 
         for(String item: list)
@@ -828,6 +977,8 @@ public class ClassUtil
         System.out.println(obj);
 
         System.out.println(findClasses(new File("E:/DEVELOP/WORKSPACE/GitWorkspace/Passport/passport-service-app/target/classes")));
+
+        System.out.println(scanTypeAnnotations(new File("E:/DEVELOP/WORKSPACE/GitWorkspace/Passport/passport-service-app/target/classes"), Configuration.class));
     }
 
 }

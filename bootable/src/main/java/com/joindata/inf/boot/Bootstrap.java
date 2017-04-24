@@ -37,9 +37,11 @@ import com.joindata.inf.common.basic.errors.SystemError;
 import com.joindata.inf.common.basic.exceptions.SystemException;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
+import com.joindata.inf.common.basic.support.BootInfoHolder.Env;
 import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
+import com.joindata.inf.common.util.basic.ResourceUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.basic.SystemUtil;
 import com.joindata.inf.common.util.log.Logger;
@@ -66,7 +68,7 @@ public class Bootstrap
     {
         try
         {
-            log.info(StreamUtils.copyToString(ClassUtil.getRootResourceAsStream("logo.txt"), Charset.forName("UTF-8")));
+            log.info(StreamUtils.copyToString(ResourceUtil.getRootResourceAsStream("logo.txt"), Charset.forName("UTF-8")), Env.get());
         }
         catch(IOException e)
         {

@@ -12,11 +12,15 @@ echo ""
 dir=$(cd "$(dirname "`readlink -f $0`")"; pwd)
 cd $dir
 
-targetconfigdir=/var/config/__APPID__/__APPVERSION__
+targetconfigdir=/var/config/__APPID__
+targetverconfigdir=$targetconfigdir/__APPVERSION__
 
 cps=$CLASSPATH
 jars="__LIBJARS__"
 opts=`cat $targetconfigdir/*_OPTS`
+if [ ! -z `ls $targetverconfigdir/*_OPTS 2>/dev/null`  ]; then
+  opts="$opts `cat $targetverconfigdir/*_OPTS`"
+fi
 
 appdir=/opt/__APPID__
 tmpdir="/data/tmp/__APPID__/__APPVERSION__"
@@ -71,7 +75,7 @@ fi
 mkdir -p $tmpdir
 
 # 启动
-nohup $JAVA_HOME/bin/java -server $disconfOpts $opts -classpath $cps __MAINCLASS__ >> $stdoutfile 2>$stderrfile &
+nohup $JAVA_HOME/bin/java -server $opts $disconfOpts -classpath $cps __MAINCLASS__ >> $stdoutfile 2>&1 &
 
 # 写 PID
 echo $! > $pidfile
@@ -83,4 +87,4 @@ echo -e "${SUCCESS}已启动${RES}"
 echo ""
 
 echo -e "标准输出追加到: ${HIGHLIGHT}$stdoutfile${RES}"
-echo -e "标准错误追加到: ${HIGHLIGHT}$stderrfile${RES}"
+echo -e "标准错误追加到: ${WARN}[已重定向至标准输出]${RES}"

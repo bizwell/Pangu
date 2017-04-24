@@ -358,6 +358,27 @@ public class CollectionUtil
         return false;
     }
 
+    /**
+     * 将集合的每个元素强转成指定的元素的集合
+     * 
+     * @param collection 原 Collection
+     * @return 强转后的 Collection
+     */
+    @SuppressWarnings("unchecked")
+    public static <Source, Target, SourceCollection extends Collection<Source>, TargetCollection extends Collection<Target>> TargetCollection cast(SourceCollection collection)
+    {
+        if(collection == null)
+        {
+            return null;
+        }
+        TargetCollection ret = (TargetCollection)ClassUtil.newInstance(collection.getClass());
+        collection.forEach(item -> {
+            ret.add((Target)item);
+        });
+
+        return ret;
+    }
+
     public static void main(String[] args)
     {
         System.out.println(newHashSet("A", "B", "C"));
@@ -389,6 +410,16 @@ public class CollectionUtil
         System.out.println(isNullOrEmpty(newList()));
 
         System.out.println(JsonUtil.toJSON(toArray(newList("a", "b", "c"))));
+
+        {
+
+            Object a = "A";
+            Object b = "B";
+            Object c = "1";
+
+            Set<String> set = cast(CollectionUtil.newHashSet(a, b, c));
+            System.out.println(set);
+        }
 
     }
 }

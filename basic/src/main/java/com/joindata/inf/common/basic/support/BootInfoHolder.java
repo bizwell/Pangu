@@ -27,7 +27,7 @@ public class BootInfoHolder
     private static String APP_ID = "";
 
     private static String APP_VERSION = "";
-    
+
     /**
      * 设置启动信息
      * 
@@ -220,4 +220,44 @@ public class BootInfoHolder
         return BOOT_CLASS.getPackage().getName();
     }
 
+    /**
+     * 环境相关的操作
+     * 
+     * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
+     * @date Apr 20, 2017 10:21:24 AM
+     */
+    public static final class Env
+    {
+        private static String ENV = System.getProperty("disconf.env", "LOCAL");
+
+        public static final String get()
+        {
+            return ENV;
+        }
+
+        public static final boolean isLOCAL()
+        {
+            return ENV.equals("LOCAL");
+        }
+
+        public static final boolean isDEV()
+        {
+            return ENV.equals("DEV");
+        }
+
+        public static final boolean isTEST()
+        {
+            return ENV.equals("TEST");
+        }
+
+        public static final boolean isUAT()
+        {
+            return ENV.equals("UAT");
+        }
+
+        public static final boolean isPROD()
+        {
+            return ENV.equals("PROD");
+        }
+    }
 }

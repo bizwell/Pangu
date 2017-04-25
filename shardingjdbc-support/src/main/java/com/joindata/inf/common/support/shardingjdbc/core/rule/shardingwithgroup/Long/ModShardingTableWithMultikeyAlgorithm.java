@@ -63,7 +63,7 @@ public class ModShardingTableWithMultikeyAlgorithm implements MultipleKeysTableS
                     tableNames.addAll(tableChooser.choose(tbNames, inValues));
                     break;
                 case RANGE:
-                    tableNames.addAll(tableChooser.choose(tbNames, (long)shardingValue.getValueRange().lowerEndpoint(), (long)shardingValue.getValueRange().upperEndpoint()));
+                    tableNames.addAll(tableChooser.choose(tbNames, (Long)shardingValue.getValueRange().lowerEndpoint(), (Long)shardingValue.getValueRange().upperEndpoint()));
                     break;
                 default:
                     throw new UnsupportedOperationException(shardingValue.getType().getClass().getName());

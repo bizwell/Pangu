@@ -67,7 +67,7 @@ public class RangeGroupSchemeMultikeyAlgorithm implements MultipleKeysDatabaseSh
                     dbNames.addAll(dbChooser.choose(dbNameList, inValues));
                     break;
                 case RANGE:
-                    dbNames.addAll(dbChooser.choose(dbNameList, (long)shardingValue.getValueRange().lowerEndpoint(), (long)shardingValue.getValueRange().upperEndpoint()));
+                    dbNames.addAll(dbChooser.choose(dbNameList, (Long)shardingValue.getValueRange().lowerEndpoint(), (Long)shardingValue.getValueRange().upperEndpoint()));
                     break;
                 default:
                     throw new UnsupportedOperationException(shardingValue.getType().getClass().getName());

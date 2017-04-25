@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.joindata.inf.common.support.kafka.component.MessageListenerScanner;
 import com.joindata.inf.common.support.kafka.component.handler.BinaryMessageListenerHandler;
 import com.joindata.inf.common.support.kafka.component.handler.StringMessageListenerHandler;
+import com.joindata.inf.common.support.kafka.core.MessageListenerScanner;
 import com.joindata.inf.common.support.kafka.properties.KafkaProperties;
 import com.joindata.inf.common.util.log.Logger;
 

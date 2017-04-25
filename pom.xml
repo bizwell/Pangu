@@ -64,6 +64,7 @@
 		<netty-old.version>3.7.0.Final</netty-old.version>
 		<mysql.version>5.1.40</mysql.version>
 		<mybatis.version>3.4.1</mybatis.version>
+		<mybatis-pagehelper.version>5.0.1</mybatis-pagehelper.version>
 		<mybatis-spring.version>1.3.0</mybatis-spring.version>
 		<druid.version>1.0.12</druid.version>
 		<springfox.version>2.6.1</springfox.version>
@@ -195,6 +196,13 @@
 				<artifactId>mybatis</artifactId>
 				<version>${mybatis.version}</version>
 			</dependency>
+			<!-- MyBatis 分页插件 -->
+			<dependency>
+				<groupId>com.github.pagehelper</groupId>
+				<artifactId>pagehelper</artifactId>
+				<version>${mybatis-pagehelper.version}</version>
+			</dependency>
+
 
 			<!-- MyBatis Spring 支持 -->
 			<dependency>
@@ -851,7 +859,7 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
-			
+
 			<!-- JAR 插件设置 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

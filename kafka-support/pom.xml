@@ -40,6 +40,13 @@
 			<artifactId>kafka-streams</artifactId>
 		</dependency>
 
+		<!-- 用于扩展 Dubbo 配置 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 	</dependencies>
 
 </project>

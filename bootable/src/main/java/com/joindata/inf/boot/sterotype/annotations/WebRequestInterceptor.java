@@ -21,10 +21,10 @@ import java.lang.annotation.Target;
 public @interface WebRequestInterceptor
 {
     /** 拦截的路径 */
-    String[] value() default {};
+    String[] value() default {"/**"};
 
     /** 拦截的路径 */
-    String[] include() default {};
+    String[] include() default {"/**"};
 
     /** 不拦截的路径 */
     String[] exclude() default {};

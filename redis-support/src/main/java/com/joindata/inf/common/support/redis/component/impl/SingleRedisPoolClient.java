@@ -1050,4 +1050,18 @@ public class SingleRedisPoolClient implements RedisClient
             return BeanUtil.deserializeObject(data, clz);
         }
     }
+
+    @Override
+    public long expire(String key, int seconds)
+    {
+        if(key == null)
+        {
+            return -1;
+        }
+
+        try (Jedis jedis = this.getJedisRes())
+        {
+            return jedis.expire(key, seconds);
+        }
+    }
 }

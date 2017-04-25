@@ -886,4 +886,15 @@ public class ClusterRedisClient implements RedisClient
         byte data[] = jedis.lpop(StringUtil.toBytes(key));
         return BeanUtil.deserializeObject(data, clz);
     }
+
+    @Override
+    public long expire(String key, int seconds)
+    {
+        if(key == null)
+        {
+            return -1;
+        }
+
+        return jedis.expire(key, seconds);
+    }
 }

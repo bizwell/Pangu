@@ -401,6 +401,15 @@ public interface RedisClient
      */
     public <T extends Serializable> T leftPop(String key, Class<T> clz);
 
+    /**
+     * 设置某个 key 的超时秒数
+     * 
+     * @param key 键
+     * @param seconds 秒数
+     * @return expire 设置成功返回 1，如果 key 不存在或版本不支持，返回 0， 如果 key 为null，返回 -1
+     */
+    public long expire(String key, int seconds);
+
     public static void main(String[] args) throws IOException
     {
         // class Dog implements Serializable

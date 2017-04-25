@@ -51,9 +51,19 @@ public class RestResponse<T>
         return new RestResponse<TT>(200, model, "OK");
     }
 
+    public static final <TT> RestResponse<TT> success(String message)
+    {
+        return new RestResponse<TT>(200, null, message);
+    }
+
     public static final <TT> RestResponse<TT> success(TT model, String message)
     {
         return new RestResponse<TT>(200, model, message);
+    }
+
+    public static final <TT> RestResponse<TT> success(TT model, Map<String, Object> extra)
+    {
+        return new RestResponse<TT>(200, model, "OK", extra);
     }
 
     public static final <TT> RestResponse<TT> success(TT model, String message, Map<String, Object> extra)

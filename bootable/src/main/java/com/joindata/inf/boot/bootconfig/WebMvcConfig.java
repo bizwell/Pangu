@@ -83,12 +83,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
         {
             WebRequestInterceptor pathParams = clz.getAnnotation(WebRequestInterceptor.class);
 
-            // 如果没有这个注解或不是 RequestInterceptor 的子类就不算拦截器，不予注册
-            if(pathParams == null && clz.isAssignableFrom(clz.asSubclass(RequestInterceptor.class)))
-            {
-                continue;
-            }
-
             if(ArrayUtil.isEmpty(pathParams.include()) && ArrayUtil.isEmpty(pathParams.value()))
             {
                 log.info("注册拦截器: {}, 拦截目录(默认): {}, 排除目录: {}", clz.getCanonicalName(), new String[]{"/**"}, pathParams.exclude());
@@ -98,12 +92,32 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
                 log.info("注册拦截器: {}, 拦截目录: {}, 排除目录: {}", clz.getCanonicalName(), ArrayUtil.merge(pathParams.include(), pathParams.value()), pathParams.exclude());
             }
 
-            // 创建拦截器实例
-            RequestInterceptor interceptor = (RequestInterceptor)SpringContextHolder.getBean(clz);
+            Object obj = SpringContextHolder.getBean(clz);
 
-            MappedInterceptor mappedInterceptor = new MappedInterceptor(ArrayUtil.merge(pathParams.include(), pathParams.value()), pathParams.exclude(), interceptor);
+            if(obj instanceof RequestInterceptor)
+            {
+                // 创建拦截器实例
+                RequestInterceptor interceptor = (RequestInterceptor)obj;
 
-            registry.addInterceptor(mappedInterceptor);
+                MappedInterceptor mappedInterceptor = new MappedInterceptor(ArrayUtil.merge(pathParams.include(), pathParams.value()), pathParams.exclude(), interceptor);
+                registry.addInterceptor(mappedInterceptor);
+
+                log.warn("注册 RequestInterceptor 拦截器: {}", clz.getCanonicalName());
+            }
+            else if(obj instanceof com.joindata.inf.boot.sterotype.handler.WebRequestInterceptor)
+            {
+                // 创建拦截器实例
+                com.joindata.inf.boot.sterotype.handler.WebRequestInterceptor interceptor = (com.joindata.inf.boot.sterotype.handler.WebRequestInterceptor)obj;
+
+                MappedInterceptor mappedInterceptor = new MappedInterceptor(ArrayUtil.merge(pathParams.include(), pathParams.value()), pathParams.exclude(), interceptor);
+                registry.addInterceptor(mappedInterceptor);
+
+                log.warn("注册 WebRequestInterceptor 拦截器: {}", clz.getCanonicalName());
+            }
+            else
+            {
+                log.warn("类: {} 没有继承任何拦截器, 不会生效", clz.getCanonicalName());
+            }
         }
 
         super.addInterceptors(registry);

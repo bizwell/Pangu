@@ -29,7 +29,7 @@ public abstract class WebRequestInterceptor implements org.springframework.web.c
     public void afterCompletion(WebRequest request, Exception ex) throws Exception
     {
         // 执行自定义拦截处理
-        afterCompletion(request, ex);
+        afterRequest(request, ex);
     }
 
     /**

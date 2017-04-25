@@ -106,7 +106,7 @@ for appcfg in $appcfgs
 do
 	if [ ! -f "$targetconfigdir/$appcfg" ]; then
 		cp $appconfigdir/$appcfg $targetconfigdir/
-		addedconfigfile="$addedconfigfile $targetconfigdir/$targetcfg"
+		addedconfigfile="$addedconfigfile $targetconfigdir/$appcfgs"
 	fi
 done
 targetcfgs=`ls $targetconfigdir/`

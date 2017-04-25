@@ -110,6 +110,7 @@ public class ZipMojo extends AbstractMojo
             CtClass mainClass = findBootClass();
             String appId = null;
             String appVersion = null;
+            String webPort = null;
             {
 
                 JoindataApp app = (JoindataApp)mainClass.getAnnotation(JoindataApp.class);
@@ -117,6 +118,7 @@ public class ZipMojo extends AbstractMojo
                 {
                     appId = app.id();
                     appVersion = app.version();
+                    webPort = "";
                 }
             }
             {
@@ -125,6 +127,7 @@ public class ZipMojo extends AbstractMojo
                 {
                     appId = app.id();
                     appVersion = app.version();
+                    webPort = String.valueOf(app.port());
                 }
             }
 
@@ -217,6 +220,7 @@ public class ZipMojo extends AbstractMojo
                 content = StringUtil.replaceAll(content, "__APPID__", appId);
                 content = StringUtil.replaceAll(content, "__APPVERSION__", appVersion);
                 content = StringUtil.replaceAll(content, "__PROG__", appId + "-" + appVersion);
+                content = StringUtil.replaceAll(content, "__WEBPORT__", webPort);
 
                 FileUtil.writeTo(fileMap.get(file).getPath(), content);
 

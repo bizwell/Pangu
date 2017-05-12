@@ -39,6 +39,9 @@ public class TransactionConfig
         return ds;
     }
 
+    /**
+     * Spring 事务管理器
+     */
     @Bean
     public DataSourceTransactionManager dataSourceTransactionManager()
     {
@@ -46,6 +49,9 @@ public class TransactionConfig
         return manager;
     }
 
+    /**
+     * 可以直接注入后使用，用于复杂的事务处理场景
+     */
     @Bean
     public TransactionTemplate transactionTemplate()
     {

@@ -12,7 +12,13 @@ public enum RabbitFeature
     QueueTransient,
     /** 独占连接，该队列只能被一个连接使用 */
     QueueExclusive,
-    /** 队列不使用时不自动删除 */
+    /**
+     * 队列不使用时自动删除<br />
+     * <strong>注意：</strong>在 BroadCast 类型时是失效的，请参阅 {@link #SharedBroadcastQueue}, {@link #DonotAutoDeleteNonSharedQueue}
+     * 
+     * @see #SharedBroadcastQueue
+     * @see #DonotAutoDeleteNonSharedQueue
+     */
     QueueAutoDelete,
 
     /** 通过 JSON 序列化消息 */
@@ -31,5 +37,13 @@ public enum RabbitFeature
     /** 交换机自动删除 */
     ExchangeAutoDelete,
     /** 内部交换机 */
-    ExchangeInternal
+    ExchangeInternal,
+
+    /**
+     * 使用共享的 BroadCast 接收队列<br />
+     * <strong>注意：</strong> 如果加上，那么应用在多实例环境下会起不到广播的作用
+     */
+    SharedBroadcastQueue,
+    /** 当不设置 {@link #SharedBroadcastQueue} 时，如果这个设置了，那么将不自动删除多实例环境下自动生成的广播队列 */
+    DonotAutoDeleteNonSharedQueue
 }

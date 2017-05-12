@@ -38,10 +38,23 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
     public void startListener()
     {
         super.getListenerMap().keySet().forEach(queue -> {
-            ConsumeThread thread = new ConsumeThread(queue, this);
+
+            boolean shared = EnumUtil.hasItem(this.getQueueConfig(queue).features(), RabbitFeature.SharedBroadcastQueue);
+
+            String realQueue = shared ? queue : UuidUtil.make() + "@" + queue;
+
+            ConsumeThread thread = new ConsumeThread(queue, realQueue, this);
             thread.start();
 
-            log.info("启动 {} 广播的收取线程", queue);
+            if(shared)
+            {
+                log.info("启动 {} 广播的收取线程, 共享队列名", queue);
+            }
+            else
+            {
+                log.info("启动 {} 广播的收取线程, 真实的收取队列: {}", queue, realQueue);
+            }
+
         });
     }
 
@@ -50,6 +63,8 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
         private AbstractMessageListenerHandler handler;
 
         private String queue;
+
+        private String realQueue;
 
         private Channel channel;
 
@@ -77,9 +92,10 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
             this.conn = conn;
         }
 
-        public ConsumeThread(String queue, AbstractMessageListenerHandler handler)
+        public ConsumeThread(String queue, String realQueue, AbstractMessageListenerHandler handler)
         {
             this.queue = queue;
+            this.realQueue = realQueue;
             this.handler = handler;
             init();
         }
@@ -109,14 +125,21 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
                 {
                     boolean durable = !EnumUtil.hasItem(config.features(), RabbitFeature.QueueTransient);
                     boolean exclusive = EnumUtil.hasItem(config.features(), RabbitFeature.QueueExclusive);
-                    boolean autoDelete = EnumUtil.hasItem(config.features(), RabbitFeature.QueueAutoDelete);
-                    channel.queueDeclare(queue, durable, exclusive, autoDelete, null);
-                    channel.queueBind(queue, broadcastExchange, routingKey);
+
+                    // 如果是不共享队列，并且当没设置不自动删除时，默认使用后删除
+                    boolean autoDelete = !StringUtil.isEquals(queue, realQueue);
+                    if(!EnumUtil.hasItem(config.features(), RabbitFeature.DonotAutoDeleteNonSharedQueue))
+                    {
+                        autoDelete = true;
+                    }
+
+                    channel.queueDeclare(realQueue, durable, exclusive, autoDelete, null);
+                    channel.queueBind(realQueue, broadcastExchange, routingKey);
                 }
             }
             catch(IOException e)
             {
-                log.error("消费 {} 时出错: {}", queue, e.getMessage(), e);
+                log.error("消费 {} 时出错: {}", realQueue, e.getMessage(), e);
             }
 
             ShutdownListener shutdownListener = new ShutdownListener()
@@ -126,7 +149,7 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
                 {
                     if(!channel.isOpen())
                     {
-                        log.warn("收取 {} 的连接已断开, 请检查服务器是否开启或网络是否畅通...", queue);
+                        log.warn("收取 {} 的连接已断开, 请检查服务器是否开启或网络是否畅通...", realQueue);
                     }
                 }
             };
@@ -143,7 +166,7 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
             String broadcastExchange = StringUtil.isNullOrEmpty(config.exchangeName()) ? RabbitDefault.DEFAULT_FANOUT_EXCHANGE : config.exchangeName();
             String routingKey = config.routingKey();
 
-            log.info("从 {} 收取广播消息, 绑定交换机: {}, 路由键: {}", queue, broadcastExchange, routingKey.equals(RabbitDefault.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
+            log.info("从 {} 收取广播消息, 绑定交换机: {}, 路由键: {}", realQueue, broadcastExchange, routingKey.equals(RabbitDefault.DEFAULT_ROUTING_KEY) ? "[默认]" : routingKey);
 
             try
             {
@@ -152,11 +175,11 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
                 boolean noLocal = EnumUtil.hasItem(config.features(), RabbitFeature.ConsumeNoLocal);
                 boolean exclusive = EnumUtil.hasItem(config.features(), RabbitFeature.ConsumeExclusive);
 
-                channel.basicConsume(queue, autoAck, consumerTag, noLocal, exclusive, null, handler.getConsumer(queue));
+                channel.basicConsume(realQueue, autoAck, consumerTag, noLocal, exclusive, null, handler.getConsumer(queue));
             }
             catch(IOException e)
             {
-                log.error("消费 {} 时出错: {}", queue, e.getMessage(), e);
+                log.error("消费 {} 时出错: {}", realQueue, e.getMessage(), e);
             }
         }
     };

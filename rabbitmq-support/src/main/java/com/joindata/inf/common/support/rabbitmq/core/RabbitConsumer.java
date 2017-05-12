@@ -79,16 +79,34 @@ public class RabbitConsumer<T extends Serializable> implements Consumer
         log.debug("收取 {} 消息的属性: {}, 消费器: {}", queue, properties, consumerTag);
         log.debug("收取 {} 环境的属性: {}, 消费器: {}", queue, envelope, consumerTag);
 
-        switch(deserialization)
+        T msg = null;
+        try
         {
-            case JSON:
-                this.listener.onReceive((T)JsonUtil.fromJSON(StringUtil.toString(body), this.dataClz));
-                break;
-            case STRING:
-                this.listener.onReceive((T)StringUtil.toString(body));
-                break;
-            default:
-                this.listener.onReceive(BeanUtil.deserializeObject(body));
+            switch(deserialization)
+            {
+                case JSON:
+                    msg = (T)JsonUtil.fromJSON(StringUtil.toString(body), this.dataClz);
+                    break;
+                case STRING:
+                    msg = (T)StringUtil.toString(body);
+                    break;
+                default:
+                    msg = BeanUtil.deserializeObject(body);
+            }
+        }
+        catch(Exception e)
+        {
+            log.error("序列化消息时出错: {}", e.getMessage(), e);
+            return;
+        }
+
+        try
+        {
+            this.listener.onReceive(msg);
+        }
+        catch(Exception e)
+        {
+            log.error("接收消息时出错: {}", e.getMessage(), e);
         }
     }
 

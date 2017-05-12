@@ -30,6 +30,8 @@ public class ConfigHub extends AbstractConfigHub
         System.setProperty("disconf.version", BootInfoHolder.getAppVersion());
         System.setProperty("disconf.user_define_download_dir", DisconfCst.DOWNLOAD_DIR);
         System.setProperty("disconf.enable_local_download_dir_in_class_path", "false");
+        System.setProperty("disconf.conf_server_url_retry_sleep_seconds", "0");
+        System.setProperty("disconf.conf_server_url_retry_times", "1");
         if(StringUtil.isBlank(System.getProperty("disconf.enable.remote.conf")))
         {
             System.setProperty("disconf.enable.remote.conf", "true");

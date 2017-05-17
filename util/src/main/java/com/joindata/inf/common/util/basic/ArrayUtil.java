@@ -89,8 +89,7 @@ public class ArrayUtil
      * 
      * @return 每个数组元素的字符串表示
      */
-    @SafeVarargs
-    public static final String toString(Object... arr)
+    public static final String toString(Object arr)
     {
         return ArrayUtils.toString(arr);
     }
@@ -103,7 +102,7 @@ public class ArrayUtil
     @SafeVarargs
     public static final String toString(String... arr)
     {
-        return ArrayUtils.toString(arr);
+        return ArrayUtil.join(arr);
     }
 
     /**

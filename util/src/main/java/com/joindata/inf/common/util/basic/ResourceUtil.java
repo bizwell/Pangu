@@ -6,11 +6,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.ResourceUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 运行时资源相关工具
@@ -18,6 +23,7 @@ import org.springframework.util.ResourceUtils;
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date 2015年12月21日 下午6:16:35
  */
+@Slf4j
 public class ResourceUtil
 {
     /**
@@ -168,5 +174,77 @@ public class ResourceUtil
         }
 
         return null;
+    }
+
+    /**
+     * 返回 ClassPath 中指定路径下的资源文件列表
+     * 
+     * @param dirs 路径列表
+     */
+    public static Resource[] getResources(String... dirs)
+    {
+        List<Resource> resList = CollectionUtil.newList();
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+        if(ArrayUtil.isEmpty(dirs))
+        {
+            dirs = ArrayUtil.make("/");
+        }
+
+        for(String dir: dirs)
+        {
+            try
+            {
+                CollectionUtil.addToList(resList, resolver.getResources("classpath:" + dir));
+            }
+            catch(IOException e)
+            {
+                log.error("查找资源文件时出错：", e.getMessage(), e);
+            }
+        }
+
+        resList.removeIf(item ->
+        {
+            return !item.exists();
+        });
+
+        return CollectionUtil.toArray(resList);
+    }
+
+    /**
+     * 返回 ClassPath 中指定路径下的资源文件列表, 限定文件结尾
+     * 
+     * @param dirs 路径列表
+     */
+    public static Resource[] getResourcesEndswith(String suffix, String... dirs)
+    {
+        List<Resource> resList = CollectionUtil.newList();
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+        if(ArrayUtil.isEmpty(dirs))
+        {
+            dirs = ArrayUtil.make("/");
+        }
+
+        for(String dir: dirs)
+        {
+            try
+            {
+                CollectionUtil.addToList(resList, resolver.getResources("classpath:" + dir + "/**"));
+            }
+            catch(IOException e)
+            {
+                log.error("查找资源文件时出错：", e.getMessage(), e);
+            }
+        }
+
+        resList.removeIf(item ->
+        {
+            return !item.exists() || !item.getFilename().endsWith(suffix);
+        });
+
+        return CollectionUtil.toArray(resList);
     }
 }

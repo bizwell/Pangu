@@ -4,16 +4,20 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Servlet;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.FilterMapping;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -27,10 +31,13 @@ import com.joindata.inf.boot.annotation.JoindataWebApp;
 import com.joindata.inf.boot.bootconfig.WebMvcConfig;
 import com.joindata.inf.boot.mechanism.Jetty2Log4j2Bridge;
 import com.joindata.inf.boot.mechanism.JoindataAnnotationBeanNameGenerator;
+import com.joindata.inf.boot.support.DelegatingServletProxy;
 import com.joindata.inf.boot.webserver.JettyServerFactory;
 import com.joindata.inf.common.basic.annotation.FilterComponent;
 import com.joindata.inf.common.basic.annotation.FilterConfig;
 import com.joindata.inf.common.basic.annotation.JoindataComponent;
+import com.joindata.inf.common.basic.annotation.ServletComponent;
+import com.joindata.inf.common.basic.annotation.ServletConfig;
 import com.joindata.inf.common.basic.annotation.WebAppFilterItem;
 import com.joindata.inf.common.basic.annotation.WebConfig;
 import com.joindata.inf.common.basic.errors.SystemError;
@@ -268,6 +275,17 @@ public class Bootstrap
                             holder = new FilterHolder(filterItem.filter());
                         }
 
+                        // 取踏马的 initParam
+                        if(filterItem.config() != null)
+                        {
+                            Map<String, String> initParamMap = CollectionUtil.newMap();
+                            for(WebInitParam initParam: filterItem.config().initParams())
+                            {
+                                initParamMap.put(initParam.name(), initParam.value());
+                            }
+                            holder.setInitParameters(initParamMap);
+                        }
+
                         holder.setName(mapping.getFilterName());
 
                         for(String path: mapping.getPathSpecs())
@@ -358,6 +376,56 @@ public class Bootstrap
                         }
                     }
                 }
+
+            }
+
+            // 添加 Servlet
+            {
+                // 从应用包下扫
+                Set<Class<?>> servletClasses = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), ServletComponent.class);
+
+                // 从配置类中找已指明的
+                for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
+                {
+                    ServletConfig servletConfig = configHubClz.getAnnotation(ServletConfig.class);
+
+                    if(servletConfig != null)
+                    {
+                        for(Class<Servlet> clz: servletConfig.value())
+                        {
+                            if(clz.getAnnotation(ServletComponent.class) == null)
+                            {
+                                log.error("无法代理 Servlet: {}, 因为没有标注 @ServletComponent", clz.getCanonicalName());
+                                continue;
+                            }
+
+                            servletClasses.add(clz);
+                        }
+                    }
+                }
+
+                // 归 Spring 代理的 Servlet
+                {
+                    {
+                        for(Class<?> clz: servletClasses)
+                        {
+                            ServletComponent webServlet = clz.getAnnotation(ServletComponent.class);
+
+                            String beanName = clz.getCanonicalName();
+                            ServletHolder holder = new ServletHolder(new DelegatingServletProxy(beanName));
+
+                            holder.setName("delegating-" + beanName);
+
+                            for(String path: webServlet.path())
+                            {
+                                webAppContext.addServlet(holder, path);
+                            }
+
+                            log.info("注册自定义 Spring 代理 Servlet: {}", beanName);
+                        }
+                    }
+                }
+
             }
 
             List<Handler> handlers = CollectionUtil.newList();

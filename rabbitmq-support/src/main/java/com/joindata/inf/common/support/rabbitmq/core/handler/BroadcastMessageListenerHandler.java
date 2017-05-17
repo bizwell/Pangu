@@ -37,7 +37,8 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
     @Override
     public void startListener()
     {
-        super.getListenerMap().keySet().forEach(queue -> {
+        super.getListenerMap().keySet().forEach(queue ->
+        {
 
             boolean shared = EnumUtil.hasItem(this.getQueueConfig(queue).features(), RabbitFeature.SharedBroadcastQueue);
 
@@ -125,19 +126,26 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
                 {
                     boolean durable = !EnumUtil.hasItem(config.features(), RabbitFeature.QueueTransient);
                     boolean exclusive = EnumUtil.hasItem(config.features(), RabbitFeature.QueueExclusive);
+                    boolean autoDelete = false;
 
-                    // 如果是不共享队列，并且当没设置不自动删除时，默认使用后删除
-                    boolean autoDelete = !StringUtil.isEquals(queue, realQueue);
-                    if(!EnumUtil.hasItem(config.features(), RabbitFeature.DonotAutoDeleteNonSharedQueue))
+                    // 如果是共享队列，autoDelete 取决于是否有 QueueAutoDelete 特性
+                    if(EnumUtil.hasItem(config.features(), RabbitFeature.SharedBroadcastQueue))
                     {
-                        autoDelete = true;
+                        autoDelete = EnumUtil.hasItem(config.features(), RabbitFeature.QueueAutoDelete);
+                    }
+                    // 如果是不共享队列，默认删除队列，但也可通过 DonotAutoDeleteNonSharedQueue 特性来设置不删除
+                    else
+                    {
+                        autoDelete = !EnumUtil.hasItem(config.features(), RabbitFeature.DonotAutoDeleteNonSharedQueue);
                     }
 
                     channel.queueDeclare(realQueue, durable, exclusive, autoDelete, null);
                     channel.queueBind(realQueue, broadcastExchange, routingKey);
                 }
             }
-            catch(IOException e)
+            catch(
+
+            IOException e)
             {
                 log.error("消费 {} 时出错: {}", realQueue, e.getMessage(), e);
             }

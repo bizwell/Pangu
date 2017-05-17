@@ -11,6 +11,9 @@ import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWit
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupRule;
 import com.joindata.inf.common.util.basic.BeanUtil;
 
+import lombok.Data;
+
+@Data
 @Service
 @Scope("singleton")
 @DisconfFile(filename = ShardingJdbcConf.FILENAME)
@@ -23,38 +26,9 @@ public class ShardingJdbcConf implements InitializingBean
 
     /** 用库分组、用表取模规则列表 */
     private ShardingWithGroupRule[] shardingWithGroupRule;
-    
+
+    /** 用库分组、用表取模并通过多个字段名路由的规则列表 */
     private ShardingWithGroupByColumnRule[] shardingWithGroupByColumnRule;
-
-    public ShardingWithGroupByColumnRule[] getShardingWithGroupByColumnRule()
-    {
-        return shardingWithGroupByColumnRule;
-    }
-
-    public void setShardingWithGroupByColumnRule(ShardingWithGroupByColumnRule[] shardingWithGroupByColumnRule)
-    {
-        this.shardingWithGroupByColumnRule = shardingWithGroupByColumnRule;
-    }
-
-    public ShardingDataSourceProperties[] getDataSources()
-    {
-        return dataSources;
-    }
-
-    public void setDataSources(ShardingDataSourceProperties[] dataSources)
-    {
-        this.dataSources = dataSources;
-    }
-
-    public ShardingWithGroupRule[] getShardingWithGroupRule()
-    {
-        return shardingWithGroupRule;
-    }
-
-    public void setShardingWithGroupRule(ShardingWithGroupRule[] shardingWithGroupRule)
-    {
-        this.shardingWithGroupRule = shardingWithGroupRule;
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception
@@ -65,7 +39,6 @@ public class ShardingJdbcConf implements InitializingBean
     private void build()
     {
         ShardingJdbcConf conf = DisconfUtil.readJson(FILENAME, ShardingJdbcConf.class);
-        // this.setDataSources(conf.getDataSources());
         BeanUtil.copyProperties(conf, this);
     }
 }

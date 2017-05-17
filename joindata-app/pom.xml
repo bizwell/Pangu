@@ -147,6 +147,13 @@
 				<version>${pangu.version}</version>
 			</dependency>
 			
+			<!-- 支持流程引擎 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>camunda-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
+			
 		</dependencies>
 	</dependencyManagement>
 
@@ -164,7 +171,7 @@
 		<plugins>
 			<!-- 嘉银数据应用插件 -->
 			<plugin>
-				<groupId>com.joindata</groupId>
+				<groupId>com.joindata.inf</groupId>
 				<artifactId>joindata-app-plugin</artifactId>
 				<version>${pangu.version}</version>
 			</plugin>

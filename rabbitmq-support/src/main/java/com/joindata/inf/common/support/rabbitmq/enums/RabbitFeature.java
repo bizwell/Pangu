@@ -14,7 +14,7 @@ public enum RabbitFeature
     QueueExclusive,
     /**
      * 队列不使用时自动删除<br />
-     * <strong>注意：</strong>在 BroadCast 类型时是失效的，请参阅 {@link #SharedBroadcastQueue}, {@link #DonotAutoDeleteNonSharedQueue}
+     * <strong>注意：</strong>在非共享队列的 BroadCast 中是失效的，请参阅 {@link #SharedBroadcastQueue}, {@link #DonotAutoDeleteNonSharedQueue}
      * 
      * @see #SharedBroadcastQueue
      * @see #DonotAutoDeleteNonSharedQueue

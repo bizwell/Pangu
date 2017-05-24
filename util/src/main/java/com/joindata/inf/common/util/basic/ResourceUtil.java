@@ -15,15 +15,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.ResourceUtils;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * 运行时资源相关工具
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date 2015年12月21日 下午6:16:35
  */
-@Slf4j
 public class ResourceUtil
 {
     /**
@@ -200,7 +197,8 @@ public class ResourceUtil
             }
             catch(IOException e)
             {
-                log.error("查找资源文件时出错：", e.getMessage(), e);
+                System.err.println("查找资源文件时出错：" + e.getMessage());
+                e.printStackTrace();
             }
         }
 
@@ -236,7 +234,8 @@ public class ResourceUtil
             }
             catch(IOException e)
             {
-                log.error("查找资源文件时出错：", e.getMessage(), e);
+                System.err.println("查找资源文件时出错：" + e.getMessage());
+                e.printStackTrace();
             }
         }
 

@@ -3,6 +3,7 @@ package com.joindata.inf.common.support.camunda.bootconfig;
 import javax.sql.DataSource;
 
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.impl.cfg.auth.DefaultAuthorizationProvider;
 import org.camunda.bpm.engine.impl.history.HistoryLevel;
 import org.camunda.bpm.engine.spring.ProcessEngineFactoryBean;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
@@ -71,6 +72,8 @@ public class CamundaConfig extends WebMvcConfigurerAdapter implements Applicatio
         configuration.setTransactionManager(dataSourceTransactionManager());
         configuration.setJobExecutorActivate(false);
         configuration.setDatabaseSchemaUpdate("true");
+        configuration.setAuthorizationEnabled(true);
+        configuration.setResourceAuthorizationProvider(new DefaultAuthorizationProvider());
         configuration.setHistoryLevel(HistoryLevel.HISTORY_LEVEL_FULL);
 
         return configuration;

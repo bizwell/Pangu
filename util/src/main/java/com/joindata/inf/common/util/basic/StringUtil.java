@@ -3,11 +3,14 @@ package com.joindata.inf.common.util.basic;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.xiaoleilu.hutool.util.StrUtil;
+
+import lombok.Synchronized;
 
 /**
  * <h3>字符串工具类</h3><br />
@@ -18,6 +21,8 @@ import com.xiaoleilu.hutool.util.StrUtil;
  */
 public class StringUtil
 {
+    private static final Pattern ESCAPED_UNICODE_PATTERN = Pattern.compile("\\\\u([0-9a-zA-Z]{4})");
+
     /**
      * 将字符串用空格、逗号、句号、分号分割为字符串数组<br />
      * <i>分割后的每个元素都会被去掉前后空格</i>
@@ -770,6 +775,7 @@ public class StringUtil
      * <strong>这里用 UTF-8 编码</strong>
      * 
      * @param bytes 字节数组
+     * @param encoding
      * @return 字符串
      */
     public static final String toString(byte[] bytes)
@@ -779,6 +785,23 @@ public class StringUtil
             return null;
         }
         return StrUtil.str(bytes, "UTF-8");
+    }
+
+    /**
+     * 将字节数组转换成字符串<br />
+     * <strong>指定编码</strong>
+     * 
+     * @param bytes 字节数组
+     * @param encoding 编码
+     * @return 字符串
+     */
+    public static final String toString(byte[] bytes, String encoding)
+    {
+        if(bytes == null)
+        {
+            return null;
+        }
+        return StrUtil.str(bytes, encoding);
     }
 
     /**
@@ -858,6 +881,31 @@ public class StringUtil
     public static String wrap(String str, String wrapStr)
     {
         return new StringBuilder().append(wrapStr).append(str).append(wrapStr).toString();
+    }
+
+    /**
+     * 解码 Unicode，把 '\\u' 这种字符还原本来面貌
+     * 
+     * @param s 要解码的字符串
+     * @return 解码后的字符串
+     */
+    @Synchronized
+    public static final String decodeUnicode(String s)
+    {
+        if(s == null)
+        {
+            return null;
+        }
+
+        s = replaceAll(s, "\\\\u", "\\\\u");
+        Matcher m = ESCAPED_UNICODE_PATTERN.matcher(s);
+        StringBuffer sb = new StringBuffer(s.length());
+        while(m.find())
+        {
+            m.appendReplacement(sb, Character.toString((char)Integer.parseInt(m.group(1), 16)));
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 
     public static void main(String[] args)

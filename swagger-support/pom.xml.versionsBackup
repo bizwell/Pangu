@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.joindata.inf.common</groupId>
+		<artifactId>root</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>swagger-support</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Swagger 支持</name>
+	<url>http://www.joindata.com</url>
+
+	<dependencies>
+
+		<!-- 工具包 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>util</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Spring MVC -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+
+		<!-- Swagger -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		
+		<!-- 创建mock服务依赖胡组件 -->
+		<dependency>
+		    <groupId>org.mbtest.javabank</groupId>
+		    <artifactId>javabank-core</artifactId>
+		    <version>0.4.10</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.mbtest.javabank</groupId>
+		    <artifactId>javabank-client</artifactId>
+		    <version>0.4.10</version>
+		</dependency>
+		
+		<!-- 文件上传插件 -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

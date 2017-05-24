@@ -1,6 +1,7 @@
 package com.joindata.inf.common.util.tools;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * UUID 相关工具
@@ -18,6 +19,16 @@ public class UuidUtil
     public static final String make()
     {
         return UUID.randomUUID().toString();
+    }
+
+    /**
+     * 生成一个 UUID 字符串，不包含横线
+     * 
+     * @return 一个 UUID 字符串
+     */
+    public static final String makeNoSlash()
+    {
+        return UUID.randomUUID().toString().replaceAll(Pattern.quote("-"), "");
     }
 
     /**

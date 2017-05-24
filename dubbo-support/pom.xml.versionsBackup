@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.joindata.inf.common</groupId>
+		<artifactId>root</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>dubbo-support</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Dubbo 远程调用服务支持</name>
+	<url>http://www.joindata.com</url>
+
+	<dependencies>
+
+		<!-- Disconf 支持 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>disconf-support</artifactId>
+			<version>${pangu.version}</version>
+		</dependency>
+
+		<!-- Dubbox 是必须要滴 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+		</dependency>
+
+		<!-- ZK 小工具是必须要滴 -->
+		<dependency>
+			<groupId>com.101tec</groupId>
+			<artifactId>zkclient</artifactId>
+		</dependency>
+
+		<!-- 我勒个去没有会死？ -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty</artifactId>
+		</dependency>
+
+	</dependencies>
+
+</project>

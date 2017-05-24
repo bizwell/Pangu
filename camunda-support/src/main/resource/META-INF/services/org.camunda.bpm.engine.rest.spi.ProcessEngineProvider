@@ -1,1 +1,2 @@
 com.joindata.inf.common.support.camunda.bootconfig.RestProcessEngineProvider
+org.camunda.bpm.example.authentication.rest.RestProcessEngineProvider

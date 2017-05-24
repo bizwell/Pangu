@@ -18,5 +18,5 @@ public @interface WebAppFilterItem
 {
     Class<? extends Filter> filter();
 
-    WebFilter config();
+    WebFilter config() default @WebFilter(description = "_EMPTY");
 }

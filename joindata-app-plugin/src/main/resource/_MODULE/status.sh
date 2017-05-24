@@ -12,14 +12,13 @@ echo ""
 dir=$(cd "$(dirname "`readlink -f $0`")"; pwd)
 cd $dir
 
-pidfile="/var/run/__APPID__/__APPVERSION__.pid"
 
 echo -e "${SUCCESS}运行状态${RES}  应用ID __APPID__, 版本号 __APPVERSION__"
 echo "------------------------------------------------"
 
 # 判断是否在运行
 piddir="/var/run/app/__APPID__"
-pidfile="$piddir/__APPVERSION__.pid"
+pidfile="$piddir/pid"
 
 mkdir -p $piddir
 if [ ! -f $pidfile ]; then

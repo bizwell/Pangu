@@ -13,7 +13,6 @@ import com.joindata.inf.common.support.fastdfs.dependency.client.FileId;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata;
 import com.joindata.inf.common.support.fastdfs.dependency.client.FileMetadata.Builder;
 import com.joindata.inf.common.support.fastdfs.support.component.FastDfsClient;
-import com.joindata.inf.common.util.basic.FileUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
 
@@ -48,22 +47,21 @@ public class FastDfsMultipartFile extends CommonsMultipartFile
 
         if(dest instanceof FastDfsFile)
         {
-            log.info("上传文件到服务器, 文件名 : {}, 上传到: {}", super.getOriginalFilename(), dest.getPath());
+            log.debug("上传文件到服务器, 文件名 : {}, 上传到: {}", super.getOriginalFilename(), dest.getPath());
 
             Builder metaBuilder = FileMetadata.newBuilder();
             metaBuilder.put("fileName", super.getOriginalFilename());
             metaBuilder.put("filePath", dest.getPath());
 
-            String ext = FileUtil.getExtension(dest.getPath());
             // 如果指定了组，传到指定组
             if(!StringUtil.isBlank(((FastDfsFile)dest).getGroup()))
             {
-                ((FastDfsFile)dest).setUploadFuture(client.upload(((FastDfsFile)dest).getGroup(), ext, super.getBytes(), metaBuilder.build()));
+                ((FastDfsFile)dest).setUploadFuture(client.upload(((FastDfsFile)dest).getGroup(), dest.getPath(), super.getBytes(), metaBuilder.build()));
             }
             // 否则默认组
             else
             {
-                ((FastDfsFile)dest).setUploadFuture(client.upload(ext, super.getBytes(), metaBuilder.build()));
+                ((FastDfsFile)dest).setUploadFuture(client.upload(dest.getPath(), super.getBytes(), metaBuilder.build()));
             }
         }
         else

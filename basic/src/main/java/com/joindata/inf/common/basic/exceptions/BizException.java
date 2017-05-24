@@ -8,6 +8,11 @@ public abstract class BizException extends RuntimeException
 
     public abstract ErrorEntity getErrorEntity();
 
+    public BizException()
+    {
+        super();
+    }
+
     public BizException(String message)
     {
         super(message);

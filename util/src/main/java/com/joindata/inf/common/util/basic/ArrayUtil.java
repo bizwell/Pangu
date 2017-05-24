@@ -158,7 +158,7 @@ public class ArrayUtil
 
         for(Object item: arr)
         {
-            if(ObjectUtil.equals(item, obj))
+            if(ObjectUtil.equal(item, obj))
             {
                 return true;
             }

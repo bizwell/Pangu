@@ -51,11 +51,6 @@ public class RestResponse<T>
         return new RestResponse<TT>(200, model, "OK");
     }
 
-    public static final <TT> RestResponse<TT> success(String message)
-    {
-        return new RestResponse<TT>(200, null, message);
-    }
-
     public static final <TT> RestResponse<TT> success(TT model, String message)
     {
         return new RestResponse<TT>(200, model, message);
@@ -83,12 +78,17 @@ public class RestResponse<T>
 
     public static final <TT> RestResponse<TT> fail(Exception e)
     {
-        return new RestResponse<TT>(500, null, e.getMessage());
+        return new RestResponse<TT>(500, -1, e.getMessage());
     }
 
     public static final <TT> RestResponse<TT> fail(int code, String message)
     {
-        return new RestResponse<TT>(code, null, message);
+        return new RestResponse<TT>(code, -1, message);
+    }
+
+    public static final <TT> RestResponse<TT> fail(int code, int errorCode, String message)
+    {
+        return new RestResponse<TT>(code, errorCode, message);
     }
 
     private RestResponse(int code, T model, String message)

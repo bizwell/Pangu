@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -121,6 +122,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
         }
 
         super.addInterceptors(registry);
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer)
+    {
+        configurer.setUseTrailingSlashMatch(false);
+        configurer.setUseRegisteredSuffixPatternMatch(true);
     }
 
 }

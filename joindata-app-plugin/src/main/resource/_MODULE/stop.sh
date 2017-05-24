@@ -13,7 +13,7 @@ dir=$(cd "$(dirname "`readlink -f $0`")"; pwd)
 cd $dir
 
 piddir="/var/run/app/__APPID__"
-pidfile="$piddir/__APPVERSION__.pid"
+pidfile="$piddir/pid"
 
 echo -e "${SUCCESS}准备停止${RES}  应用ID __APPID__, 版本号 __APPVERSION__"
 echo "------------------------------------------------"

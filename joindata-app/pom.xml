@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.joindata.inf</groupId>
@@ -13,10 +13,6 @@
 
 	<name>嘉银数据应用</name>
 	<url>http://www.joindata.com</url>
-
-	<properties>
-		<pangu.version>1.0.0-SNAPSHOT</pangu.version>
-	</properties>
 
 	<dependencyManagement>
 		<dependencies>
@@ -147,12 +143,13 @@
 				<version>${pangu.version}</version>
 			</dependency>
 			
-			<!-- 支持流程引擎 -->
+			<!-- 支持流程引擎 
 			<dependency>
 				<groupId>com.joindata.inf.common</groupId>
 				<artifactId>camunda-support</artifactId>
 				<version>${pangu.version}</version>
 			</dependency>
+			-->
 			
 		</dependencies>
 	</dependencyManagement>

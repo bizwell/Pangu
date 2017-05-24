@@ -11,12 +11,13 @@
 	<groupId>com.joindata.inf.common</groupId>
 	<artifactId>root</artifactId>
 	<packaging>pom</packaging>
+	<version>1.1.0-SNAPSHOT</version>
 
 	<name>公共组件</name>
 	<url>http://www.joindata.com</url>
 
 	<properties>
-		<pangu.version>1.0.0-SNAPSHOT</pangu.version>
+		<pangu.version>1.1.0-SNAPSHOT</pangu.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<spring-security.version>4.2.0.RELEASE</spring-security.version>
 		<spring-data-redis.version>1.8.1.RELEASE</spring-data-redis.version>
@@ -45,8 +46,8 @@
 		<commons-io.version>2.5</commons-io.version>
 		<commons-csv.version>1.4</commons-csv.version>
 		<commons-fileupload.version>1.3.2</commons-fileupload.version>
-		<httpclient.version>4.5.2</httpclient.version>
-		<httpcore.version>4.4.4</httpcore.version>
+		<httpclient.version>4.5.3</httpclient.version>
+		<httpcore.version>4.4.6</httpcore.version>
 		<truezip.version>7.7.10</truezip.version>
 		<jpinyin.version>1.1.8</jpinyin.version>
 		<thumbnailator.version>0.4.8</thumbnailator.version>
@@ -57,7 +58,7 @@
 		<cssparser.version>0.9.20</cssparser.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<javax-mail.version>1.5.0-b01</javax-mail.version>
-		<hutool.version>2.15.19</hutool.version>
+		<hutool.version>2.16.2</hutool.version>
 		<aspectj.version>1.8.10</aspectj.version>
 		<disconf.version>2.6.36</disconf.version>
 		<netty.version>4.1.6.Final</netty.version>
@@ -1000,7 +1001,10 @@
 		<module>jdbc-sterotype</module>
 		<module>joindata-app</module>
 		<module>joindata-app-plugin</module>
+		<!-- 
 		<module>joindata-app-template</module>
+		<module>camunda-support</module>
+		 -->
 	</modules>
 
 </project>

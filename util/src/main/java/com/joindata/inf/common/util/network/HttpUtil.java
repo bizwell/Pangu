@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -35,8 +37,11 @@ import com.joindata.inf.common.basic.errors.ResourceErrors;
 import com.joindata.inf.common.basic.exceptions.ResourceException;
 import com.joindata.inf.common.util.basic.BeanUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
+import com.joindata.inf.common.util.basic.JsonUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.xiaoleilu.hutool.io.IoUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * HTTP 请求工具
@@ -45,8 +50,28 @@ import com.xiaoleilu.hutool.io.IoUtil;
  * @date 2015年11月6日 下午4:31:10
  */
 // TODO 后完善 HTTP 异常处理机制，完善异步、缓存等高级功能
+@Slf4j
 public class HttpUtil
 {
+    private static ThreadLocal<RequestConfig> CurrentRequsetConfig = new ThreadLocal<>();
+
+    private static final RequestConfig DEFAULT_REQUEST_CONFIG = RequestConfig.custom().setConnectionRequestTimeout(5).setConnectTimeout(6).setSocketTimeout(7).build();
+
+    static
+    {
+        CurrentRequsetConfig.set(DEFAULT_REQUEST_CONFIG);
+    }
+
+    /**
+     * 设置<strong>当前线程</strong>中 HttpUtil 发起的所有请求的默认超时时间<br />
+     * 
+     * @param timeout 按秒计算
+     */
+    public static final void setTimeout(int reqTimeout, int connTimeout, int socketTimeout)
+    {
+        CurrentRequsetConfig.set(RequestConfig.copy(DEFAULT_REQUEST_CONFIG).setConnectionRequestTimeout(reqTimeout).setConnectTimeout(connTimeout).setSocketTimeout(socketTimeout).build());
+    }
+
     /**
      * 发起一个简单的 GET 请求
      * 
@@ -57,8 +82,11 @@ public class HttpUtil
     public static final byte[] get(String url) throws IOException
     {
         HttpGet httpGet = new HttpGet(url);
+        httpGet.setConfig(CurrentRequsetConfig.get());
         HttpClient httpClient = HttpClients.createMinimal();
         HttpResponse response = httpClient.execute(httpGet);
+
+        log.debug("GET 请求 URL: {}", url);
 
         HttpEntity entity = response.getEntity();
 
@@ -67,6 +95,146 @@ public class HttpUtil
         entity.getContent().read(bytes);
 
         EntityUtils.consume(response.getEntity());
+        return bytes;
+    }
+
+    /**
+     * 发起一个简单的 GET 请求，返回的JSON转换成对象
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param params 请求的参数
+     * @param retClz 返回的 JSON 转换成什么对象
+     * @return 返回的数据
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     */
+    public static final <T> T getJson(String url, Class<T> retClz, Map<String, Object> params) throws IOException
+    {
+        String json = StringUtil.toString(get(url, params));
+        return JsonUtil.fromJSON(json, retClz);
+    }
+
+    /**
+     * 发起一个简单的 GET 请求，返回的JSON转换成对象
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param params 请求的参数
+     * @param retClz 返回的 JSON 转换成什么对象
+     * @return 返回的数据
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     */
+    public static final <T> T getJson(String url, Class<T> retClz, KeyValuePair... keyValuePair) throws IOException
+    {
+        Map<String, Object> params = CollectionUtil.newMap();
+
+        for(KeyValuePair kv: keyValuePair)
+        {
+            params.put(kv.getKey(), kv.getValue());
+        }
+
+        String json = StringUtil.toString(get(url, params));
+
+        return JsonUtil.fromJSON(json, retClz);
+    }
+
+    /**
+     * 发起一个简单的 GET 请求，返回值转成 String
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param params 请求的参数
+     * @return 返回的数据
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     */
+    public static final String getString(String url, KeyValuePair... keyValuePair) throws IOException
+    {
+        Map<String, Object> params = CollectionUtil.newMap();
+
+        for(KeyValuePair kv: keyValuePair)
+        {
+            params.put(kv.getKey(), kv.getValue());
+        }
+
+        return StringUtil.toString(get(url, params));
+    }
+
+    /**
+     * 发起一个简单的 GET 请求，返回值转成 String
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param params 请求的参数
+     * @return 返回的数据
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     */
+    public static final String getString(String url, Map<String, Object> params) throws IOException
+    {
+        return StringUtil.toString(get(url, params));
+    }
+
+    /**
+     * 发起一个简单的 GET 请求，返回值转成 String
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param params 请求的参数
+     * @param encoding 返回转 String 的编码
+     * @return 返回的数据
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     */
+    public static final String getString(String url, String encoding, KeyValuePair... keyValuePair) throws IOException
+    {
+        Map<String, Object> params = CollectionUtil.newMap();
+
+        for(KeyValuePair kv: keyValuePair)
+        {
+            params.put(kv.getKey(), kv.getValue());
+        }
+
+        return StringUtil.toString(get(url, params), encoding);
+    }
+
+    /**
+     * 发起一个简单的 GET 请求
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param params 请求的参数
+     * @return 返回的数据
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     */
+    public static final byte[] get(String url, KeyValuePair... keyValuePair) throws IOException
+    {
+        Map<String, Object> params = CollectionUtil.newMap();
+
+        for(KeyValuePair kv: keyValuePair)
+        {
+            params.put(kv.getKey(), kv.getValue());
+        }
+
+        return get(url, params);
+    }
+
+    /**
+     * 发起一个简单的 GET 请求
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param params 请求的参数
+     * @return 返回的数据
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     */
+    public static final byte[] get(String url, Map<String, Object> params) throws IOException
+    {
+        String urlFinal = url + "?" + com.xiaoleilu.hutool.http.HttpUtil.toParams(params);
+
+        log.debug("GET 请求 URL: {}", urlFinal);
+
+        HttpGet httpGet = new HttpGet(urlFinal);
+        httpGet.setConfig(CurrentRequsetConfig.get());
+        HttpClient httpClient = HttpClients.createMinimal();
+        HttpResponse response = httpClient.execute(httpGet);
+
+        HttpEntity entity = response.getEntity();
+
+        byte bytes[] = IoUtil.read(entity.getContent()).toByteArray();
+
+        EntityUtils.consume(entity);
+
         return bytes;
     }
 
@@ -81,7 +249,11 @@ public class HttpUtil
     public static final void get(String url, OutputStream out) throws IOException
     {
         HttpGet httpGet = new HttpGet(url);
+        httpGet.setConfig(CurrentRequsetConfig.get());
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("GET 请求 URL: {}", url);
+
         HttpResponse response = httpClient.execute(httpGet);
 
         HttpEntity entity = response.getEntity();
@@ -104,12 +276,15 @@ public class HttpUtil
     public static final byte[] post(String url, String data, String encoding) throws IOException
     {
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
 
         HttpEntity reqEntity = new StringEntity(data, encoding);
 
         httpPost.setEntity(reqEntity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPost);
 
@@ -142,6 +317,7 @@ public class HttpUtil
     public static final byte[] post(String url, File data, String fieldName) throws IOException
     {
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
 
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
         multipartEntityBuilder.addPart(FormBodyPartBuilder.create(fieldName, new FileBody(data)).build());
@@ -150,6 +326,8 @@ public class HttpUtil
         httpPost.setEntity(reqEntity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPost);
 
@@ -180,9 +358,10 @@ public class HttpUtil
      * @throws IOException 发生任何 IO 错误，抛出该异常
      * @throws ResourceException 如果返回码不在 2xx 范围内，抛出该异常
      */
-    public static final byte[] post(String url, File data, String fieldName, Set<KeyValuePair> params) throws IOException
+    public static final byte[] post(String url, File data, String fieldName, KeyValuePair... params) throws IOException
     {
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
 
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
 
@@ -199,6 +378,8 @@ public class HttpUtil
         httpPost.setEntity(reqEntity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPost);
 
@@ -230,9 +411,10 @@ public class HttpUtil
      * @throws IOException 发生任何 IO 错误，抛出该异常
      * @throws ResourceException 如果返回码不在 2xx 范围内，抛出该异常
      */
-    public static final byte[] post(String url, String fileName, InputStream in, String fieldName, Set<KeyValuePair> params) throws IOException
+    public static final byte[] post(String url, String fileName, InputStream in, String fieldName, KeyValuePair... params) throws IOException
     {
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
 
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
 
@@ -249,6 +431,8 @@ public class HttpUtil
         httpPost.setEntity(reqEntity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPost);
 
@@ -268,6 +452,103 @@ public class HttpUtil
     }
 
     /**
+     * 用 POST 方式发送JSON字符串值给指定 URL<br />
+     * 编码方式是 UTF-8
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param obj 将被转成 JSON 的对象（要发送的数据）
+     * @param retClz 返回对象要转成什么类型
+     * @return 返回的数据，会通过 JSON 转换器转成指定 Class
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     * @throws ResourceException 如果返回码不在 2xx 范围内，抛出该异常
+     */
+    public static final <T> T postJson(String url, Object obj, Class<T> retClz) throws IOException
+    {
+        String ret = postJson(url, obj);
+        return JsonUtil.fromJSON(ret, retClz);
+    }
+
+    /**
+     * 用 POST 方式发送JSON字符串值给指定 URL<br />
+     * 编码方式是 UTF-8
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param obj 将被转成 JSON 的对象（要发送的数据）
+     * @return 返回的数据，会转成字符串
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     * @throws ResourceException 如果返回码不在 2xx 范围内，抛出该异常
+     */
+    public static final String postJson(String url, Object obj) throws IOException
+    {
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
+
+        HttpEntity reqEntity = new StringEntity(JsonUtil.toJSON(obj), "UTF-8");
+
+        httpPost.setEntity(reqEntity);
+
+        HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
+
+        HttpResponse response = httpClient.execute(httpPost);
+
+        HttpEntity resEntity = response.getEntity();
+
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        IoUtil.copy(resEntity.getContent(), byteOut);
+
+        EntityUtils.consume(response.getEntity());
+
+        if(response.getStatusLine().getStatusCode() < 200 && response.getStatusLine().getStatusCode() >= 300)
+        {
+            throw new ResourceException(ResourceErrors.UNRESOLVABLE, StringUtil.toString(byteOut.toByteArray()));
+        }
+
+        return StringUtil.toString(byteOut.toByteArray());
+    }
+
+    /**
+     * 用 POST 方式发送字符串给指定 URL<br />
+     * 编码方式是 UTF-8
+     * 
+     * @param url 要访问的 HTTP 地址
+     * @param data 请求数据
+     * @return 返回的数据，会转成字符串
+     * @throws IOException 发生任何 IO 错误，抛出该异常
+     * @throws ResourceException 如果返回码不在 2xx 范围内，抛出该异常
+     */
+    public static final String postString(String url, String data) throws IOException
+    {
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
+
+        HttpEntity reqEntity = new StringEntity(data, "UTF-8");
+
+        httpPost.setEntity(reqEntity);
+
+        HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
+
+        HttpResponse response = httpClient.execute(httpPost);
+
+        HttpEntity resEntity = response.getEntity();
+
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        IoUtil.copy(resEntity.getContent(), byteOut);
+
+        EntityUtils.consume(response.getEntity());
+
+        if(response.getStatusLine().getStatusCode() < 200 && response.getStatusLine().getStatusCode() >= 300)
+        {
+            throw new ResourceException(ResourceErrors.UNRESOLVABLE, StringUtil.toString(byteOut.toByteArray()));
+        }
+
+        return StringUtil.toString(byteOut.toByteArray());
+    }
+
+    /**
      * 用 POST 方式发送多个key-value值给指定 URL<br />
      * 
      * @param url 要访问的 HTTP 地址
@@ -279,6 +560,7 @@ public class HttpUtil
     public static final byte[] post(String url, KeyValuePair... keyValuePair) throws IOException
     {
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
 
         Set<NameValuePair> params = CollectionUtil.newHashSet();
         if(keyValuePair != null)
@@ -294,6 +576,8 @@ public class HttpUtil
         httpPost.setEntity(reqEntity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPost);
 
@@ -322,9 +606,10 @@ public class HttpUtil
      * @throws IOException 发生任何 IO 错误，抛出该异常
      * @throws ResourceException 如果返回码不在 2xx 范围内，抛出该异常
      */
-    public static final byte[] post(String url, Object bean) throws IOException
+    public static final byte[] post(String url, Serializable bean) throws IOException
     {
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
 
         Set<NameValuePair> params = CollectionUtil.newHashSet();
         if(bean != null)
@@ -347,6 +632,8 @@ public class HttpUtil
         httpPost.setEntity(reqEntity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPost);
 
@@ -379,10 +666,13 @@ public class HttpUtil
     public static final byte[] post(String url, HttpEntity entity) throws IOException
     {
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
 
         httpPost.setEntity(entity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("POST 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPost);
 
@@ -414,12 +704,15 @@ public class HttpUtil
     public static final byte[] put(String url, String data, String encoding) throws IOException
     {
         HttpPut httpPut = new HttpPut(url);
+        httpPut.setConfig(CurrentRequsetConfig.get());
 
         HttpEntity reqEntity = new StringEntity(data, encoding);
 
         httpPut.setEntity(reqEntity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("PUT 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPut);
 
@@ -452,6 +745,7 @@ public class HttpUtil
     public static final byte[] put(String url, File data, String fieldName) throws IOException
     {
         HttpPut httpPut = new HttpPut(url);
+        httpPut.setConfig(CurrentRequsetConfig.get());
 
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
         multipartEntityBuilder.addPart(FormBodyPartBuilder.create(fieldName, new FileBody(data)).build());
@@ -460,6 +754,8 @@ public class HttpUtil
         httpPut.setEntity(reqEntity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("PUT 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPut);
 
@@ -492,10 +788,13 @@ public class HttpUtil
     public static final byte[] put(String url, HttpEntity entity) throws IOException
     {
         HttpPut httpPost = new HttpPut(url);
+        httpPost.setConfig(CurrentRequsetConfig.get());
 
         httpPost.setEntity(entity);
 
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("PUT 请求 URL: {}", url);
 
         HttpResponse response = httpClient.execute(httpPost);
 
@@ -525,7 +824,12 @@ public class HttpUtil
     public static final byte[] delete(String url) throws IOException
     {
         HttpDelete httpDelete = new HttpDelete(url);
+        httpDelete.setConfig(CurrentRequsetConfig.get());
+
         HttpClient httpClient = HttpClients.createMinimal();
+
+        log.debug("DELETE 请求 URL: {}", url);
+
         HttpResponse response = httpClient.execute(httpDelete);
 
         HttpEntity resEntity = response.getEntity();
@@ -544,6 +848,7 @@ public class HttpUtil
 
     public static void main(String[] args) throws ClientProtocolException, IOException, UnsupportedCharsetException, ResourceException
     {
+
         System.out.println(new String(get("http://localhost:8088/get"), "UTF-8"));
         System.out.println(new String(post("http://localhost:8088/post", "测试一下 Post，I'm fine, thank you!", "UTF-8"), "UTF-8"));
         System.out.println(new String(post("http://localhost:8088/postfile", new File("/temp/test/size.txt"), "file"), "UTF-8"));

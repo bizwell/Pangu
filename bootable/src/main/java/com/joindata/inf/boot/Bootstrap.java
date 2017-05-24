@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
@@ -241,7 +242,9 @@ public class Bootstrap
 
                     for(WebAppFilterItem filterItem: filterConfig.value())
                     {
-                        WebFilter webFilter = filterItem.config();
+                        Class<? extends Filter> filter = filterItem.filter();
+                        WebFilter webFilter = StringUtil.isEquals(filterItem.config().description(), "_EMPTY") ? filter.getAnnotation(WebFilter.class) : filterItem.config();
+
                         if(webFilter == null)
                         {
                             throw new SystemException(SystemError.DEPEND_RESOURCE_CANNOT_READY, "没有设置 Filter 属性，这样不好");
@@ -266,26 +269,29 @@ public class Bootstrap
                         FilterHolder holder = null;
 
                         // 对 Spring 的代理 filter 特殊处理，因为这傻逼玩意必须有个 targetBeanName 草他大爷的！
-                        if(filterItem.filter().equals(DelegatingFilterProxy.class))
+                        if(filter.equals(DelegatingFilterProxy.class))
                         {
                             holder = new FilterHolder(new DelegatingFilterProxy(webFilter.filterName()));
                         }
                         else
                         {
-                            holder = new FilterHolder(filterItem.filter());
+                            holder = new FilterHolder(filter);
                         }
 
-                        // 取踏马的 initParam
-                        if(filterItem.config() != null)
+                        // 设置 initParam
+                        if(webFilter.initParams() != null)
                         {
                             Map<String, String> initParamMap = CollectionUtil.newMap();
-                            for(WebInitParam initParam: filterItem.config().initParams())
+
+                            for(WebInitParam initParam: webFilter.initParams())
                             {
                                 initParamMap.put(initParam.name(), initParam.value());
                             }
+
                             holder.setInitParameters(initParamMap);
                         }
 
+                        // 设置名字
                         holder.setName(mapping.getFilterName());
 
                         for(String path: mapping.getPathSpecs())
@@ -465,7 +471,9 @@ public class Bootstrap
         log.info("注册扫描包: {}", bootClz.getPackage().getName());
         context.scan(bootClz.getPackage().getName());
 
-        for(Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
+        for(
+
+        Class<?> configHubClz: BootInfoHolder.getConfigHubClasses())
         {
             // 注册支持组件的 Web 配置
             if(configHubClz.getAnnotation(WebConfig.class) != null)

@@ -1,8 +1,5 @@
 package com.joindata.inf.common.support.camunda;
 
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
-
 import org.camunda.bpm.admin.Admin;
 import org.camunda.bpm.admin.impl.DefaultAdminRuntimeDelegate;
 import org.camunda.bpm.cockpit.Cockpit;
@@ -11,7 +8,6 @@ import org.camunda.bpm.tasklist.Tasklist;
 import org.camunda.bpm.tasklist.impl.DefaultTasklistRuntimeDelegate;
 import org.camunda.bpm.welcome.Welcome;
 import org.camunda.bpm.welcome.impl.DefaultWelcomeRuntimeDelegate;
-import org.jboss.resteasy.plugins.server.servlet.FilterDispatcher;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -20,7 +16,8 @@ import com.joindata.inf.common.basic.annotation.WebAppFilterItem;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
 import com.joindata.inf.common.support.camunda.bootconfig.CamundaConfig;
 import com.joindata.inf.common.support.camunda.bootconfig.CamundaServiceConfig;
-import com.joindata.inf.common.support.camunda.bootconfig.ProcessEngineAware;
+import com.joindata.inf.common.support.camunda.core.filter.CustomAuthenticationFilter;
+import com.joindata.inf.common.support.camunda.core.filter.CustomFilterDispatcher;
 import com.joindata.inf.common.support.camunda.core.filter.CustomProcessEnginesFilter;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
 
@@ -32,8 +29,8 @@ import com.joindata.inf.common.support.disconf.EnableDisconf;
  */
 @Configuration
 @EnableDisconf
-@Import({CamundaConfig.class, CamundaServiceConfig.class, ProcessEngineAware.class})
-@FilterConfig({@WebAppFilterItem(filter = CustomProcessEnginesFilter.class, config = @WebFilter(filterName = "ProcessEngines", urlPatterns = {"/app/*", "/lib/*", "/plugin/*"})), @WebAppFilterItem(filter = FilterDispatcher.class, config = @WebFilter(filterName = "RestEasy", urlPatterns = "/*", initParams = {@WebInitParam(name = "javax.ws.rs.Application", value = "com.joindata.inf.common.support.camunda.bootconfig.RestProcessEngineDeployment")}))})
+@Import({CamundaConfig.class, CamundaServiceConfig.class})
+@FilterConfig({@WebAppFilterItem(filter = CustomProcessEnginesFilter.class), @WebAppFilterItem(filter = CustomFilterDispatcher.class), @WebAppFilterItem(filter = CustomAuthenticationFilter.class)})
 public class ConfigHub extends AbstractConfigHub
 {
     static

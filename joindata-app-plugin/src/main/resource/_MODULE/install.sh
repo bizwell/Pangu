@@ -58,7 +58,7 @@ echo "------------------------------------------------------------"
 echo -en "${INFO}---(STEP 0 )${RES} 检查环境..."
 # 判断是否在运行
 piddir="/var/run/app/__APPID__"
-pidfile="$piddir/__APPVERSION__.pid"
+pidfile="$piddir/pid"
 mkdir -p $piddir
 if [ ! -f $pidfile ]; then
   touch $pidfile

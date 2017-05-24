@@ -19,5 +19,7 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface FilterComponent
 {
+    String name() default "";
+
     String[] path() default {"/*"};
 }

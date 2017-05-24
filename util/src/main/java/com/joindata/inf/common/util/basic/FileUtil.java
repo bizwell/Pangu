@@ -1,5 +1,6 @@
 package com.joindata.inf.common.util.basic;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -8,6 +9,10 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -16,6 +21,9 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import com.joindata.inf.common.util.tools.UuidUtil;
+import com.xiaoleilu.hutool.exceptions.UtilException;
+import com.xiaoleilu.hutool.io.IoUtil;
+import com.xiaoleilu.hutool.util.StrUtil;
 import com.xiaoleilu.hutool.util.ZipUtil;
 
 /**
@@ -724,6 +732,142 @@ public class FileUtil
     }
 
     /**
+     * 递归压缩文件夹<br />
+     * <strong>重写了 Hutool ZipUtil 的</strong>
+     * 
+     * @param out 压缩文件存储对象
+     * @param srcRootDir 压缩文件夹根目录的子路径
+     * @param file 当前递归压缩的文件或目录对象
+     * @throws Exception
+     */
+    private static void zip(ZipOutputStream out, String srcRootDir, File file)
+    {
+        if(file == null)
+        {
+            return;
+        }
+
+        if(file.isFile())
+        {// 如果是文件，则直接压缩该文件
+            final String subPath = StringUtil.replaceAll(file.getPath(), new File(srcRootDir).getPath() + File.separatorChar, ""); // 获取文件相对于压缩文件夹根目录的子路径
+            BufferedInputStream in = null;
+            try
+            {
+                out.putNextEntry(new ZipEntry(subPath));
+                in = com.xiaoleilu.hutool.io.FileUtil.getInputStream(file);
+                IoUtil.copy(in, out);
+            }
+            catch(IOException e)
+            {
+                throw new UtilException(e);
+            }
+            finally
+            {
+                IoUtil.close(in);
+                closeEntry(out);
+            }
+        }
+        else
+        {// 如果是目录，则压缩压缩目录中的文件或子目录
+            for(File childFile: file.listFiles())
+            {
+                zip(out, srcRootDir, childFile);
+            }
+        }
+    }
+
+    /**
+     * 关闭当前Entry，继续下一个Entry
+     * 
+     * @param out ZipOutputStream
+     */
+    private static void closeEntry(ZipOutputStream out)
+    {
+        try
+        {
+            out.closeEntry();
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /**
+     * 判断压缩文件保存的路径是否为源文件路径的子文件夹，如果是，则抛出异常（防止无限递归压缩的发生）
+     * 
+     * @param srcFile 被压缩的文件或目录
+     * @param zipFile 压缩后的产生的文件路径
+     */
+    private static void validateFiles(File zipFile, File... srcFiles) throws UtilException
+    {
+        for(File srcFile: srcFiles)
+        {
+            if(false == srcFile.exists())
+            {
+                throw new UtilException(StrUtil.format("File [{}] not exist!", srcFile.getAbsolutePath()));
+            }
+
+            try
+            {
+                // 压缩文件不能位于被压缩的目录内
+                if(srcFile.isDirectory() && zipFile.getParent().contains(srcFile.getCanonicalPath()))
+                {
+                    throw new UtilException("[zipPath] must not be the child directory of [srcPath]!");
+                }
+
+                if(false == zipFile.exists())
+                {
+                    com.xiaoleilu.hutool.io.FileUtil.touch(zipFile);
+                }
+            }
+            catch(IOException e)
+            {
+                throw new UtilException(e);
+            }
+        }
+    }
+
+    /**
+     * 对文件或文件目录进行压缩<br>
+     * <strong>重写 hutool 的</strong>
+     * 
+     * @param zipFile 生成的Zip文件，包括文件名。注意：zipPath不能是srcPath路径下的子文件夹
+     * @param withSrcDir 是否包含被打包目录
+     * @param srcFiles 要压缩的源文件或目录。如果压缩一个文件，则为该文件的全路径；如果压缩一个目录，则为该目录的顶层目录路径
+     * @throws IOException
+     */
+    private static void zip(File zipFile, boolean withSrcDir, File... srcFiles) throws IOException
+    {
+        validateFiles(zipFile, srcFiles);
+
+        ZipOutputStream out = null;
+        try
+        {
+            out = new ZipOutputStream(new CheckedOutputStream(com.xiaoleilu.hutool.io.FileUtil.getOutputStream(zipFile), new CRC32()));
+            for(File srcFile: srcFiles)
+            {
+                // 如果只是压缩一个文件，则需要截取该文件的父目录
+                String srcRootDir = srcFile.getCanonicalPath();
+                if(srcFile.isFile() || withSrcDir)
+                {
+                    srcRootDir = srcFile.getParent();
+                }
+                // 调用递归压缩方法进行目录或文件压缩
+                zip(out, srcRootDir, srcFile);
+                out.flush();
+            }
+        }
+        catch(IOException e)
+        {
+            throw e;
+        }
+        finally
+        {
+            IoUtil.close(out);
+        }
+    }
+
+    /**
      * 压缩文件/文件夹
      * 
      * @param path 生成的 ZIP 文件
@@ -738,7 +882,7 @@ public class FileUtil
             throw new FileNotFoundException("文件路径不对");
         }
 
-        ZipUtil.zip(zipFile, true, files);
+        zip(zipFile, true, files);
 
         return zipFile.getPath();
     }
@@ -815,7 +959,7 @@ public class FileUtil
                 continue;
             }
 
-            if (isAbsolutePath)
+            if(isAbsolutePath)
             {
                 files.add(f.getAbsolutePath());
             }
@@ -867,8 +1011,15 @@ public class FileUtil
         return files;
     }
 
+    public static void main(String[] args) throws IOException
+    {
+        System.out.println(ArrayUtil.toString(new File("/data/tmp/pangu.workbench/1.0.0/tempfiles/ede20213-b0d6-4750-8465-66021947ff8e").listFiles()));
+        System.out.println(zip(new File("/data/tmp/fuck/a.zip"), new File("/data/tmp/pangu.workbench/1.0.0/tempfiles/ede20213-b0d6-4750-8465-66021947ff8e").listFiles()));
+    }
+
     public static void main1(String[] args) throws IOException
     {
+
         System.out.println(readFile("/temp/test/read.txt"));
         System.out.println(readFileToBytes("/temp/test/read.txt").length);
         System.out.println(readFile("/temp/test/read.txt", "GBK"));

@@ -27,7 +27,7 @@ tmpdir="/data/tmp/__APPID__/__APPVERSION__"
 piddir="/var/run/app/__APPID__"
 stdoutfile="$tmpdir/nohup.out"
 stderrfile="$tmpdir/nohup.err"
-pidfile="$piddir/__APPVERSION__.pid"
+pidfile="$piddir/pid"
 disconfOptsfile="/var/config/_DISCONF_OPTS"
 
 # 输出提示

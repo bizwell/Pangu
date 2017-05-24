@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
+import org.apache.zookeeper.server.auth.AuthenticationProvider;
 import org.camunda.bpm.engine.rest.impl.CamundaRestResources;
 
 import com.joindata.inf.common.support.camunda.core.CustomNamedProcessEngineRestServiceImpl;
@@ -23,6 +24,7 @@ public class RestProcessEngineDeployment extends Application
 
         // 原封不动
         classes.addAll(CamundaRestResources.getConfigurationClasses());
+        classes.add(AuthenticationProvider.class);
 
         return classes;
     }

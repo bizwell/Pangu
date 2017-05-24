@@ -1,0 +1,181 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.joindata.inf.common</groupId>
+		<artifactId>root</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.joindata.inf</groupId>
+	<artifactId>joindata-app</artifactId>
+	<packaging>pom</packaging>
+
+	<name>嘉银数据应用</name>
+	<url>http://www.joindata.com</url>
+
+	<properties>
+		<pangu.version>1.0.1-SNAPSHOT</pangu.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- 基础包定义 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>basic</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 可启动应用 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>bootable</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 Disconf -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>disconf-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 FastDFS -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>fastdfs-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 MyBatis -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>mybatis-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 Swagger -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>swagger-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 ElasticSearch -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>elasticsearch-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 Redis -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>redis-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 HTTP 会话 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>session-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 SSO -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>sso-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 Dubbo -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>dubbo-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 ElasticJob -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>elasticjob-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 Kafka -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>kafka-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持短信服务 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>sms-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 ID 生成器 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>idgen-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			
+			<!-- 支持 ShardingJDBC -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>shardingjdbc-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持邮件服务 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>email-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 支持 RabbitMQ -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>rabbitmq-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			
+			<!-- 支持流程引擎 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>camunda-support</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+
+		<!-- 可启动应用 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>bootable</artifactId>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- 嘉银数据应用插件 -->
+			<plugin>
+				<groupId>com.joindata.inf</groupId>
+				<artifactId>joindata-app-plugin</artifactId>
+				<version>${project.version}</version>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

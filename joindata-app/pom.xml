@@ -143,13 +143,19 @@
 				<version>${pangu.version}</version>
 			</dependency>
 			
-			<!-- 支持流程引擎 
+			<!-- 支持流程引擎 -->
 			<dependency>
 				<groupId>com.joindata.inf.common</groupId>
 				<artifactId>camunda-support</artifactId>
 				<version>${pangu.version}</version>
 			</dependency>
-			-->
+			
+			<!-- 支持 Paho MQTT 客户端 -->
+			<dependency>
+				<groupId>com.joindata.inf.common</groupId>
+				<artifactId>paho-support</artifactId>
+				<version>${pangu.version}</version>
+			</dependency>
 			
 		</dependencies>
 	</dependencyManagement>

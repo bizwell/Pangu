@@ -1,5 +1,6 @@
 package com.joindata.inf.common.basic.support;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,11 +23,13 @@ public class BootInfoHolder
 
     private static Set<AbstractConfigHub> CONFIG_HUBS = new HashSet<>();
 
-    private static final Map<String, Object> bootInfoMap = new HashMap<>();
+    private static final Map<String, Serializable> BootInfoMap = new HashMap<>();
 
     private static String APP_ID = "";
 
     private static String APP_VERSION = "";
+
+    private static boolean isRegistryEnabled = false;
 
     /**
      * 设置启动信息
@@ -34,9 +37,9 @@ public class BootInfoHolder
      * @param name 名字
      * @param value 内容
      */
-    public static final void put(String name, Object value)
+    public static final void put(String name, Serializable value)
     {
-        bootInfoMap.put(name, value);
+        BootInfoMap.put(name, value);
     }
 
     /**
@@ -49,7 +52,7 @@ public class BootInfoHolder
     @SuppressWarnings("unchecked")
     public static final <T> T get(String name, Class<T> clz)
     {
-        return (T)bootInfoMap.get(name);
+        return (T)BootInfoMap.get(name);
     }
 
     /**
@@ -60,10 +63,10 @@ public class BootInfoHolder
      */
     public static final String get(String name)
     {
-        if(bootInfoMap.get(name) == null)
+        if(BootInfoMap.get(name) == null)
             return null;
         else
-            return bootInfoMap.get(name).toString();
+            return BootInfoMap.get(name).toString();
     }
 
     /**
@@ -221,6 +224,26 @@ public class BootInfoHolder
     }
 
     /**
+     * 获取参数表
+     */
+    public static Map<String, Serializable> getBootInfoMap()
+    {
+        return BootInfoMap;
+    }
+
+    /** 设置是否启用注册中心 */
+    public static void setRegistryEnabled(boolean enabled)
+    {
+        isRegistryEnabled = enabled;
+    }
+
+    /** 是否启用注册中心了 */
+    public static boolean isRegistryEnabled()
+    {
+        return isRegistryEnabled;
+    }
+
+    /**
      * 环境相关的操作
      * 
      * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
@@ -265,4 +288,5 @@ public class BootInfoHolder
             return ENV.equals("PROD");
         }
     }
+
 }

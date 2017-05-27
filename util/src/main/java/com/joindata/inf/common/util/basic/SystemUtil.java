@@ -25,16 +25,16 @@ public class SystemUtil
     /**
      * 制作当前运行时的签名
      * 
-     * @return pid@ip-yyyy-MM-dd
+     * @return base64(pid@ip#yyyy-MM-dd)
      */
-    public static final String getRuntimeSignature()
+    public static final String getRuntimeSignature(String pid, String startTime)
     {
-        return getProcessId() + "@" + NetworkUtil.getLocalIpv4s() + " started " + DateUtil.getCurrentDateTimeString();
+        return CodecUtil.toBase64(getProcessId() + "@" + NetworkUtil.getLocalIpv4s() + "#" + startTime);
     }
 
     public static void main(String[] args)
     {
         System.out.println(getProcessId());
-        System.out.println(getRuntimeSignature());
+        System.out.println(getRuntimeSignature(getProcessId(), DateUtil.getCurrentDateTimeString()));
     }
 }

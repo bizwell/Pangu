@@ -21,6 +21,13 @@
 			<artifactId>util</artifactId>
 			<version>${pangu.version}</version>
 		</dependency>
+		
+		<!-- 注册中心 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>registry</artifactId>
+			<version>${pangu.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>

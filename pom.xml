@@ -1001,10 +1001,7 @@
 		<module>jdbc-sterotype</module>
 		<module>joindata-app</module>
 		<module>joindata-app-plugin</module>
-		<!-- 
-		<module>joindata-app-template</module>
-		<module>camunda-support</module>
-		 -->
+		<!-- <module>joindata-app-template</module> <module>camunda-support</module> -->
 	</modules>
 
 </project>

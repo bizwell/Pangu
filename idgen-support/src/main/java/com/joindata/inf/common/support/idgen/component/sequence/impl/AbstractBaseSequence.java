@@ -11,7 +11,7 @@ import lombok.Setter;
 public abstract class AbstractBaseSequence implements Sequence
 {
     @Resource(name = "idRangeFactory")
-    private IdRangeFactory idRangeFactory;
+    protected IdRangeFactory idRangeFactory;
 
     protected String name;
 

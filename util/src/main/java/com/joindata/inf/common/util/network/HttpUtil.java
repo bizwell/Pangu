@@ -55,7 +55,7 @@ public class HttpUtil
 {
     private static ThreadLocal<RequestConfig> CurrentRequsetConfig = new ThreadLocal<>();
 
-    private static final RequestConfig DEFAULT_REQUEST_CONFIG = RequestConfig.custom().setConnectionRequestTimeout(5).setConnectTimeout(6).setSocketTimeout(7).build();
+    private static final RequestConfig DEFAULT_REQUEST_CONFIG = RequestConfig.custom().setConnectionRequestTimeout(5000).setConnectTimeout(6000).setSocketTimeout(7000).build();
 
     static
     {
@@ -69,6 +69,9 @@ public class HttpUtil
      */
     public static final void setTimeout(int reqTimeout, int connTimeout, int socketTimeout)
     {
+        reqTimeout = reqTimeout / 1000;
+        connTimeout = connTimeout / 1000;
+        socketTimeout = socketTimeout / 1000;
         CurrentRequsetConfig.set(RequestConfig.copy(DEFAULT_REQUEST_CONFIG).setConnectionRequestTimeout(reqTimeout).setConnectTimeout(connTimeout).setSocketTimeout(socketTimeout).build());
     }
 

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.joindata.inf.common.basic.entities.KeyValuePair;
 
@@ -106,6 +107,16 @@ public class CollectionUtil
     public static final <K, V> Map<K, V> newMap()
     {
         return new HashMap<K, V>();
+    }
+
+    /**
+     * 创建一个空 TreeMap
+     * 
+     * @return 一个空的 TreeMap
+     */
+    public static final <K, V> Map<K, V> newTreeMap()
+    {
+        return new TreeMap<>();
     }
 
     /**
@@ -372,11 +383,29 @@ public class CollectionUtil
             return null;
         }
         TargetCollection ret = (TargetCollection)ClassUtil.newInstance(collection.getClass());
-        collection.forEach(item -> {
+        collection.forEach(item ->
+        {
             ret.add((Target)item);
         });
 
         return ret;
+    }
+
+    /**
+     * 集合中是否包含指定元素
+     * 
+     * @param collection 集合
+     * @param version 要判断的元素
+     * @return true, 如果包含
+     */
+    public static boolean contains(Collection<String> collection, String item)
+    {
+        if(collection == null)
+        {
+            return false;
+        }
+
+        return collection.contains(item);
     }
 
     public static void main(String[] args)
@@ -422,4 +451,5 @@ public class CollectionUtil
         }
 
     }
+
 }

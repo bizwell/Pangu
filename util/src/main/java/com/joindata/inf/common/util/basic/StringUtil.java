@@ -164,7 +164,7 @@ public class StringUtil
     }
 
     /**
-     * 将字符串右边去指定字符
+     * 将字符串左右两边去指定字符
      * 
      * @param str 要去空格的字符串，如果为空，返回空
      * @return 去除后的字符串<br />

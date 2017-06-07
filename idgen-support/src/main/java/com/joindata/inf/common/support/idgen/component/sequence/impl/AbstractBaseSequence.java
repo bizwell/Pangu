@@ -19,7 +19,6 @@ public abstract class AbstractBaseSequence implements Sequence
     {
         synchronized(this)
         {
-
             return idRangeFactory.getCurrentIdRange(name).next();
         }
     }

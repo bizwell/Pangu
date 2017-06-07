@@ -41,6 +41,7 @@ import com.joindata.inf.common.basic.annotation.ServletComponent;
 import com.joindata.inf.common.basic.annotation.ServletConfig;
 import com.joindata.inf.common.basic.annotation.WebAppFilterItem;
 import com.joindata.inf.common.basic.annotation.WebConfig;
+import com.joindata.inf.common.basic.entities.StringMap;
 import com.joindata.inf.common.basic.errors.SystemError;
 import com.joindata.inf.common.basic.exceptions.SystemException;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
@@ -54,6 +55,7 @@ import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.basic.SystemUtil;
 import com.joindata.inf.common.util.log.Logger;
 import com.joindata.inf.common.util.network.NetworkUtil;
+import com.joindata.inf.registry.CurrentAppRegistry;
 
 /**
  * 启动器提供者
@@ -72,12 +74,14 @@ public class Bootstrap
      * <i>会在堆栈中自动寻找调用的启动类，放心地调用即可</i>
      * 
      * @param args 启动参数，实际上并没有什么软用，不要传
+     * @throws Exception
      */
-    public static final ApplicationContext boot(String... args)
+    public static final ApplicationContext boot()
     {
         try
         {
-            log.info(StreamUtils.copyToString(ResourceUtil.getRootResourceAsStream("logo.txt"), Charset.forName("UTF-8")), Env.get());
+            // XXX 每次发布要注意这里的版本号
+            log.info(StreamUtils.copyToString(ResourceUtil.getRootResourceAsStream("logo.txt"), Charset.forName("UTF-8")), Env.get(), "1.1.0-SNAPSHOT");
         }
         catch(IOException e)
         {
@@ -96,8 +100,7 @@ public class Bootstrap
                 log.info("启动 Web 应用...");
 
                 JoindataWebApp joindataWebApp = bootClz.getAnnotation(JoindataWebApp.class);
-                configureBootInfo(bootClz, joindataWebApp.id(), joindataWebApp.version());
-                checkEnv();
+                configureBootInfo(bootClz, joindataWebApp.id(), joindataWebApp.version(), !joindataWebApp.disableRegistry());
 
                 String portProp = System.getProperty("http.port");
                 if(portProp != null)
@@ -111,6 +114,14 @@ public class Bootstrap
                     log.info("使用注解配置的端口号: {}", port);
                 }
 
+                // 记录 Web 端口号
+                BootInfoHolder.put("WebPort", port);
+
+                // 注册应用
+                CurrentAppRegistry.get().createInstance();
+
+                checkEnv();
+
                 if(!NetworkUtil.isUsableLocalPort(port))
                 {
                     throw new SystemException("端口 " + port + " 被占用");
@@ -120,6 +131,9 @@ public class Bootstrap
 
                 log.info("应用已启动, PID: {}{}", SystemUtil.getProcessId(), ". Web 端口号: " + Bootstrap.port);
 
+                // 告知注册中心启动完成
+                CurrentAppRegistry.get().setStarted();
+
             }
             // 启动应用
             else if(bootClz.getAnnotation(JoindataApp.class) != null)
@@ -127,12 +141,19 @@ public class Bootstrap
                 log.info("启动应用...");
 
                 JoindataApp joindataApp = bootClz.getAnnotation(JoindataApp.class);
-                configureBootInfo(bootClz, joindataApp.id(), joindataApp.version());
+                configureBootInfo(bootClz, joindataApp.id(), joindataApp.version(), !joindataApp.disableRegistry());
+
+                // 注册应用
+                CurrentAppRegistry.get().createInstance();
+
                 checkEnv();
 
                 context = boot(bootClz);
 
                 log.info("应用已启动, PID: {}", SystemUtil.getProcessId());
+
+                // 告知注册中心启动完成
+                CurrentAppRegistry.get().setStarted();
             }
             // 没有标注，就报错
             else
@@ -144,11 +165,30 @@ public class Bootstrap
         catch(SystemException e)
         {
             log.fatal("启动失败, 发生意外错误: {}", e.getMessage());
+
+            try
+            {
+                CurrentAppRegistry.get().setFatal(e);
+            }
+            catch(Exception e1)
+            {
+                log.fatal("卧槽给注册中心设置启动失败信息时也失败了: {}", e1.getMessage(), e1);
+            }
             System.exit(0);
         }
         catch(Exception e)
         {
             log.fatal("启动失败, 发生意外错误: {}", e.getMessage(), e);
+
+            try
+            {
+                CurrentAppRegistry.get().setFatal(e);
+            }
+            catch(Exception e1)
+            {
+                log.fatal("卧槽给注册中心设置启动失败信息时也失败了: {}", e1.getMessage(), e1);
+            }
+
             System.exit(0);
         }
 
@@ -161,8 +201,9 @@ public class Bootstrap
      * @param bootClz 启动类
      * @param args 没什么软用的参数，不要传
      * @return Spring 上下文
+     * @throws Exception
      */
-    private static final ApplicationContext boot(Class<?> bootClz, String... args)
+    private static final ApplicationContext boot(Class<?> bootClz, String... args) throws Exception
     {
         log.info("配置 Spring - 开始");
 
@@ -521,7 +562,7 @@ public class Bootstrap
     /**
      * 设置启动信息，以供其他组件使用
      */
-    public static void configureBootInfo(Class<?> bootClz, String appId, String appVersion)
+    public static void configureBootInfo(Class<?> bootClz, String appId, String appVersion, boolean enableRegistry) throws Exception
     {
         log.info("配置启动信息 - 开始");
 
@@ -537,6 +578,12 @@ public class Bootstrap
         BootInfoHolder.setBootClass(bootClz);
         log.info("启动类是: {}", bootClz.getName());
 
+        // 设置是否启动注册中心
+        BootInfoHolder.setRegistryEnabled(enableRegistry);
+        log.info("是否启用注册中心: {}", enableRegistry);
+
+        StringMap coms = new StringMap();
+
         Annotation[] annos = bootClz.getAnnotations();
         for(Annotation anno: annos)
         {
@@ -548,8 +595,12 @@ public class Bootstrap
 
             log.info("声明使用组件: @{} - {}", anno.annotationType().getSimpleName(), jc.name());
 
+            coms.put("@" + anno.annotationType().getSimpleName(), jc.name());
+
             BootInfoHolder.addConfigHub(jc.bind());
         }
+
+        BootInfoHolder.put("EnabledComponents", coms);
 
         log.info("配置启动信息 - 完成");
     }

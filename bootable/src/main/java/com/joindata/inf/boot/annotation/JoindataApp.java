@@ -44,4 +44,7 @@ public @interface JoindataApp
 
     /** 应用版本号 */
     String version();
+
+    /** 禁用应用注册 */
+    boolean disableRegistry() default false;
 }

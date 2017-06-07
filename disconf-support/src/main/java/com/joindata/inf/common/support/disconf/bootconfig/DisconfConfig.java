@@ -56,6 +56,14 @@ public class DisconfConfig
     }
 
     /**
+     * Disconf 服务器地址
+     */
+    public static final String getDisconfServerHost()
+    {
+        return System.getProperty("disconf.conf_server_host");
+    }
+
+    /**
      * 一些工具
      * 
      * @author <a href="mailto:songxiang@joindata.com">宋翔</a>

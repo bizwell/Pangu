@@ -19,7 +19,6 @@ import com.google.common.primitives.Longs;
  */
 public class SequenceRepositoryZookeeper implements SequenceRepository
 {
-
     private static final int RETRY_MAX_TIMES = 100;
 
     private CuratorFramework zkClient;

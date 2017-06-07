@@ -94,6 +94,7 @@
 		<amqp.version>4.1.0</amqp.version>
 		<camunda.version>7.6.0</camunda.version>
 		<resteasy.version>3.1.2.Final</resteasy.version>
+		<paho.version>1.1.1</paho.version>
 	</properties>
 
 	<dependencyManagement>
@@ -835,6 +836,13 @@
 				<version>${resteasy.version}</version>
 			</dependency>
 
+			<!-- Paho MQTT 库 -->
+			<dependency>
+				<groupId>org.eclipse.paho</groupId>
+				<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+				<version>${paho.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -996,12 +1004,14 @@
 		<module>email-support</module>
 		<module>idgen-support</module>
 		<module>rabbitmq-support</module>
+		<module>paho-support</module>
+		<module>camunda-support</module>
 		<module>bootable</module>
 		<module>mq-sterotype</module>
 		<module>jdbc-sterotype</module>
 		<module>joindata-app</module>
 		<module>joindata-app-plugin</module>
-		<!-- <module>joindata-app-template</module> <module>camunda-support</module> -->
+		<!-- <module>joindata-app-template</module> -->
 	</modules>
 
 </project>

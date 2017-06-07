@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.joindata.inf.common</groupId>
+		<artifactId>root</artifactId>
+		<version>1.1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>paho-support</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Paho MQTT 消息队列支持</name>
+	<url>http://www.joindata.com</url>
+
+	<dependencies>
+
+		<!-- Disconf 支持 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>disconf-support</artifactId>
+			<version>${pangu.version}</version>
+		</dependency>
+
+		<!-- MQ 公共模板 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>mq-sterotype</artifactId>
+			<version>${pangu.version}</version>
+		</dependency>
+
+		<!-- Paho 客户端 -->
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+		</dependency>
+
+	</dependencies>
+
+</project>

@@ -126,7 +126,7 @@ public class ZipMojo extends AbstractMojo
                 if(app != null)
                 {
                     appId = app.id();
-                    appVersion = app.version();
+                    appVersion = app.version() == null ? "8080" : app.version();
                     webPort = String.valueOf(app.port());
                 }
             }

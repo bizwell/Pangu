@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>3.3.9</version>
+			<version>3.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-artifact</artifactId>
-			<version>3.1.1</version>
+			<version>3.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -54,7 +54,6 @@
 			<version>2.5.2</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.sonatype.sisu</groupId>
 			<artifactId>sisu-inject-plexus</artifactId>
@@ -66,6 +65,12 @@
 			<groupId>com.joindata.inf.common</groupId>
 			<artifactId>bootable</artifactId>
 			<version>${pangu.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.joindata.inf.common</groupId>
+					<artifactId>registry</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -73,10 +78,12 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-plugin-plugin</artifactId>
-				<configuration>
-					<goalPrefix>joindata</goalPrefix>
-				</configuration>
 				<version>3.5</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<fork>true</fork>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

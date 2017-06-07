@@ -41,6 +41,7 @@ import com.joindata.inf.common.basic.annotation.ServletComponent;
 import com.joindata.inf.common.basic.annotation.ServletConfig;
 import com.joindata.inf.common.basic.annotation.WebAppFilterItem;
 import com.joindata.inf.common.basic.annotation.WebConfig;
+import com.joindata.inf.common.basic.entities.StringMap;
 import com.joindata.inf.common.basic.errors.SystemError;
 import com.joindata.inf.common.basic.exceptions.SystemException;
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
@@ -101,11 +102,6 @@ public class Bootstrap
                 JoindataWebApp joindataWebApp = bootClz.getAnnotation(JoindataWebApp.class);
                 configureBootInfo(bootClz, joindataWebApp.id(), joindataWebApp.version(), !joindataWebApp.disableRegistry());
 
-                // 注册应用
-                CurrentAppRegistry.get().createInstance();
-
-                checkEnv();
-
                 String portProp = System.getProperty("http.port");
                 if(portProp != null)
                 {
@@ -117,6 +113,14 @@ public class Bootstrap
                     port = bootClz.getAnnotation(JoindataWebApp.class).port();
                     log.info("使用注解配置的端口号: {}", port);
                 }
+
+                // 记录 Web 端口号
+                BootInfoHolder.put("WebPort", port);
+
+                // 注册应用
+                CurrentAppRegistry.get().createInstance();
+
+                checkEnv();
 
                 if(!NetworkUtil.isUsableLocalPort(port))
                 {
@@ -578,6 +582,8 @@ public class Bootstrap
         BootInfoHolder.setRegistryEnabled(enableRegistry);
         log.info("是否启用注册中心: {}", enableRegistry);
 
+        StringMap coms = new StringMap();
+
         Annotation[] annos = bootClz.getAnnotations();
         for(Annotation anno: annos)
         {
@@ -589,8 +595,12 @@ public class Bootstrap
 
             log.info("声明使用组件: @{} - {}", anno.annotationType().getSimpleName(), jc.name());
 
+            coms.put("@" + anno.annotationType().getSimpleName(), jc.name());
+
             BootInfoHolder.addConfigHub(jc.bind());
         }
+
+        BootInfoHolder.put("EnabledComponents", coms);
 
         log.info("配置启动信息 - 完成");
     }

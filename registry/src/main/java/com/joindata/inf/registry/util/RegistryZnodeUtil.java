@@ -1,5 +1,7 @@
 package com.joindata.inf.registry.util;
 
+import com.joindata.inf.common.util.basic.StringUtil;
+
 /**
  * 注册中心的工具
  * 
@@ -58,6 +60,30 @@ public class RegistryZnodeUtil
     }
 
     /**
+     * {@value #ROOT_NODE}/应用ID/版本号/instance/实例ID/HEARTBEAT
+     */
+    public static final String getHeartbeatNode(String appId, String version, String instanceId)
+    {
+        return getVersionNode(appId, version) + "/instance/" + instanceId + "/HEARTBEAT";
+    }
+
+    /**
+     * {@value #ROOT_NODE}/应用ID/版本号/instance/实例ID/STARTING
+     */
+    public static final String getStartingNode(String appId, String version, String instanceId)
+    {
+        return getVersionNode(appId, version) + "/instance/" + instanceId + "/STARTING";
+    }
+
+    /**
+     * {@value #ROOT_NODE}/应用ID/版本号/instance/实例ID/RUNNING
+     */
+    public static final String getRunningNode(String appId, String version, String instanceId)
+    {
+        return getVersionNode(appId, version) + "/instance/" + instanceId + "/RUNNING";
+    }
+
+    /**
      * {@value #ROOT_NODE}/应用ID/版本号/instance/实例ID/RUNNING
      */
     public static final String getStartedNode(String appId, String version, String instanceId)
@@ -65,4 +91,41 @@ public class RegistryZnodeUtil
         return getVersionNode(appId, version) + "/instance/" + instanceId + "/STARTED";
     }
 
+    /**
+     * 解析出应用 ID
+     * 
+     * @param node 节点路径
+     * @return 应用 ID
+     */
+    public static final String getAppId(String node)
+    {
+        return StringUtil.substringBeforeFirst(StringUtil.trimLeft(StringUtil.substringAfterLast(node, ROOT_NODE), '/') + "/", "/");
+    }
+
+    /**
+     * 解析出版本号
+     * 
+     * @param node 节点路径
+     * @return 版本号
+     */
+    public static final String getVersion(String node)
+    {
+        String appId = getAppId(node);
+        String version = StringUtil.trimLeft(StringUtil.replaceAll(node, getAppNode(appId), ""), '/');
+        return StringUtil.substringBeforeFirst(version, "/");
+    }
+
+    /**
+     * 解析出实例 ID
+     * 
+     * @param node 节点路径
+     * @return 实例 ID
+     */
+    public static final String getInstanceId(String node)
+    {
+        String appId = getAppId(node);
+        String version = getVersion(node);
+        String instanceId = StringUtil.trimLeft(StringUtil.replaceAll(node, getVersionNode(appId, version) + "/instance", ""), '/');
+        return StringUtil.substringBeforeFirst(instanceId, "/");
+    }
 }

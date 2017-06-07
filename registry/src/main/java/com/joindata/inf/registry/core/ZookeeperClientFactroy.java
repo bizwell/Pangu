@@ -23,6 +23,7 @@ public class ZookeeperClientFactroy
     {
         if(INSTANCE == null)
         {
+            // TODO 这里可能需要处理没有 EnableDisconf 的应用
             INSTANCE = CuratorFrameworkFactory.newClient(DisconfApi.getZkHost(), new RetryNTimes(10, 5000));
         }
 

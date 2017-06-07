@@ -1,13 +1,13 @@
 package com.joindata.inf.registry.entity;
 
-import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
-public class AppVersionSummary extends TreeMap<String, List<AppInstanceSummary>>
+public class AppVersionSummary extends TreeMap<String, Map<String, AppInstanceSummary>>
 {
     private static final long serialVersionUID = -8219607976142750414L;
 
-    public List<AppInstanceSummary> add(String version, List<AppInstanceSummary> instances)
+    public Map<String, AppInstanceSummary> add(String version, Map<String, AppInstanceSummary> instances)
     {
         return this.put(version, instances);
     }

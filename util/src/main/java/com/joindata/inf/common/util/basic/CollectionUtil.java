@@ -391,6 +391,23 @@ public class CollectionUtil
         return ret;
     }
 
+    /**
+     * 集合中是否包含指定元素
+     * 
+     * @param collection 集合
+     * @param version 要判断的元素
+     * @return true, 如果包含
+     */
+    public static boolean contains(Collection<String> collection, String item)
+    {
+        if(collection == null)
+        {
+            return false;
+        }
+
+        return collection.contains(item);
+    }
+
     public static void main(String[] args)
     {
         System.out.println(newHashSet("A", "B", "C"));
@@ -434,4 +451,5 @@ public class CollectionUtil
         }
 
     }
+
 }

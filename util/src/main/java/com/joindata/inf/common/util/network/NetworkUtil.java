@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Set;
 
 import com.joindata.inf.common.basic.entities.StringMap;
@@ -101,16 +102,17 @@ public class NetworkUtil
      * @param startsWith 过滤开头
      * @return 第一个匹配的元素。如果没有匹配，返回 null
      */
-    public static final String grepIpv4ByPrefix(Set<String> ipSet, String startsWith)
+    public static final String grepIpv4ByPrefix(Collection<String> ips, String startsWith)
     {
-        if(ipSet == null)
+        if(ips == null)
         {
             return null;
         }
 
-        for(String ip: ipSet)
+        for(String ip: ips)
         {
-            if(StringUtil.startsWith(ip, startsWith))
+
+            if(StringUtil.startsWith(StringUtil.trim(ip), startsWith))
             {
                 return ip;
             }

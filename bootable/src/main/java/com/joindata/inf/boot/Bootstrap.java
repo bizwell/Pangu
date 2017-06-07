@@ -69,6 +69,8 @@ public class Bootstrap
 
     private static Integer port = null;
 
+    private static final String VERSION = "1.0.0";
+
     /**
      * 启动应用，<strong>启动后容器将继续运行</strong><br />
      * <i>会在堆栈中自动寻找调用的启动类，放心地调用即可</i>
@@ -81,7 +83,7 @@ public class Bootstrap
         try
         {
             // XXX 每次发布要注意这里的版本号
-            log.info(StreamUtils.copyToString(ResourceUtil.getRootResourceAsStream("logo.txt"), Charset.forName("UTF-8")), Env.get(), "1.1.0-SNAPSHOT");
+            log.info(StreamUtils.copyToString(ResourceUtil.getRootResourceAsStream("logo.txt"), Charset.forName("UTF-8")), Env.get(), VERSION);
         }
         catch(IOException e)
         {

@@ -8,6 +8,7 @@ import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.basic.support.SpringContextHolder;
 import com.joindata.inf.common.sterotype.mq.MessageListener;
 import com.joindata.inf.common.sterotype.mq.annotation.Topic;
+import com.joindata.inf.common.support.paho.annotation.PahoAttr;
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.log.Logger;
@@ -17,6 +18,8 @@ public class MessageListenerScanner
     private static final Logger log = Logger.get();
 
     private final Class<Topic> topicClz = Topic.class;
+
+    private final Class<PahoAttr> pahoAttrClz = PahoAttr.class;
 
     @SuppressWarnings("unchecked")
     public Map<String, MessageListener<Serializable>> scanTopicListener()
@@ -34,9 +37,9 @@ public class MessageListenerScanner
                 continue;
             }
 
-            Class<Serializable> innerClz = ClassUtil.getNestedGenericType(clz);
-            if(String.class.equals(innerClz))
+            if(clz.getAnnotation(pahoAttrClz) == null)
             {
+                log.warn("该监听器 {} 没有 @PahoAttr 注解，忽略了", clz.getCanonicalName());
                 continue;
             }
 

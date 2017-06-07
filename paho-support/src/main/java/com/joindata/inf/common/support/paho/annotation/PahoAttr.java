@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.paho;
+package com.joindata.inf.common.support.paho.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,19 +7,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.joindata.inf.common.basic.annotation.JoindataComponent;
+import com.joindata.inf.common.support.paho.enums.PahoSerialization;
 
 /**
- * 启用 Paho
+ * 标记一个 Paho 队列属性
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
- * @date May 25, 2017 5:24:08 PM
+ * @date Jun 7, 2017 2:12:02 PM
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@JoindataComponent(bind = ConfigHub.class, name = "MQTT 消息队列支持")
-public @interface EnablePaho
+public @interface PahoAttr
 {
+    /** 序列化方式，参见 {@link PahoSerialization} */
+    PahoSerialization serialization();
 }

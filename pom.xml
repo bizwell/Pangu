@@ -1004,6 +1004,7 @@
 		<module>email-support</module>
 		<module>idgen-support</module>
 		<module>rabbitmq-support</module>
+		<module>paho-support</module>
 		<module>bootable</module>
 		<module>mq-sterotype</module>
 		<module>jdbc-sterotype</module>

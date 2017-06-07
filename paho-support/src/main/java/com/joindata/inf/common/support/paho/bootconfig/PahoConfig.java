@@ -68,7 +68,6 @@ public class PahoConfig
             opts.setUserName(properties.getBrokerUsername());
             opts.setPassword(properties.getBrokerPassword().toCharArray());
             log.info("MQTT 连接用户名: {}", properties.getBrokerUsername());
-            log.info("MQTT 连接密码: {}", properties.getBrokerPassword());
         }
 
         opts.setAutomaticReconnect(true);
@@ -82,7 +81,7 @@ public class PahoConfig
      * @throws MqttException
      */
     @Bean(initMethod = "init")
-    public MessageListenerHandler binaryMessageListenerHandler() throws MqttException
+    public MessageListenerHandler messageListenerHandler() throws MqttException
     {
         MessageListenerScanner scanner = new MessageListenerScanner();
         MessageListenerHandler handler = new MessageListenerHandler(mqttClient(), scanner.scanTopicListener());

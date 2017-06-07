@@ -20,4 +20,6 @@ public interface SequenceRepository
     long set(String key, long value) throws Exception;
 
     public long getAndIncrease(String key, long addValue) throws Exception;
+
+    public void delete(String key) throws Exception;
 }

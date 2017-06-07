@@ -77,6 +77,12 @@ public class IdRangeFactory
         }
     }
 
+    public void clearRange(String sequenceName)
+    {
+        String key = getCacheKey(sequenceName);
+        idRangeCacheMap.remove(key);
+    }
+
     private static final String getCacheKey(String name)
     {
         return IdKeyBuilder.getSequenceKey(name) + ".cache";

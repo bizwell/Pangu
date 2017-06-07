@@ -76,7 +76,15 @@ public class SequenceRepositoryZookeeper implements SequenceRepository
     @Override
     public long set(String key, long value) throws Exception
     {
+        ensureStart();
         zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(key, Longs.toByteArray(value));
         return value;
+    }
+
+    @Override
+    public void delete(String key) throws Exception
+    {
+        ensureStart();
+        zkClient.delete().forPath(key);
     }
 }

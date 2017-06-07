@@ -71,6 +71,15 @@ public class IdgenConfig
     }
 
     /**
+     * 17 位 Padding 的前缀附加器
+     */
+    @Bean("prefixAttacherOffset10")
+    public PrefixAttacher prefixAttacherOffset10()
+    {
+        return new PrefixAttacher(10);
+    }
+
+    /**
      * 14 位的时间戳前缀附加器<br />
      * <i>由于时间戳永远在最前面，所以用这个默认的即可</i>
      */

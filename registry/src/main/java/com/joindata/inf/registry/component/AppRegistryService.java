@@ -11,7 +11,6 @@ import com.joindata.inf.common.util.basic.BeanUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
-import com.joindata.inf.common.util.network.NetworkUtil;
 import com.joindata.inf.registry.core.ZookeeperClientFactroy;
 import com.joindata.inf.registry.entity.AppHeartbeatInfo;
 import com.joindata.inf.registry.entity.AppInstanceInfo;
@@ -131,7 +130,7 @@ public class AppRegistryService implements InitializingBean
         instanceSummary.setFatalInfo(getFatalInfo(app, version, instance));
         instanceSummary.setStartInfo(getStartInfo(app, version, instance));
         instanceSummary.setInstanceInfo(getInstanceInfo(app, version, instance));
-        instanceSummary.setHost(NetworkUtil.grepIpv4ByPrefix(InstanceUtil.parseInstanceSign(instance).getHosts(), "10."));
+        instanceSummary.setHosts(InstanceUtil.parseInstanceSign(instance).getHosts());
         instanceSummary.setHeartbeatInfo(getHeartbeatInfo(app, version, instance));
         InstanceState state = null;
         if(isRunning(app, version, instance))
@@ -179,7 +178,7 @@ public class AppRegistryService implements InitializingBean
                         instanceSummary.setFatalInfo(getFatalInfo(app, version, instance));
                         instanceSummary.setStartInfo(getStartInfo(app, version, instance));
                         instanceSummary.setInstanceInfo(getInstanceInfo(app, version, instance));
-                        instanceSummary.setHost(NetworkUtil.grepIpv4ByPrefix(InstanceUtil.parseInstanceSign(instance).getHosts(), "10."));
+                        instanceSummary.setHosts(InstanceUtil.parseInstanceSign(instance).getHosts());
                         instanceSummary.setHeartbeatInfo(getHeartbeatInfo(app, version, instance));
                         instanceSummary.setState(InstanceState.RUNNING);
                         instanceSummaryList.add(instanceSummary);

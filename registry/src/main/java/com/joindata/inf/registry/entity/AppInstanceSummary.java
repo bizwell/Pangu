@@ -1,5 +1,7 @@
 package com.joindata.inf.registry.entity;
 
+import java.util.Collection;
+
 import com.joindata.inf.registry.enums.InstanceState;
 
 import lombok.Data;
@@ -15,7 +17,7 @@ public class AppInstanceSummary
 
     private String fatalInfo;
 
-    private String host;
+    private Collection<String> hosts;
 
     private InstanceState state;
 

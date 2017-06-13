@@ -74,6 +74,7 @@ public class DailySequence extends AbstractBaseSequence implements InitializingB
 
     private void resetSequence()
     {
+        logger.info("开始重置sequence");
         Date currentDate = new Date();
         String currentDateStr = DateUtil.formatDate(currentDate, DateUtil.UGLY_DATE_FORMAT2);
         setName(getSequenceNameWhitTimeSuffix(currentDate));
@@ -84,12 +85,18 @@ public class DailySequence extends AbstractBaseSequence implements InitializingB
         idRangeFactory.clearRange(historySequenceName);
         try
         {
-            sequenceRepository.delete(IdKeyBuilder.getSequenceKey(historySequenceName));
+            String dataId = IdKeyBuilder.getSequenceKey(historySequenceName);
+            if(sequenceRepository.exist(dataId))
+            {
+                sequenceRepository.delete(dataId);
+            }
         }
         catch(Exception e)
         {
             logger.warn("删除历史节点数据失败", e);
         }
+
+        logger.info("重置sequence完成");
     }
 
     private String getSequenceNameWhitTimeSuffix(Date date)

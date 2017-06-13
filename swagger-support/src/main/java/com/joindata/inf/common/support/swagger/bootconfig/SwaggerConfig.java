@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.swagger.EnableSwagger;
@@ -14,6 +16,7 @@ import com.joindata.inf.common.support.swagger.core.MountebankClient;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
 
+import freemarker.template.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.Contact;
@@ -85,6 +88,7 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/views/**").addResourceLocations("classpath:/static/views/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/", "classpath:/static/js/", "classpath:/static/css/");
 
         log.info("Swagger 页面: {}", "swagger-ui.html");
@@ -97,4 +101,25 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter
         return new MountebankClient(enableSwagger.mockServerPort());
     }
 
+    @Bean(name = "freemarkerConfig")
+    public FreeMarkerConfigurer freemarkerConfig()
+    {
+        FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+        freemarker.template.Configuration configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+        configuration.setClassForTemplateLoading(this.getClass(), "/static/views/");
+        configurer.setDefaultEncoding("UTF-8");
+        configurer.setConfiguration(configuration);
+        configuration.setDefaultEncoding("UTF-8");
+        return configurer;
+    }
+
+    @Bean(name = "freeMarkerViewResolver")
+    public FreeMarkerViewResolver freeMarkerViewResolver()
+    {
+        FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
+        freeMarkerViewResolver.setContentType("text/html;charset=UTF-8");
+        freeMarkerViewResolver.setCache(true);
+        freeMarkerViewResolver.setSuffix(".ftl");
+        return freeMarkerViewResolver;
+    }
 }

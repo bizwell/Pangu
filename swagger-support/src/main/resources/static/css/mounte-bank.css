@@ -23,3 +23,13 @@
 	width: 80px;
 	margin-right: 10px;
 }
+
+a:link { text-decoration: none;color: blue}
+a:active { text-decoration:blink}
+a:hover { text-decoration:underline;color: red} 
+a:visited { text-decoration: none;color: green}
+
+
+.api-preview {
+	font-size: 70%
+}

@@ -226,7 +226,7 @@
                     name: "sanitize",
                     hash: {},
                     data: i
-                })) ? a : "") + '</div><input type="button" class="mock_export" value="导出mock"/>\n  <input id="importMock" type="button" class="mock_import" value="导入mock"/>\n</div>  <input type="file" hidden class="mock_import_file" value="导入mock"/>\n</div>  <div class="info_description markdown">' + (null != (a = (n.sanitize || t && t.sanitize || s).call(o, null != (a = null != t ? t.info : t) ? a.description : a, {
+                })) ? a : "") + "(<a class='api-preview' href='/api-docs/preview'>接口文档预览</a>)" + '</div><div class="info_description markdown">' + (null != (a = (n.sanitize || t && t.sanitize || s).call(o, null != (a = null != t ? t.info : t) ? a.description : a, {
                     name: "sanitize",
                     hash: {},
                     data: i
@@ -538,7 +538,7 @@
                 return ""
             },
             21: function(e, t, n, r, i) {
-                return "          <div class='sandbox_header'>\n            <input class='submit' type='submit' value='试一下！' data-sw-translate/>\n   <input class='addMock' type='button' value='Mock 一下！' data-sw-translate/>\n  <input class='tryMock' type='button' value='请求mock！' data-sw-translate/>\n         <a href='#' class='response_hider' style='display:none' data-sw-translate>Hide Response</a>\n            <span class='response_throbber' style='display:none'></span>\n          </div>\n"
+                return "          <div class='sandbox_header'>\n            <input class='submit' type='submit' value='试一下！' data-sw-translate/>\n     <a href='#' class='response_hider' style='display:none' data-sw-translate>Hide Response</a>\n            <span class='response_throbber' style='display:none'></span>\n          </div>\n"
             },
             23: function(e, t, n, r, i) {
                 return "          <h4 data-sw-translate>Request Headers</h4>\n          <div class='block request_headers'></div>\n"
@@ -1392,12 +1392,12 @@
                     data: i
                 })) ? a : "") + "\n "; 
                 if (null != t && !t.isParam) {
-                	console.log(e);
-                	console.log(t);
-                	console.log(n);
-                	console.log(r);
-                	console.log(i);
-                	result += "<h3>mock 响应数据: </h3> </div><textarea class='responseInput required' placeholder='创建mock数据时，在此输入mock的响应信息'></textarea>\n";
+//                	console.log(e);
+//                	console.log(t);
+//                	console.log(n);
+//                	console.log(r);
+//                	console.log(i);
+//                	result += "<h3>mock 响应数据: </h3> </div><textarea class='responseInput required' placeholder='创建mock数据时，在此输入mock的响应信息'></textarea>\n";
                 } 
                 return result;
             },
@@ -20988,7 +20988,7 @@
             $(this.el).html(Handlebars.templates.main(this.model)),
             this.info = this.$(".info")[0],
             this.info && this.info.addEventListener("click", this.onLinkClick, !0),
-            this.exportButton = this.$(".mock_export")[0],
+            this.exportButton = this.$(".api_export")[0],
             this.importButton = this.$(".mock_import")[0],
             this.importFileInput = this.$(".mock_import_file")[0],
             this.importButton && this.importButton.addEventListener("click", this.onImportButtonClick, !0),
@@ -21033,17 +21033,7 @@
             window.open(t.href, "_blank"))
         },
         onExportButtonClick: function(e) {
-        	var imposterModel = new SwaggerUi.Models.ImposterModel();
-        	var port = $("#mockserver").val().split(":")[1];
-            var imposter = imposterModel.getImposters(port);
-            var data = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(imposter));
-            var a = document.createElement('A');
-        	a.href = data;
-        	a.target = '_blank';
-        	a.download = "mock-" + port + ".ejs";
-        	document.body.appendChild(a);
-        	a.click();
-        	document.body.removeChild(a);
+    	     window.open("api-docs/preview");
         },
         
         onImportFileChange: function(e) {

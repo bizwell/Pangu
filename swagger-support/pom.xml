@@ -38,34 +38,54 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-annotations</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
-		
+
 		<!-- 创建mock服务依赖胡组件 -->
 		<dependency>
-		    <groupId>org.mbtest.javabank</groupId>
-		    <artifactId>javabank-core</artifactId>
-		    <version>0.4.10</version>
+			<groupId>org.mbtest.javabank</groupId>
+			<artifactId>javabank-core</artifactId>
+			<version>0.4.10</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.mbtest.javabank</groupId>
-		    <artifactId>javabank-client</artifactId>
-		    <version>0.4.10</version>
+			<groupId>org.mbtest.javabank</groupId>
+			<artifactId>javabank-client</artifactId>
+			<version>0.4.10</version>
 		</dependency>
-		
+
 		<!-- 文件上传插件 -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>io.github.swagger2markup</groupId>
+			<artifactId>swagger2markup</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.23</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

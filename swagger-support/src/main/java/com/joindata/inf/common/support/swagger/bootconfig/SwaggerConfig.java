@@ -65,7 +65,7 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter
             builder.version(enableSwagger.version());
             docklet.apiInfo(builder.build());
 
-            log.info("Swagger 文档标题: {}, 接口版本: {}, 文档维护人: {}, 维护人 Email: {}", title, enableSwagger.version(), enableSwagger.author(), enableSwagger.email());
+            log.info("Swagger 文档标题: {}, 接口版本: {}, 文档维护人: {}, 维护人 Email: {}, 根: {}", title, enableSwagger.version(), enableSwagger.author(), enableSwagger.email(), enableSwagger.apiRoot());
         }
 
         String packageName = enableSwagger.scanPackages();

@@ -20,6 +20,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.joindata.inf.boot.annotation.JoindataWebApp;
+import com.joindata.inf.boot.annotation.MvcJsonSerializationFeature;
 import com.joindata.inf.boot.sterotype.annotations.WebRequestInterceptor;
 import com.joindata.inf.boot.sterotype.handler.RequestInterceptor;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
@@ -42,7 +43,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
         FastJsonHttpMessageConverter messageConverter = new FastJsonHttpMessageConverter();
         FastJsonConfig config = new FastJsonConfig();
 
-        config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect, SerializerFeature.SkipTransientField, SerializerFeature.WriteEnumUsingToString, SerializerFeature.WriteSlashAsSpecial);
+        config.setSerializerFeatures(Util.getJsonFeature());
         messageConverter.setFastJsonConfig(config);
         messageConverter.setDefaultCharset(Charset.forName("UTF-8"));
 
@@ -60,7 +61,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
         super.addResourceHandlers(registry);
-        for(String staticDir: BootInfoHolder.getBootClass().getAnnotation(JoindataWebApp.class).staticDir())
+        for(String staticDir: Util.getStaticDir())
         {
             registry.addResourceHandler("**").addResourceLocations("classpath:" + staticDir + "/");
         }
@@ -131,4 +132,27 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
         configurer.setUseRegisteredSuffixPatternMatch(true);
     }
 
+    /**
+     * 实用工具
+     * 
+     * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
+     * @date Jun 14, 2017 2:39:06 PM
+     */
+    private static final class Util
+    {
+        public static SerializerFeature[] getJsonFeature()
+        {
+            MvcJsonSerializationFeature anno = BootInfoHolder.getBootClass().getAnnotation(MvcJsonSerializationFeature.class);
+            if(anno == null)
+            {
+                return new SerializerFeature[]{SerializerFeature.DisableCircularReferenceDetect, SerializerFeature.SkipTransientField, SerializerFeature.WriteEnumUsingToString, SerializerFeature.WriteSlashAsSpecial};
+            }
+            return anno.value();
+        }
+
+        public static String[] getStaticDir()
+        {
+            return BootInfoHolder.getBootClass().getAnnotation(JoindataWebApp.class).staticDir();
+        }
+    }
 }

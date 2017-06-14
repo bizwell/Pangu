@@ -32,6 +32,9 @@ public class DubboProperties
     /** 服务默认提供的的负载均衡策略 */
     private String providerLoadbalance;
 
+    /** 服务默认的拦截扩展 */
+    private String providerFilter;
+
     /** 线程池数量 */
     private int dubboThreads;
 
@@ -49,6 +52,9 @@ public class DubboProperties
 
     /** 远程调用负载均衡方式 */
     private String consumerLoadbalance;
+
+    /** 远程调用默认的调用拦截扩展 */
+    private String consumerFilter;
 
     /** 默认是否检测服务是否存在 */
     private boolean consumerCheck;
@@ -130,6 +136,17 @@ public class DubboProperties
         this.providerLoadbalance = providerLoadbalance;
     }
 
+    @DisconfFileItem(name = "provider.filter", associateField = "providerFilter")
+    public String getProviderFilter()
+    {
+        return providerFilter;
+    }
+
+    public void setProviderFilter(String providerFilter)
+    {
+        this.providerFilter = providerFilter;
+    }
+
     @DisconfFileItem(name = "dubbo.threads", associateField = "dubboThreads")
     public int getDubboThreads()
     {
@@ -194,6 +211,17 @@ public class DubboProperties
     public void setConsumerLoadbalance(String consumerLoadbalance)
     {
         this.consumerLoadbalance = consumerLoadbalance;
+    }
+
+    @DisconfFileItem(name = "consumer.filter", associateField = "consumerFilter")
+    public String getConsumerFilter()
+    {
+        return consumerFilter;
+    }
+
+    public void setConsumerFilter(String consumerFilter)
+    {
+        this.consumerFilter = consumerFilter;
     }
 
     @DisconfFileItem(name = "consumer.check", associateField = "consumerCheck")

@@ -47,6 +47,7 @@
 		<commons-csv.version>1.4</commons-csv.version>
 		<commons-fileupload.version>1.3.2</commons-fileupload.version>
 		<httpclient.version>4.5.3</httpclient.version>
+		<httpasyncclient.version>4.1.3</httpasyncclient.version>
 		<httpcore.version>4.4.6</httpcore.version>
 		<truezip.version>7.7.10</truezip.version>
 		<jpinyin.version>1.1.8</jpinyin.version>
@@ -68,7 +69,7 @@
 		<mybatis-pagehelper.version>5.0.1</mybatis-pagehelper.version>
 		<mybatis-spring.version>1.3.0</mybatis-spring.version>
 		<druid.version>1.0.12</druid.version>
-		<springfox.version>2.6.1</springfox.version>
+		<springfox.version>2.7.0</springfox.version>
 		<swagger.version>1.5.10</swagger.version>
 		<jackson.version>2.8.5</jackson.version>
 		<elasticsearch.version>5.0.2</elasticsearch.version>
@@ -95,6 +96,8 @@
 		<camunda.version>7.6.0</camunda.version>
 		<resteasy.version>3.1.2.Final</resteasy.version>
 		<paho.version>1.1.1</paho.version>
+		<asciidoctorj.version>1.5.5</asciidoctorj.version>
+		<reflections.version>1.9.11</reflections.version>
 	</properties>
 
 	<dependencyManagement>
@@ -290,6 +293,11 @@
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>${httpclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpasyncclient</artifactId>
+				<version>${httpasyncclient.version}</version>
 			</dependency>
 
 			<!-- Apache HTTP 核心 -->
@@ -514,6 +522,12 @@
 				<groupId>io.springfox</groupId>
 				<artifactId>springfox-swagger2</artifactId>
 				<version>${springfox.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.reflections</groupId>
+						<artifactId>reflections</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>io.springfox</groupId>
@@ -526,6 +540,13 @@
 				<groupId>io.swagger</groupId>
 				<artifactId>swagger-annotations</artifactId>
 				<version>${swagger.version}</version>
+			</dependency>
+
+			<!-- 生成静态 API 文档 -->
+			<dependency>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctorj</artifactId>
+				<version>${asciidoctorj.version}</version>
 			</dependency>
 
 			<!-- Jackson，我特么其实不想用这个，可 Swagger 必须让加载 -->
@@ -842,7 +863,7 @@
 				<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
 				<version>${paho.version}</version>
 			</dependency>
-
+			
 		</dependencies>
 	</dependencyManagement>
 

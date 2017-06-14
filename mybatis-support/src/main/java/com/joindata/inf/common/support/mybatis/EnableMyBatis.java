@@ -27,4 +27,7 @@ public @interface EnableMyBatis
 
     /** 是否启用驼峰命名转换 */
     boolean autoCamel() default false;
+
+    /** 默认数据源（用于多数据源路由） */
+    String defaultDatasource() default "";
 }

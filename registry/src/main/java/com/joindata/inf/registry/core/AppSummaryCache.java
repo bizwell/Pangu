@@ -3,14 +3,16 @@ package com.joindata.inf.registry.core;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.log.Logger;
 import com.joindata.inf.registry.component.AppRegistryService;
+import com.joindata.inf.registry.entity.AppHeartbeatInfo;
+import com.joindata.inf.registry.entity.AppInstanceInfo;
 import com.joindata.inf.registry.entity.AppInstanceSummary;
+import com.joindata.inf.registry.entity.AppStartInfo;
 import com.joindata.inf.registry.entity.AppSummary;
 import com.joindata.inf.registry.entity.AppVersionSummary;
 import com.joindata.inf.registry.enums.InstanceState;
@@ -22,7 +24,7 @@ import com.joindata.inf.registry.enums.InstanceState;
  * @date Jun 5, 2017 10:25:12 AM
  */
 @Component
-public class AppSummaryCache implements InitializingBean
+public class AppSummaryCache
 {
     private static final Logger log = Logger.get();
 
@@ -49,23 +51,73 @@ public class AppSummaryCache implements InitializingBean
     public void refreshInstanceSummary(String appId, String version, String instanceId) throws Exception
     {
         log.info("刷新实例缓存, 应用: {}, 版本: {}, 实例: {}", appId, version, instanceId);
-        if(!SUMMARY.containsKey(appId))
-        {
-            log.info("没有应用缓存，将创建应用 {}", appId);
-            SUMMARY.put(appId, new AppVersionSummary());
-        }
 
+        ensureInstanceData(appId, version, instanceId);
         AppInstanceSummary summary = service.getInstanceSummary(appId, version, instanceId);
-
-        if(!SUMMARY.get(appId).containsKey(version))
-        {
-            log.info("没有应用 {} 的版本缓存，将创建版本 {}", appId, version);
-            SUMMARY.get(appId).put(version, CollectionUtil.newMap());
-        }
 
         log.info("刷新的实例缓存是: {}", summary);
 
         SUMMARY.get(appId).get(version).put(instanceId, summary);
+    }
+
+    private void ensureInstanceData(String appId, String version, String instanceId) throws Exception
+    {
+        if(!SUMMARY.containsKey(appId))
+        {
+            log.info("没有应用缓存，将创建应用 {} 的缓存", appId);
+            SUMMARY.put(appId, new AppVersionSummary());
+        }
+
+        if(!SUMMARY.get(appId).containsKey(version))
+        {
+            log.info("没有应用 {} 的版本缓存，将创建版本 {} 的缓存", appId, version);
+            SUMMARY.get(appId).put(version, CollectionUtil.newMap());
+        }
+
+        if(!SUMMARY.get(appId).get(version).containsKey(instanceId))
+        {
+            log.info("没有应用 {} 的 {} 版本的实例缓存，将创建实例 {} 的缓存", appId, version, instanceId);
+            SUMMARY.get(appId).get(version).put(instanceId, new AppInstanceSummary());
+        }
+    }
+
+    public void updateFatalInfo(String appId, String version, String instanceId, String fatalInfo) throws Exception
+    {
+        ensureInstanceData(appId, version, instanceId);
+        SUMMARY.get(appId).get(version).get(instanceId).setFatalInfo(fatalInfo);
+    }
+
+    public void updateStartInfo(String appId, String version, String instanceId, AppStartInfo startInfo) throws Exception
+    {
+        ensureInstanceData(appId, version, instanceId);
+        SUMMARY.get(appId).get(version).get(instanceId).setStartInfo(startInfo);
+    }
+
+    public void updateInstanceInfo(AppInstanceInfo instanceInfo) throws Exception
+    {
+        String appId = instanceInfo.getAppId();
+        String version = instanceInfo.getVersion();
+        String instanceId = instanceInfo.getInstanceId();
+        ensureInstanceData(appId, version, instanceId);
+        SUMMARY.get(appId).get(version).get(instanceId).setInstanceInfo(instanceInfo);
+    }
+
+    public void updateHosts(String appId, String version, String instanceId, Collection<String> hosts) throws Exception
+    {
+        ensureInstanceData(appId, version, instanceId);
+        SUMMARY.get(appId).get(version).get(instanceId).setHosts(hosts);
+    }
+
+    public void updateHeartbeatInfo(String appId, String version, String instanceId, AppHeartbeatInfo heartbeatInfo) throws Exception
+    {
+        ensureInstanceData(appId, version, instanceId);
+        SUMMARY.get(appId).get(version).get(instanceId).setHeartbeatInfo(heartbeatInfo);
+    }
+
+    public void updateState(String appId, String version, String instanceId, InstanceState state) throws Exception
+    {
+        ensureInstanceData(appId, version, instanceId);
+        SUMMARY.get(appId).get(version).get(instanceId).setState(state);
     }
 
     public Collection<String> getApps()
@@ -125,9 +177,30 @@ public class AppSummaryCache implements InitializingBean
         return SUMMARY.get(appId).get(version).get(instanceId);
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception
+    /**
+     * 检查已缓存实例的状态
+     */
+    public void checkInstanceState()
     {
-        SUMMARY.putAll(service.getAll());
+        SUMMARY.forEach((appId, appSummary) ->
+        {
+            appSummary.forEach((version, versionSummary) ->
+            {
+                versionSummary.forEach((instanceId, instanceSummary) ->
+                {
+                    if(instanceSummary.getState() == null)
+                    {
+                        if(instanceSummary.getFatalInfo() == null && instanceSummary.getStartInfo() != null)
+                        {
+                            instanceSummary.setState(InstanceState.STOPPED);
+                        }
+                        else
+                        {
+                            instanceSummary.setState(InstanceState.ABNORMAL);
+                        }
+                    }
+                });
+            });
+        });
     }
 }

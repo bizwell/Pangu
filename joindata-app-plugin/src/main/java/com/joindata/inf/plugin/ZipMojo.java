@@ -109,16 +109,14 @@ public class ZipMojo extends AbstractMojo
             // 获取主类信息
             CtClass mainClass = findBootClass();
             String appId = null;
-            String appVersion = null;
-            String webPort = null;
-            {
+            String appVersion = implementationVersion;
+            String webPort = "";
 
+            {
                 JoindataApp app = (JoindataApp)mainClass.getAnnotation(JoindataApp.class);
                 if(app != null)
                 {
                     appId = app.id();
-                    appVersion = app.version();
-                    webPort = "";
                 }
             }
             {
@@ -126,8 +124,14 @@ public class ZipMojo extends AbstractMojo
                 if(app != null)
                 {
                     appId = app.id();
-                    appVersion = app.version() == null ? "8080" : app.version();
-                    webPort = String.valueOf(app.port());
+                    try
+                    {
+                        webPort = String.valueOf(app.port());
+                    }
+                    catch(Exception e)
+                    {
+                        webPort = "8080";
+                    }
                 }
             }
 

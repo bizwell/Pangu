@@ -67,8 +67,11 @@ pid=`cat $pidfile`
 if [ ! -z "$pid" ]; then
   if kill -0 $pid > /dev/null 2>&1; then
 	  echo -e "${DANGER}			程序在运行${RES}"
-	  sure=$quiet
-      while [ -z "$sure" ] || ([ ! $sure == "Y" ] && [ ! $sure = "N" ])
+	  sure=''
+	  if [ 'Y' == "$quiet" ]; then
+	      sure='Y'
+	  fi
+      while [ -z "$sure" ] || ([ ! $sure == "Y" ] && [ ! $sure == "N" ])
       do
           echo -en "${WARN}---(STEP - )${RES} 是否强制停止应用并继续安装(Y/N)? 		"
           read sure

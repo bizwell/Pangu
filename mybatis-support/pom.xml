@@ -62,6 +62,12 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
 		</dependency>
+		
+		<!-- Sharding JDBC -->
+		<dependency>
+			<groupId>com.dangdang</groupId>
+			<artifactId>sharding-jdbc-core</artifactId>
+		</dependency>
 
 		<!-- 分页插件 -->
 		<dependency>

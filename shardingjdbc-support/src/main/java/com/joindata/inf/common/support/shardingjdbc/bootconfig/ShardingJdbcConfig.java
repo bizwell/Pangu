@@ -18,13 +18,13 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule.ShardingRuleBuild
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule.TableRuleBuilder;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.joindata.inf.common.support.mybatis.properties.inner.ShardingDataSourceProperties;
 import com.joindata.inf.common.support.shardingjdbc.core.algorithm.Long.GroupRangeSuffixChooser;
 import com.joindata.inf.common.support.shardingjdbc.core.rule.shardingwithgroup.Long.ModShardingTableAlgorithm;
 import com.joindata.inf.common.support.shardingjdbc.core.rule.shardingwithgroup.Long.ModShardingTableWithMultikeyAlgorithm;
 import com.joindata.inf.common.support.shardingjdbc.core.rule.shardingwithgroup.Long.RangeGroupSchemeAlgorithm;
 import com.joindata.inf.common.support.shardingjdbc.core.rule.shardingwithgroup.Long.RangeGroupSchemeMultikeyAlgorithm;
 import com.joindata.inf.common.support.shardingjdbc.properties.ShardingJdbcConf;
-import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingDataSourceProperties;
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupByColumnRule;
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupRule;
 import com.joindata.inf.common.util.basic.ArrayUtil;
@@ -58,7 +58,6 @@ public class ShardingJdbcConfig
     public DataSourceRule dataSourceRule()
     {
         DataSourceRule rule = new DataSourceRule(getDataSourceMap());
-
         log.info("ShardingJDBC 数据源: {}", rule.getDataSourceNames());
 
         return rule;

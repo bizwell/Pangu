@@ -1,4 +1,4 @@
-package com.joindata.inf.common.support.shardingjdbc.properties.inner;
+package com.joindata.inf.common.support.mybatis.properties.inner;
 
 import java.util.List;
 

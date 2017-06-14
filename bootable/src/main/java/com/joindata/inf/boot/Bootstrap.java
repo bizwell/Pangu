@@ -70,6 +70,11 @@ public class Bootstrap
     private static Integer port = null;
 
     /**
+     * @since 1.2.0 版本号必须从 app.version 参数中取
+     */
+    private static final String VERSION = StringUtil.isBlank(System.getProperty("app.version")) ? "1.0.0" : System.getProperty("app.version");
+
+    /**
      * 启动应用，<strong>启动后容器将继续运行</strong><br />
      * <i>会在堆栈中自动寻找调用的启动类，放心地调用即可</i>
      * 
@@ -100,7 +105,7 @@ public class Bootstrap
                 log.info("启动 Web 应用...");
 
                 JoindataWebApp joindataWebApp = bootClz.getAnnotation(JoindataWebApp.class);
-                configureBootInfo(bootClz, joindataWebApp.id(), joindataWebApp.version(), !joindataWebApp.disableRegistry());
+                configureBootInfo(bootClz, joindataWebApp.id(), VERSION, !joindataWebApp.disableRegistry());
 
                 String portProp = System.getProperty("http.port");
                 if(portProp != null)
@@ -141,7 +146,7 @@ public class Bootstrap
                 log.info("启动应用...");
 
                 JoindataApp joindataApp = bootClz.getAnnotation(JoindataApp.class);
-                configureBootInfo(bootClz, joindataApp.id(), joindataApp.version(), !joindataApp.disableRegistry());
+                configureBootInfo(bootClz, joindataApp.id(), VERSION, !joindataApp.disableRegistry());
 
                 // 注册应用
                 CurrentAppRegistry.get().createInstance();

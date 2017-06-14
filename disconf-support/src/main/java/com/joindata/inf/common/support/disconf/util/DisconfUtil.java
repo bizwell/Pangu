@@ -35,6 +35,17 @@ public class DisconfUtil
     }
 
     /**
+     * 判断文件是否存在
+     * 
+     * @param filename 文件名
+     * @return true，如果存在
+     */
+    public static final boolean exists(String filename)
+    {
+        return FileUtil.isExists(DisconfCst.DOWNLOAD_DIR + "/" + filename);
+    }
+
+    /**
      * 读取文件
      * 
      * @param filename 文件名

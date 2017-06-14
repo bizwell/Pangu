@@ -208,6 +208,7 @@ public class BaseDataSourceProperties
     public DataSource toDataSource()
     {
         DruidDataSource ds = new DruidDataSource();
+        ds.setName(this.getName());
         ds.setUrl(this.getUrl());
         ds.setUsername(this.getUsername());
         ds.setPassword(this.getPassword());
@@ -228,6 +229,7 @@ public class BaseDataSourceProperties
     public static BaseDataSourceProperties of(DruidDataSource ds)
     {
         BaseDataSourceProperties props = new BaseDataSourceProperties();
+        props.setName(ds.getName());
         props.setUrl(ds.getUrl());
         props.setUsername(ds.getUsername());
         props.setPassword(ds.getPassword());

@@ -42,9 +42,6 @@ public @interface JoindataWebApp
     /** 应用 ID */
     String id();
 
-    /** 应用版本号 */
-    String version();
-
     /** 端口号，默认 8080 */
     int port() default 8080;
 

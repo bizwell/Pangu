@@ -40,6 +40,9 @@ public @interface EnableSwagger
     /** 版本，默认 1.0.0 */
     public String version() default "1.0.0";
 
+    /** API 根路径 */
+    public String apiRoot() default "/";
+
     /**
      * 提供mock服务的端口号
      */

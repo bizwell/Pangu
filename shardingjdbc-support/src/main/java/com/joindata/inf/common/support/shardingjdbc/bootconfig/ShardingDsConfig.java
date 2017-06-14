@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.joindata.inf.common.sterotype.jdbc.cst.DatasourceName;
 import com.joindata.inf.common.sterotype.jdbc.support.DataSourceRoutingHolder;
-import com.joindata.inf.common.sterotype.jdbc.support.DataSourceType;
 
 @Configuration
 public class ShardingDsConfig
@@ -17,14 +17,15 @@ public class ShardingDsConfig
     @Autowired
     private ShardingRule shardingRule;
 
+    @Autowired
+    private DataSourceRoutingHolder holder;
+
     @Bean
-    public DataSource shardingDataSource()
+    public void shardingDataSource()
     {
         DataSource shardingDs = ShardingDataSourceFactory.createDataSource(shardingRule);
 
-        DataSourceRoutingHolder.addDataSource(DataSourceType.SHARDINGJDBC, shardingDs);
-
-        return shardingDs;
+        holder.addDataSource(DatasourceName.ShardingJDBC, shardingDs);
     }
 
 }

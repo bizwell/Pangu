@@ -4,8 +4,9 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import com.joindata.inf.common.basic.support.SpringContextHolder;
+import com.joindata.inf.common.sterotype.jdbc.exception.NoSuchDatasourceException;
 import com.joindata.inf.common.util.basic.CollectionUtil;
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * 数据源类型持有者
@@ -15,10 +16,26 @@ import com.joindata.inf.common.util.basic.CollectionUtil;
  */
 public class DataSourceRoutingHolder
 {
+    private static final Logger log = Logger.get();
+
+    /** 里面是连接串 */
+    public static final ThreadLocal<String> RoutingKey = new ThreadLocal<>();
+
+    /** 数据源 Map */
     private static Map<Object, Object> DS_MAP = CollectionUtil.newMap();
 
+    /** 默认数据源 key */
+    private static String DefaultDatasource = null;
+
+    private RoutingDataSource routingDataSource;
+
+    public DataSourceRoutingHolder(RoutingDataSource routingDataSource)
+    {
+        this.routingDataSource = routingDataSource;
+    }
+
     /**
-     * 读取数据源 Map
+     * 获取数据源 Map
      * 
      * @return 数据源 Map
      */
@@ -28,33 +45,91 @@ public class DataSourceRoutingHolder
     }
 
     /**
-     * 添加数据源
+     * 添加数据源<br />
+     * <strong>这个方法可以在运行时调用，但是不建议真这么做，这是不安全的，建议仅在启动时调用</strong>
      * 
      * @param type 数据源类型
      * @param ds 数据源
      */
-    public static void addDataSource(DataSourceType type, DataSource ds)
+    public void addDataSource(String key, DataSource ds)
     {
-        DS_MAP.put(type, ds);
+        log.info("动态添加数据源: {}", key);
 
-        SpringContextHolder.getBean(RoutingDataSource.class).afterPropertiesSet();
+        DS_MAP.put(key, ds);
+        reloadDatasource();
     }
 
     /**
-     * 获取 DataSource 的类型<br />
-     * <i>由于不同的组件会设置不同的类型给 DS_TYPE，这里会按照优先级来挑选合适的数据类型</i>
+     * 添加数据源<br />
+     * <strong>这个方法可以在运行时调用，但是不建议真这么做，这是不安全的，建议仅在启动时调用</strong>
      * 
-     * @return 应该选择的数据源类型
+     * @param type 数据源类型
+     * @param ds 数据源
      */
-    public static DataSourceType getType()
+    public void addDataSource(Map<String, DataSource> dsMap)
     {
-        if(DS_MAP.containsKey(DataSourceType.SHARDINGJDBC))
+        if(dsMap == null)
         {
-            return DataSourceType.SHARDINGJDBC;
+            throw new IllegalArgumentException("没有给数据源你添加个 JB");
         }
-        else
+
+        log.info("动态添加数据源: {}", dsMap.keySet());
+
+        DS_MAP.putAll(dsMap);
+        reloadDatasource();
+    }
+
+    /**
+     * 重新加载数据源
+     */
+    private void reloadDatasource()
+    {
+        routingDataSource.afterPropertiesSet();
+    }
+
+    /**
+     * 获取当前在用的数据源 key
+     * 
+     * @return 当前数据源 key
+     */
+    public static Object getRoutingKey()
+    {
+        String key = RoutingKey.get();
+
+        // 如果没有，就用默认数据源
+        if(key == null)
         {
-            return DataSourceType.SINGLE;
+            log.debug("使用默认数据源");
+            key = DefaultDatasource;
         }
+
+        if(!DS_MAP.containsKey(key))
+        {
+            log.error("没有 {} 这个数据源", key);
+            throw new NoSuchDatasourceException(key);
+        }
+
+        return key;
+    }
+
+    /**
+     * 选择数据源
+     * 
+     * @param key 数据源名
+     */
+    public void useDatasource(String key)
+    {
+        log.info("切换到数据源: {}", key);
+        RoutingKey.set(key);
+    }
+
+    /**
+     * 设置默认数据源
+     * 
+     * @param key 数据源名
+     */
+    public void setDefaultDatasource(String key)
+    {
+        DefaultDatasource = key;
     }
 }

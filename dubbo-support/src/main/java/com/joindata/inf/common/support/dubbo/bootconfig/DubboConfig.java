@@ -111,10 +111,12 @@ public class DubboConfig
         config.setRetries(properties.getProviderRetries());
         config.setLoadbalance(properties.getProviderLoadbalance());
         config.setHost(NetworkUtil.getLocalIpv4(properties.getDubboHostPrefix()));
+        config.setFilter(properties.getProviderFilter());
 
         log.info("Dubbo 服务默认超时时间: {}", config.getTimeout());
         log.info("Dubbo 服务默认重试次数: {}", config.getRetries());
         log.info("Dubbo 服务负载均衡方式: {}", config.getLoadbalance());
+        log.info("Dubbo 服务拦截扩展: {}", config.getFilter());
         log.info("Dubbo 服务地址: {}", config.getHost());
 
         return config;
@@ -153,11 +155,13 @@ public class DubboConfig
         config.setRetries(properties.getConsumerRetries());
         config.setLoadbalance(properties.getConsumerLoadbalance());
         config.setCheck(properties.isConsumerCheck());
+        config.setFilter(properties.getConsumerFilter());
 
         log.info("Dubbo 调用默认超时时间: {}", config.getTimeout());
         log.info("Dubbo 调用默认重试次数: {}", config.getRetries());
         log.info("Dubbo 调用负载均衡方式: {}", config.getLoadbalance());
         log.info("Dubbo 调用默认是否开启服务检测: {}", config.isCheck());
+        log.info("Dubbo 调用拦截扩展: {}", config.getFilter());
 
         return config;
     }

@@ -84,7 +84,7 @@ public class RegistryZnodeUtil
     }
 
     /**
-     * {@value #ROOT_NODE}/应用ID/版本号/instance/实例ID/RUNNING
+     * {@value #ROOT_NODE}/应用ID/版本号/instance/实例ID/STARTED
      */
     public static final String getStartedNode(String appId, String version, String instanceId)
     {

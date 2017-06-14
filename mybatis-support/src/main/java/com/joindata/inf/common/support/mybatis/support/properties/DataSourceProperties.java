@@ -22,6 +22,7 @@ import com.joindata.inf.common.sterotype.jdbc.sterotype.BaseDataSourceProperties
 @DisconfFile(filename = "jdbc.properties")
 public class DataSourceProperties extends BaseDataSourceProperties
 {
+    /** 数据源名称 */
     protected String name;
 
     /** URL */

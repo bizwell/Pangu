@@ -1,18 +1,14 @@
 package com.joindata.inf.common.support.mybatis.bootconfig;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.joindata.inf.common.sterotype.jdbc.support.DataSourceRoutingHolder;
-import com.joindata.inf.common.sterotype.jdbc.support.DataSourceType;
 import com.joindata.inf.common.sterotype.jdbc.support.RoutingDataSource;
-import com.joindata.inf.common.support.mybatis.support.properties.DataSourceProperties;
 import com.joindata.inf.common.util.log.Logger;
 
 @Configuration
@@ -21,23 +17,9 @@ public class TransactionConfig
 {
     private static final Logger log = Logger.get();
 
-    @Autowired
-    private DataSourceProperties properties;
-
     /** 大 DataSource，唯一的，暴露给 TX 的 */
     @Autowired
     private RoutingDataSource dataSource;
-
-    @Bean
-    public DataSource mybatisDatasource()
-    {
-        DataSource ds = properties.toDataSource();
-        DataSourceRoutingHolder.addDataSource(DataSourceType.SINGLE, ds);
-
-        log.info("Druid 数据源连接地址: {}, 用户: {}, 最大活动连接数: {}, 初始化大小: {}", properties.getUrl(), properties.getUsername(), properties.getMaxActive(), properties.getInitialSize());
-
-        return ds;
-    }
 
     /**
      * Spring 事务管理器
@@ -45,6 +27,7 @@ public class TransactionConfig
     @Bean
     public DataSourceTransactionManager dataSourceTransactionManager()
     {
+        log.info("启用注解事务管理器");
         DataSourceTransactionManager manager = new DataSourceTransactionManager(dataSource);
         return manager;
     }
@@ -53,8 +36,10 @@ public class TransactionConfig
      * 可以直接注入后使用，用于复杂的事务处理场景
      */
     @Bean
+    @Lazy
     public TransactionTemplate transactionTemplate()
     {
+        log.info("启用 TransactionTemplate 事务管理器");
         return new TransactionTemplate(dataSourceTransactionManager());
     }
 }

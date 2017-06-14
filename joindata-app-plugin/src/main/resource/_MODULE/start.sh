@@ -75,7 +75,7 @@ fi
 mkdir -p $tmpdir
 
 # 启动
-nohup $JAVA_HOME/bin/java -server $opts $disconfOpts -classpath $cps __MAINCLASS__ >> $stdoutfile 2>&1 &
+nohup $JAVA_HOME/bin/java -server $opts -Dapp.version=__APPVERSION__ $disconfOpts -classpath $cps __MAINCLASS__ >> $stdoutfile 2>&1 &
 
 # 写 PID
 echo $! > $pidfile

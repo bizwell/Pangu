@@ -849,9 +849,13 @@ public class HttpUtil
         return byteOut.toByteArray();
     }
 
-    public static void main(String[] args) throws ClientProtocolException, IOException, UnsupportedCharsetException, ResourceException
+    public static void main(String[] args) throws IOException
     {
+        System.out.println(StringUtil.toString(get("http://wx.51eparty.com/fastfood/notifyRest?orderId=127185&user=songxiang")));
+    }
 
+    public static void main1(String[] args) throws ClientProtocolException, IOException, UnsupportedCharsetException, ResourceException
+    {
         System.out.println(new String(get("http://localhost:8088/get"), "UTF-8"));
         System.out.println(new String(post("http://localhost:8088/post", "测试一下 Post，I'm fine, thank you!", "UTF-8"), "UTF-8"));
         System.out.println(new String(post("http://localhost:8088/postfile", new File("/temp/test/size.txt"), "file"), "UTF-8"));

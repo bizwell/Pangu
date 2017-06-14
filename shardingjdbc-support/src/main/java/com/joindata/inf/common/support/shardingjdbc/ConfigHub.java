@@ -4,9 +4,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
-import com.joindata.inf.common.sterotype.jdbc.bootconfig.DataSourceConfig;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
 import com.joindata.inf.common.support.mybatis.EnableMyBatis;
+import com.joindata.inf.common.support.shardingjdbc.bootconfig.ShardingDsConfig;
 import com.joindata.inf.common.support.shardingjdbc.bootconfig.ShardingJdbcConfig;
 
 /**
@@ -16,7 +16,7 @@ import com.joindata.inf.common.support.shardingjdbc.bootconfig.ShardingJdbcConfi
  * @date Mar 20, 2017 5:40:03 PM
  */
 @Configuration
-@Import({DataSourceConfig.class, ShardingJdbcConfig.class})
+@Import({ShardingDsConfig.class, ShardingJdbcConfig.class})
 @EnableDisconf
 @EnableMyBatis
 public class ConfigHub extends AbstractConfigHub

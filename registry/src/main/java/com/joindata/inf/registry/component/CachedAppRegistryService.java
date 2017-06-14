@@ -6,9 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.joindata.inf.registry.core.AppSummaryCache;
+import com.joindata.inf.registry.entity.AppHeartbeatInfo;
+import com.joindata.inf.registry.entity.AppInstanceInfo;
 import com.joindata.inf.registry.entity.AppInstanceSummary;
+import com.joindata.inf.registry.entity.AppStartInfo;
 import com.joindata.inf.registry.entity.AppSummary;
 import com.joindata.inf.registry.entity.AppVersionSummary;
+import com.joindata.inf.registry.enums.InstanceState;
+import com.joindata.inf.registry.util.InstanceUtil;
 
 /**
  * 缓存的应用注册操作服务
@@ -33,6 +38,32 @@ public class CachedAppRegistryService
     public void refreshInstanceSummary(String appId, String version, String instanceId) throws Exception
     {
         cache.refreshInstanceSummary(appId, version, instanceId);
+    }
+
+    public void updateFatalInfo(String appId, String version, String instanceId, String fatalInfo) throws Exception
+    {
+        cache.updateFatalInfo(appId, version, instanceId, fatalInfo);
+    }
+
+    public void updateStartInfo(String appId, String version, String instanceId, AppStartInfo startInfo) throws Exception
+    {
+        cache.updateStartInfo(appId, version, instanceId, startInfo);
+    }
+
+    public void updateInstanceInfo(AppInstanceInfo instanceInfo) throws Exception
+    {
+        cache.updateInstanceInfo(instanceInfo);
+        cache.updateHosts(instanceInfo.getAppId(), instanceInfo.getVersion(), instanceInfo.getInstanceId(), InstanceUtil.parseInstanceSign(instanceInfo.getInstanceId()).getHosts());
+    }
+
+    public void updateHeartbeatInfo(String appId, String version, String instanceId, AppHeartbeatInfo heartbeatInfo) throws Exception
+    {
+        cache.updateHeartbeatInfo(appId, version, instanceId, heartbeatInfo);
+    }
+
+    public void updateState(String appId, String version, String instanceId, InstanceState state) throws Exception
+    {
+        cache.updateState(appId, version, instanceId, state);
     }
 
     /**
@@ -99,5 +130,10 @@ public class CachedAppRegistryService
     public Collection<String> getInstanceList(String appId) throws Exception
     {
         return cache.getInstanceList(appId);
+    }
+
+    public void checkInstanceState()
+    {
+        cache.checkInstanceState();
     }
 }

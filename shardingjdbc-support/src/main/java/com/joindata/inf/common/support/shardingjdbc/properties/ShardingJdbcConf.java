@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.joindata.inf.common.support.disconf.util.DisconfUtil;
-import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingDataSourceProperties;
+import com.joindata.inf.common.support.mybatis.properties.inner.ShardingDataSourceProperties;
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupByColumnRule;
 import com.joindata.inf.common.support.shardingjdbc.properties.inner.ShardingWithGroupRule;
 import com.joindata.inf.common.util.basic.BeanUtil;

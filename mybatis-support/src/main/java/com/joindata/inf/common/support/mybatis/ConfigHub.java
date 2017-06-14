@@ -4,9 +4,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.joindata.inf.common.basic.stereotype.AbstractConfigHub;
-import com.joindata.inf.common.sterotype.jdbc.bootconfig.DataSourceConfig;
 import com.joindata.inf.common.support.disconf.EnableDisconf;
 import com.joindata.inf.common.support.mybatis.bootconfig.CustomMapperScannerRegistrar;
+import com.joindata.inf.common.support.mybatis.bootconfig.DataSourceConfig;
 import com.joindata.inf.common.support.mybatis.bootconfig.MyBatisConfig;
 import com.joindata.inf.common.support.mybatis.bootconfig.TransactionConfig;
 

@@ -400,7 +400,8 @@ public class ClassUtil
         {
             pool.appendClassPath(dir.getPath());
 
-            set = ClassUtil.findClassNames(dir).stream().map(clzName -> {
+            set = ClassUtil.findClassNames(dir).stream().map(clzName ->
+            {
                 try
                 {
                     return pool.getCtClass(clzName);
@@ -410,14 +411,18 @@ public class ClassUtil
                     log.error("出错，找不到类: {}", e.getMessage(), e);
                 }
                 return null;
-            }).filter(ctClz -> {
+            }).filter(ctClz ->
+            {
                 boolean match = ctClz != null && ctClz.hasAnnotation(annoClz);
                 for(Class<? extends Annotation> exclude: excludeAnnoClz)
                 {
                     log.debug("由于包含 {} 这个注解，便排除在扫描结果之外", exclude.getCanonicalName());
                     match = false;
                 }
-                log.debug("扫描到 {} 是包含 {} 注解的，收了", annoClz.getCanonicalName());
+                if(match)
+                {
+                    log.debug("扫描到 {} 是包含 {} 注解的，收了", ctClz.getName(), annoClz.getCanonicalName());
+                }
                 return match;
             }).collect(Collectors.toSet());
         }
@@ -475,7 +480,7 @@ public class ClassUtil
                     continue;
                 }
 
-                log.debug("扫描到 {} 是包含 {} 注解的，收了", annoClz.getCanonicalName());
+                log.debug("扫描到 {} 是包含 {} 注解的，收了", clz.getCanonicalName(), annoClz.getCanonicalName());
                 // 剩下的都是符合要求的精英
                 set.add(clz);
             }
@@ -528,7 +533,7 @@ public class ClassUtil
                     continue;
                 }
 
-                log.debug("扫描到 {} 是包含 {} 注解的，收了", annoClz.getCanonicalName());
+                log.debug("扫描到 {} 是包含 {} 注解的，收了", clz.getCanonicalName(), annoClz.getCanonicalName());
                 // 剩下的都是符合要求的精英
                 set.add(clz);
             }

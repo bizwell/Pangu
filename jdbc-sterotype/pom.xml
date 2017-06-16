@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.2.0</version>
 	</parent>
 
 	<artifactId>jdbc-sterotype</artifactId>
@@ -32,11 +32,17 @@
 			<artifactId>util</artifactId>
 			<version>${pangu.version}</version>
 		</dependency>
-		
+
 		<!-- Druid 连接池 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
+		</dependency>
+
+		<!-- AspectJ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
 		</dependency>
 
 	</dependencies>

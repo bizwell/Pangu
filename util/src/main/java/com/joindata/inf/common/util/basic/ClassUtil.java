@@ -240,7 +240,7 @@ public class ClassUtil
      * 获取调用者的 Class<br />
      * <i>这个东西没搞清楚之前，还是不要随便调用，基本只用于框架开发</i>
      * 
-     * @param anchor 指定该Class，最终会获取调用该 Class 类的类
+     * @param upon 指定该Class，最终会获取调用该 Class 类的类
      * @return 调用者的 Class
      */
     public static Class<?> getCaller(Class<?> upon)
@@ -595,7 +595,7 @@ public class ClassUtil
      */
     public static final MethodReflectInfo getMethodInfo(Method method)
     {
-        return new MethodReflectInfo(method, getMethodArgInfo(method));
+        return new MethodReflectInfo(method);
     }
 
     /**
@@ -648,7 +648,6 @@ public class ClassUtil
                 MethodArgReflectInfo argInfo = new MethodArgReflectInfo(paramNames[i], paramTypes[i].getName(), annoMap);
                 list.add(argInfo);
             }
-
         }
         catch(NotFoundException | ClassNotFoundException e)
         {

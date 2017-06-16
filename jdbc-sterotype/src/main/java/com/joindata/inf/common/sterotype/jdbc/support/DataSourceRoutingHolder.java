@@ -84,6 +84,7 @@ public class DataSourceRoutingHolder
      */
     private void reloadDatasource()
     {
+        log.debug("重新加载数据源: {}", DS_MAP);
         routingDataSource.afterPropertiesSet();
     }
 
@@ -96,10 +97,12 @@ public class DataSourceRoutingHolder
     {
         String key = RoutingKey.get();
 
+        log.debug("线程 {} 中的数据源: {}", Thread.currentThread().getName(), key);
+
         // 如果没有，就用默认数据源
         if(key == null)
         {
-            log.debug("使用默认数据源");
+            log.debug("使用默认数据源: {}", DefaultDatasource);
             key = DefaultDatasource;
         }
 
@@ -117,10 +120,21 @@ public class DataSourceRoutingHolder
      * 
      * @param key 数据源名
      */
-    public void useDatasource(String key)
+    public static void useDatasource(String key)
     {
-        log.info("切换到数据源: {}", key);
+        log.info("线程 {} 切换到数据源: {}", Thread.currentThread().getName(), key);
         RoutingKey.set(key);
+    }
+
+    /**
+     * 释放数据源
+     * 
+     * @param key 数据源名
+     */
+    public static void releaseDatasource(String key)
+    {
+        log.info("线程 {} 释放数据源: {}", Thread.currentThread().getName(), key);
+        RoutingKey.remove();
     }
 
     /**
@@ -130,6 +144,7 @@ public class DataSourceRoutingHolder
      */
     public void setDefaultDatasource(String key)
     {
+        log.info("设置默认数据源: {}", key);
         DefaultDatasource = key;
     }
 }

@@ -8,6 +8,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.sterotype.jdbc.support.DataSourceRoutingHolder;
 import com.joindata.inf.common.sterotype.jdbc.support.RoutingDataSource;
+import com.joindata.inf.common.sterotype.jdbc.support.RoutingDatasourceAspect;
 import com.joindata.inf.common.support.mybatis.EnableMyBatis;
 import com.joindata.inf.common.support.mybatis.properties.DatasourceConf;
 import com.joindata.inf.common.support.mybatis.support.properties.DataSourceProperties;
@@ -90,6 +91,15 @@ public class DataSourceConfig
         RoutingDataSource ds = new RoutingDataSource();
         ds.setTargetDataSources(DataSourceRoutingHolder.getDataSourceMap());
         return ds;
+    }
+
+    /**
+     * 动态数据源切换器
+     */
+    @Bean
+    public RoutingDatasourceAspect routingDatasourceAspect()
+    {
+        return new RoutingDatasourceAspect();
     }
 
     /** 实用工具 */

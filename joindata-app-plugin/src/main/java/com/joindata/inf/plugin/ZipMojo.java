@@ -97,6 +97,12 @@ public class ZipMojo extends AbstractMojo
     @Component
     private MavenProjectHelper projectHelper;
 
+    private String bootClzName;
+
+    private String appId;
+
+    private String webPort;
+
     private String adminName = "嘉银数据.架构组 - 宋翔<songxiang@joindata.com>";
 
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -108,9 +114,7 @@ public class ZipMojo extends AbstractMojo
         {
             // 获取主类信息
             CtClass mainClass = findBootClass();
-            String appId = null;
             String appVersion = implementationVersion;
-            String webPort = "";
 
             {
                 JoindataApp app = (JoindataApp)mainClass.getAnnotation(JoindataApp.class);
@@ -237,7 +241,15 @@ public class ZipMojo extends AbstractMojo
             // 打包文件
             FileUtil.zip(zipFile, _packRoot.listFiles());
 
-            getLog().info("文件已打包到: " + zipFile.getPath());
+            getLog().info("");
+            getLog().info("应用 ID: " + appId);
+            getLog().info("应用版本: " + appVersion);
+            getLog().info("启动类: " + bootClzName);
+            getLog().info("");
+            getLog().info("发布件已打包到: " + zipFile.getPath());
+            getLog().info("执行 " + outputDirectory + " 目录下的 deploy.sh 可进行部署");
+            getLog().info("");
+            getLog().info("如需帮助请联系: " + adminName);
         }
         catch(IOException e)
         {
@@ -260,11 +272,11 @@ public class ZipMojo extends AbstractMojo
 
     private void displayPluginInfo()
     {
+        getLog().info("");
         getLog().info("打包应用为 ZIP 包");
-        getLog().info("应用名: " + project.getName());
-        getLog().info("应用构件名: " + project.getArtifactId());
+        getLog().info("工程名: " + project.getName());
+        getLog().info("工程构件名: " + project.getArtifactId());
         getLog().info("工程版本号: " + implementationVersion);
-        getLog().info("如需帮助请联系: " + adminName);
         getLog().info("");
     }
 
@@ -301,7 +313,8 @@ public class ZipMojo extends AbstractMojo
         for(CtClass clz: clzSet)
         {
             bootClz = clz;
-            getLog().info("启动类为: " + clz.getName());
+            bootClzName = clz.getName();
+            getLog().debug("找到启动类: " + clz.getName());
         }
 
         return bootClz;

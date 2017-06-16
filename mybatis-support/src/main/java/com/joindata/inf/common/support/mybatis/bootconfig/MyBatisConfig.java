@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.basic.support.SpringContextHolder;
@@ -28,6 +29,7 @@ import com.joindata.inf.common.util.log.Logger;
  * @date 2016年11月30日 上午10:32:18
  */
 @Configuration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class MyBatisConfig
 {
     private static final Logger log = Logger.get();

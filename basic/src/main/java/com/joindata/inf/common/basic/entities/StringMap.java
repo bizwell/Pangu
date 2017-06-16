@@ -11,4 +11,19 @@ import java.util.HashMap;
 public class StringMap extends HashMap<String, String>
 {
     private static final long serialVersionUID = 4299471689867121008L;
+
+    /**
+     * 生成一个简单的只有一个元素的 StringMap
+     * 
+     * @param key
+     * @param value
+     * @return
+     */
+    public static StringMap of(String key, String value)
+    {
+        StringMap map = new StringMap();
+        map.put(key, value);
+
+        return map;
+    }
 }

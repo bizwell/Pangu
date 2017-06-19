@@ -129,7 +129,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
     public void configurePathMatch(PathMatchConfigurer configurer)
     {
         configurer.setUseTrailingSlashMatch(false);
-        configurer.setUseRegisteredSuffixPatternMatch(true);
+        configurer.setUseRegisteredSuffixPatternMatch(false);
+        configurer.setUseSuffixPatternMatch(false);
     }
 
     /**

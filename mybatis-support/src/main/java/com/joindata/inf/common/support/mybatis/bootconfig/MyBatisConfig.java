@@ -17,6 +17,7 @@ import com.joindata.inf.common.support.mybatis.EnableMyBatis;
 import com.joindata.inf.common.support.mybatis.annotation.MyBatisPlugin;
 import com.joindata.inf.common.support.mybatis.sterotype.PluginTemplate;
 import com.joindata.inf.common.support.mybatis.support.CustomVfs;
+import com.joindata.inf.common.support.mybatis.support.SQLStatementTypeInterceptor;
 import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
@@ -75,7 +76,8 @@ public class MyBatisConfig
         {
             Set<Class<?>> clzes = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), MyBatisPlugin.class);
             List<Interceptor> interceptors = CollectionUtil.newList();
-
+            // 用于获取运行期间sql的类型： update or select
+            interceptors.add(new SQLStatementTypeInterceptor());
             for(Class<?> clz: clzes)
             {
                 Object bean = SpringContextHolder.getBean(clz);

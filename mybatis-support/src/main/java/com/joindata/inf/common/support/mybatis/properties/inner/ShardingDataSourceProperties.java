@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.MasterSlaveDataSource;
 import com.joindata.inf.common.sterotype.jdbc.sterotype.BaseDataSourceProperties;
 import com.joindata.inf.common.sterotype.jdbc.sterotype.SlaveDataSourceProperties;
+import com.joindata.inf.common.support.mybatis.support.MasterSlaveDatasourceWrapper;
 import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.log.Logger;
@@ -41,6 +42,7 @@ public class ShardingDataSourceProperties extends BaseDataSourceProperties
 
         log.info("数据源 {} 有 {} 个 Slave 节点", connProps.getDbName(), slaves.size());
 
-        return new MasterSlaveDataSource(connProps.getDbName(), super.toDataSource(), slaves);
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(connProps.getDbName(), super.toDataSource(), slaves);
+        return new MasterSlaveDatasourceWrapper(masterSlaveDataSource);
     }
 }

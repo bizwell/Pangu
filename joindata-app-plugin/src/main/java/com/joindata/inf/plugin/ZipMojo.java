@@ -101,6 +101,8 @@ public class ZipMojo extends AbstractMojo
 
     private String appId;
 
+    private String appVersion;
+
     private String webPort;
 
     private String adminName = "嘉银数据.架构组 - 宋翔<songxiang@joindata.com>";
@@ -114,7 +116,7 @@ public class ZipMojo extends AbstractMojo
         {
             // 获取主类信息
             CtClass mainClass = findBootClass();
-            String appVersion = implementationVersion;
+            appVersion = StringUtil.replaceLast(implementationVersion, "-SNAPSHOT", "");
 
             {
                 JoindataApp app = (JoindataApp)mainClass.getAnnotation(JoindataApp.class);

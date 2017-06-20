@@ -33,6 +33,8 @@ public class DailySequence extends AbstractBaseSequence implements InitializingB
     @Resource(name = "sequenceRepositoryZookeeper")
     private SequenceRepository sequenceRepository;
 
+    private static String DATE_FORMATE = "yyMMdd";
+
     private int timePrefix;
 
     private String originName;
@@ -41,12 +43,6 @@ public class DailySequence extends AbstractBaseSequence implements InitializingB
     {
         String tomorrow = DateUtil.formatDate(DateUtil.plusDays(DateUtil.getCurrentDate(), 1));
         new Timer().schedule(new DailyResetSequenceTask(), DateUtil.parseDate(tomorrow), DateUtil.DAY_MILLIS - 1);
-    }
-
-    public static void main(String[] args)
-    {
-        String tomorrow = DateUtil.formatDate(DateUtil.plusDays(DateUtil.getCurrentDate(), 1));
-        System.out.println(DateUtil.parseDate(tomorrow));
     }
 
     @Override
@@ -76,7 +72,7 @@ public class DailySequence extends AbstractBaseSequence implements InitializingB
     {
         logger.info("开始重置sequence");
         Date currentDate = new Date();
-        String currentDateStr = DateUtil.formatDate(currentDate, DateUtil.UGLY_DATE_FORMAT2);
+        String currentDateStr = DateUtil.formatDate(currentDate, DATE_FORMATE);
         setName(getSequenceNameWhitTimeSuffix(currentDate));
         timePrefix = Integer.parseInt(currentDateStr);
 
@@ -101,6 +97,6 @@ public class DailySequence extends AbstractBaseSequence implements InitializingB
 
     private String getSequenceNameWhitTimeSuffix(Date date)
     {
-        return originName + "-" + DateUtil.formatDate(date, DateUtil.UGLY_DATE_FORMAT2);
+        return originName + "-" + DateUtil.formatDate(date, DATE_FORMATE);
     }
 }

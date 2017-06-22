@@ -1503,10 +1503,7 @@
         $("form.sandbox").submit(function() {
             var e = !0;
             return $(this).find("input.required").each(function() {
-                $(this).removeClass("error"),
-                "" === $(this).val() && ($(this).addClass("error"),
-                $(this).wiggle(),
-                e = !1)
+                $(this).removeClass("error");
             }),
             e
         })
@@ -2669,12 +2666,12 @@
         l && (r = " id='" + l + "'"),
         o = o ? sanitizeHtml(o) : "",
         a)
-            t = "<textarea class='body-textarea" + (e.required ? " required" : "") + "' name='" + s + "'" + r + u,
+            t = "<textarea class='body-textarea"  + "' name='" + s + "'" + r + u,
             t += " placeholder='Provide multiple values in new lines" + (e.required ? " (at least one required)." : ".") + "'>",
             t += o + "</textarea>";
         else {
             var c = "parameter";
-            e.required && (c += " required"),
+            e.required && (c += ""),
             t = "<input class='" + c + "' minlength='" + (e.required ? 1 : 0) + "'",
             t += " name='" + s + "' placeholder='" + (e.required ? "(required)" : "") + "'" + r + u,
             t += " type='" + n + "' value='" + o + "'/>"
@@ -21560,7 +21557,7 @@
             r = 0,
             i = n.length; r < i; r++)
                 a = n[r],
-                null !== a.value && jQuery.trim(a.value).length > 0 && (t[a.name] = a.value),
+                (t[a.name] = a.value),
                 "file" === a.type && (t[a.name] = a.files[0]);
             for (o = e.find("textarea"),
             s = 0,

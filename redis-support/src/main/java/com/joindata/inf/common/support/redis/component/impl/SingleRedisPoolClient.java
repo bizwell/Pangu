@@ -81,8 +81,8 @@ public class SingleRedisPoolClient extends RedisClient
         }
         catch(JedisException e)
         {
-            log.error("Jedis 连接池资源不足, 当前连接数: {}, 错误信息: {}", this.jedisPool.getNumActive(), e.getMessage());
-            throw new ResourceException(ResourceErrors.CANNOT_ACCESS, "Redis 连接池资源不足");
+            log.error("Jedis 连接池无法访问, 当前连接数: {}, 错误信息: {}", this.jedisPool.getNumActive(), e.getMessage());
+            throw new ResourceException(ResourceErrors.CANNOT_ACCESS, "Redis 连接池无法访问");
         }
         catch(Exception e)
         {

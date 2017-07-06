@@ -27,9 +27,10 @@ public class BeanUtil
      * 
      * @param src 被复制的对象
      * @param dest 需要复制属性的对象
+     * @param ignoredField 不需要复制的对象属性
      * @return 需要复制属性的对象
      */
-    public static final <T> T copyProperties(Object src, T dest)
+    public static final <T> T copyProperties(Object src, T dest, String... ignoredField)
     {
         if(src == null)
         {
@@ -41,6 +42,11 @@ public class BeanUtil
 
         for(Field fld: destFlds)
         {
+            if(ArrayUtil.contains(ignoredField, fld.getName()))
+            {
+                continue;
+            }
+
             if(srcValues.containsKey(fld.getName()))
             {
                 try
@@ -73,10 +79,11 @@ public class BeanUtil
      * 
      * @param src 被复制的对象
      * @param destClz 需要复制属性的对象 Class
+     * @param ignoredField 不需要复制的对象属性
      * @return 需要复制属性的对象
      * @throws RuntimeException 创建新对象时发生错误，抛出该异常
      */
-    public static final <T> T copyProperties(Object src, Class<T> destClz)
+    public static final <T> T copyProperties(Object src, Class<T> destClz, String... ignoredField)
     {
         if(src == null)
         {
@@ -98,6 +105,11 @@ public class BeanUtil
 
         for(Field fld: destFlds)
         {
+            if(ArrayUtil.contains(ignoredField, fld.getName()))
+            {
+                continue;
+            }
+
             if(srcValues.containsKey(fld.getName()))
             {
                 try

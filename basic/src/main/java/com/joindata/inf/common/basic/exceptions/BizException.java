@@ -8,13 +8,24 @@ public abstract class BizException extends RuntimeException
 
     public abstract ErrorEntity getErrorEntity();
 
+    private String message;
+
     public BizException()
     {
         super();
+        this.message = getErrorEntity().getMessage();
     }
 
     public BizException(String message)
     {
-        super(message);
+        super();
+        this.message = message;
     }
+
+    @Override
+    public String getMessage()
+    {
+        return this.message;
+    }
+
 }

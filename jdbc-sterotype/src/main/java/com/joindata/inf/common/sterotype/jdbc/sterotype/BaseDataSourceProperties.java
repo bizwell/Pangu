@@ -1,8 +1,13 @@
 package com.joindata.inf.common.sterotype.jdbc.sterotype;
 
+import java.security.GeneralSecurityException;
+
 import javax.sql.DataSource;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.joindata.inf.common.basic.cst.PanguConfusing;
+import com.joindata.inf.common.util.basic.CodecUtil;
+import com.joindata.inf.common.util.basic.StringUtil;
 
 /**
  * Druid 数据源参数
@@ -205,13 +210,12 @@ public class BaseDataSourceProperties
         this.slaves = slaves;
     }
 
-    public DataSource toDataSource()
+    public DataSource toDataSource() throws GeneralSecurityException
     {
         DruidDataSource ds = new DruidDataSource();
         ds.setName(this.getName());
         ds.setUrl(this.getUrl());
         ds.setUsername(this.getUsername());
-        ds.setPassword(this.getPassword());
         ds.setInitialSize(this.getInitialSize());
         ds.setMinIdle(this.getMinIdle());
         ds.setMaxActive(this.getMaxActive());
@@ -223,10 +227,20 @@ public class BaseDataSourceProperties
         ds.setTestOnBorrow(this.isTestOnBorrow());
         ds.setTestOnReturn(this.isTestOnReturn());
 
+        String password = this.getPassword();
+        if(StringUtil.startsWith(password, "enc("))
+        {
+            ds.setPassword(CodecUtil.decryptDES(StringUtil.substringBetweenFirstAndLast(password, "enc(", ")"), PanguConfusing.KEY));
+        }
+        else
+        {
+            ds.setPassword(password);
+        }
+
         return ds;
     }
 
-    public static BaseDataSourceProperties of(DruidDataSource ds)
+    public static BaseDataSourceProperties of(DruidDataSource ds) throws GeneralSecurityException
     {
         BaseDataSourceProperties props = new BaseDataSourceProperties();
         props.setName(ds.getName());
@@ -243,6 +257,7 @@ public class BaseDataSourceProperties
         props.setTestWhileIdle(ds.isTestWhileIdle());
         props.setTestOnBorrow(ds.isTestOnBorrow());
         props.setTestOnReturn(ds.isTestOnReturn());
+        props.setPassword("enc(" + CodecUtil.encryptDES(ds.getPassword(), PanguConfusing.KEY) + ")");
 
         return props;
     }

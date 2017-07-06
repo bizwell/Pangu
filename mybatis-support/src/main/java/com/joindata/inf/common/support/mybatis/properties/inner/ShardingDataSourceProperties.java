@@ -1,5 +1,6 @@
 package com.joindata.inf.common.support.mybatis.properties.inner;
 
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -25,7 +26,7 @@ public class ShardingDataSourceProperties extends BaseDataSourceProperties
     private static final Logger log = Logger.get();
 
     @Override
-    public DataSource toDataSource()
+    public DataSource toDataSource() throws GeneralSecurityException
     {
         if(ArrayUtil.isEmpty(this.getSlaves()))
         {

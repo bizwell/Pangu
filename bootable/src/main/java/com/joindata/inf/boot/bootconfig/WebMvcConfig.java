@@ -54,6 +54,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
 
         converters.add(messageConverter);
 
+        log.info("HTTP JSON 消息转换器特性: {}", ArrayUtil.toString(Util.getJsonFeature()));
         log.info("注册 HTTP 消息转换器: {}", messageConverter.toString());
     }
 

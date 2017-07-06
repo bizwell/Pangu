@@ -1,5 +1,6 @@
 package com.joindata.inf.common.support.redis.bootconfig;
 
+import java.security.GeneralSecurityException;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.joindata.inf.common.basic.cst.PanguConfusing;
+import com.joindata.inf.common.basic.support.BootInfoHolder;
+import com.joindata.inf.common.support.redis.EnableRedis;
 import com.joindata.inf.common.support.redis.component.RedisClient;
 import com.joindata.inf.common.support.redis.component.impl.ClusterRedisClient;
 import com.joindata.inf.common.support.redis.component.impl.SingleRedisPoolClient;
 import com.joindata.inf.common.support.redis.support.RedisProperties;
+import com.joindata.inf.common.util.basic.CodecUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
@@ -56,14 +61,21 @@ public class RedisConfig
      * 自己提供的客户端
      * 
      * @return Redis 客户端
+     * @throws GeneralSecurityException
      */
     @Bean
-    public RedisClient redisClient()
+    public RedisClient redisClient() throws GeneralSecurityException
     {
         log.info("创建 RedisClient");
         log.info("Redis 连接地址: {}", properties.getHost());
 
         HostPort[] hostPorts = NetworkUtil.parseHostPort(properties.getHost());
+
+        String password = properties.getPassword();
+        if(StringUtil.startsWith(password, "enc("))
+        {
+            password = CodecUtil.decryptDES(StringUtil.substringBetweenFirstAndLast(password, "enc(", ")"), PanguConfusing.KEY);
+        }
 
         RedisClient redisClient = null;
         if(hostPorts.length > 1)
@@ -76,9 +88,9 @@ public class RedisConfig
             }
 
             JedisCluster jedisCluster = null;
-            if(!StringUtil.isNullOrEmpty(properties.getPassword()))
+            if(!StringUtil.isNullOrEmpty(password))
             {
-                jedisCluster = new JedisCluster(hostSet, properties.getTimeout(), 2000, 5, properties.getPassword(), jedisConnectionPoolConfig());
+                jedisCluster = new JedisCluster(hostSet, properties.getTimeout(), 2000, 5, password, jedisConnectionPoolConfig());
                 log.info("Redis 设置了密码，将启用认证");
             }
             else
@@ -92,10 +104,11 @@ public class RedisConfig
         else
         {
             JedisPool jedisPool = null;
-            if(!StringUtil.isNullOrEmpty(properties.getPassword()))
+            if(!StringUtil.isNullOrEmpty(password))
             {
                 log.info("Redis 设置了密码，将启用认证");
-                jedisPool = new JedisPool(jedisConnectionPoolConfig(), hostPorts[0].getHost(), hostPorts[0].getPort(), properties.getTimeout(), properties.getPassword());
+
+                jedisPool = new JedisPool(jedisConnectionPoolConfig(), hostPorts[0].getHost(), hostPorts[0].getPort(), properties.getTimeout(), password);
             }
             else
             {
@@ -107,14 +120,22 @@ public class RedisConfig
             redisClient = new SingleRedisPoolClient(jedisPool);
         }
 
+        // 如果没有禁用命名空间，设置命名空间
+        if(!Util.disableNamespace())
+        {
+            redisClient.setNamespace(Util.defaultNamespace());
+        }
+
         return redisClient;
     }
 
     /**
      * Spring 的连接池工厂
+     * 
+     * @throws GeneralSecurityException
      */
     @Bean
-    public JedisConnectionFactory jedisConnectionFactory()
+    public JedisConnectionFactory jedisConnectionFactory() throws GeneralSecurityException
     {
         log.info("创建 Spring 的 JedisConnectionFactory");
         log.info("Redis 连接地址: {}", properties.getHost());
@@ -140,9 +161,15 @@ public class RedisConfig
             log.info("以单实例 Jedis 连接池方式连接 Redis");
         }
 
-        if(!StringUtil.isNullOrEmpty(properties.getPassword()))
+        String password = properties.getPassword();
+        if(StringUtil.startsWith(password, "enc("))
         {
-            factory.setPassword(properties.getPassword());
+            password = CodecUtil.decryptDES(StringUtil.substringBetweenFirstAndLast(password, "enc(", ")"), PanguConfusing.KEY);
+        }
+
+        if(!StringUtil.isNullOrEmpty(password))
+        {
+            factory.setPassword(password);
             log.info("Redis 设置了密码，将启用认证");
         }
 
@@ -155,9 +182,10 @@ public class RedisConfig
      * 
      * 
      * @return RedisTemplate
+     * @throws GeneralSecurityException
      */
     @Bean
-    public RedisTemplate<StringRedisSerializer, JdkSerializationRedisSerializer> redisTemplate()
+    public RedisTemplate<StringRedisSerializer, JdkSerializationRedisSerializer> redisTemplate() throws GeneralSecurityException
     {
         log.info("创建 Spring 的 RedisTemplate");
 
@@ -165,6 +193,19 @@ public class RedisConfig
         template.setConnectionFactory(jedisConnectionFactory());
 
         return template;
+    }
+
+    private static final class Util
+    {
+        public static final boolean disableNamespace()
+        {
+            return BootInfoHolder.getBootAnno(EnableRedis.class).disableNamespace();
+        }
+
+        public static final String defaultNamespace()
+        {
+            return BootInfoHolder.getAppId() + "@" + BootInfoHolder.Env.get();
+        }
     }
 
 }

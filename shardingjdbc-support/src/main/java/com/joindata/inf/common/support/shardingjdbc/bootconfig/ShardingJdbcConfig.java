@@ -1,5 +1,6 @@
 package com.joindata.inf.common.support.shardingjdbc.bootconfig;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,7 +56,7 @@ public class ShardingJdbcConfig
     private static final String DELIMITER = ".";
 
     @Bean
-    public DataSourceRule dataSourceRule()
+    public DataSourceRule dataSourceRule() throws GeneralSecurityException
     {
         DataSourceRule rule = new DataSourceRule(getDataSourceMap());
         log.info("ShardingJDBC 数据源: {}", rule.getDataSourceNames());
@@ -64,7 +65,7 @@ public class ShardingJdbcConfig
     }
 
     @Bean
-    public ShardingRule shardingRule()
+    public ShardingRule shardingRule() throws GeneralSecurityException
     {
         ShardingRuleBuilder builder = new ShardingRuleBuilder();
         // 单分表键对应的rule
@@ -82,8 +83,9 @@ public class ShardingJdbcConfig
      * 根据配置文件创建表规则
      * 
      * @return 表规则集合
+     * @throws GeneralSecurityException
      */
-    private Collection<TableRule> generateTableRulesWithSingleShardingKey()
+    private Collection<TableRule> generateTableRulesWithSingleShardingKey() throws GeneralSecurityException
     {
         Collection<TableRule> rules = CollectionUtil.newHashSet();
 
@@ -148,8 +150,9 @@ public class ShardingJdbcConfig
      * 多个分库分表键对应的table rule
      * 
      * @return
+     * @throws GeneralSecurityException
      */
-    private Collection<TableRule> generateTableRulesWithMultiShardingKey()
+    private Collection<TableRule> generateTableRulesWithMultiShardingKey() throws GeneralSecurityException
     {
 
         Collection<TableRule> rules = CollectionUtil.newHashSet();
@@ -225,8 +228,9 @@ public class ShardingJdbcConfig
      * 获取数据源集合
      * 
      * @return 数据源 Map<数据库名, 数据源实例>
+     * @throws GeneralSecurityException
      */
-    private Map<String, DataSource> getDataSourceMap()
+    private Map<String, DataSource> getDataSourceMap() throws GeneralSecurityException
     {
         if(DS_MAP == null)
         {

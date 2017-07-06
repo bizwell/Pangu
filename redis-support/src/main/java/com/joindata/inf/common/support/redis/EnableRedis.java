@@ -22,4 +22,6 @@ import com.joindata.inf.common.basic.annotation.JoindataComponent;
 @JoindataComponent(bind = ConfigHub.class, name = "分布式键值对存储客户端")
 public @interface EnableRedis
 {
+    /** 默认禁用命名空间 */
+    boolean disableNamespace() default false;
 }

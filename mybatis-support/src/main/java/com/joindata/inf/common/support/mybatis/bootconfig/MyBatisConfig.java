@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.type.TypeHandler;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,9 @@ import com.joindata.inf.common.support.mybatis.annotation.MyBatisPlugin;
 import com.joindata.inf.common.support.mybatis.sterotype.PluginTemplate;
 import com.joindata.inf.common.support.mybatis.support.CustomVfs;
 import com.joindata.inf.common.support.mybatis.support.SQLStatementTypeInterceptor;
+import com.joindata.inf.common.support.mybatis.support.typehandler.DateTimeTypeHandler;
+import com.joindata.inf.common.support.mybatis.support.typehandler.DateTypeHandler;
+import com.joindata.inf.common.support.mybatis.support.typehandler.TimeTypeHandler;
 import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CollectionUtil;
@@ -55,6 +59,7 @@ public class MyBatisConfig
         bean.setDataSource(dataSource);
         bean.setVfs(CustomVfs.class);
         bean.setConfiguration(sqlSessionFactoryConfiguration());
+        bean.setTypeHandlers(Utils.typeHandlers());
 
         Interceptor[] plugins = Utils.instantPlugins();
 
@@ -94,6 +99,16 @@ public class MyBatisConfig
             }
 
             return CollectionUtil.toArray(interceptors);
+        }
+
+        /**
+         * 获取自定义类型转换器
+         * 
+         * @return 类型转换器数组
+         */
+        public static final TypeHandler<?>[] typeHandlers()
+        {
+            return new TypeHandler<?>[]{new DateTimeTypeHandler(), new DateTypeHandler(), new TimeTypeHandler()};
         }
 
         /**

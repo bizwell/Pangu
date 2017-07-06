@@ -1,14 +1,19 @@
 package com.joindata.inf.common.support.rabbitmq.bootconfig;
 
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.joindata.inf.common.basic.cst.PanguConfusing;
 import com.joindata.inf.common.support.rabbitmq.core.MessageListenerScanner;
 import com.joindata.inf.common.support.rabbitmq.core.handler.BroadcastMessageListenerHandler;
 import com.joindata.inf.common.support.rabbitmq.core.handler.QueueMessageListenerHandler;
 import com.joindata.inf.common.support.rabbitmq.core.handler.TopicMessageListenerHandler;
 import com.joindata.inf.common.support.rabbitmq.properties.RabbitMqProperties;
+import com.joindata.inf.common.util.basic.CodecUtil;
+import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
 import com.rabbitmq.client.ConnectionFactory;
 
@@ -27,12 +32,20 @@ public class RabbitConfig
     private RabbitMqProperties properties;
 
     @Bean
-    public ConnectionFactory connectionFactory()
+    public ConnectionFactory connectionFactory() throws GeneralSecurityException
     {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost(properties.getHost());
+
         connectionFactory.setUsername(properties.getUsername());
-        connectionFactory.setPassword(properties.getPassword());
+
+        String password = properties.getPassword();
+        if(StringUtil.startsWith(password, "enc("))
+        {
+            password = CodecUtil.decryptDES(StringUtil.substringBetweenFirstAndLast(password, "enc(", ")"), PanguConfusing.KEY);
+        }
+
+        connectionFactory.setPassword(password);
         connectionFactory.setPort(properties.getPort());
         connectionFactory.setVirtualHost(properties.getVirtualHost());
 
@@ -49,9 +62,11 @@ public class RabbitConfig
 
     /**
      * 注册一大堆 Topic 消息监听器
+     * 
+     * @throws GeneralSecurityException
      */
     @Bean(initMethod = "startListener")
-    public TopicMessageListenerHandler topicMessageListenerHandler()
+    public TopicMessageListenerHandler topicMessageListenerHandler() throws GeneralSecurityException
     {
         log.info("注册 RabbitMQ 主题消息监听器");
         return new TopicMessageListenerHandler(connectionFactory(), messageListenerScanner().scanTopicListener());
@@ -59,9 +74,11 @@ public class RabbitConfig
 
     /**
      * 注册一大堆直连消息监听器
+     * 
+     * @throws GeneralSecurityException
      */
     @Bean(initMethod = "startListener")
-    public QueueMessageListenerHandler queueMessageListenerHandler()
+    public QueueMessageListenerHandler queueMessageListenerHandler() throws GeneralSecurityException
     {
         log.info("注册 RabbitMQ 直连消息监听器");
         return new QueueMessageListenerHandler(connectionFactory(), messageListenerScanner().scanQueueListener());
@@ -69,9 +86,11 @@ public class RabbitConfig
 
     /**
      * 注册一大堆广播消息监听器
+     * 
+     * @throws GeneralSecurityException
      */
     @Bean(initMethod = "startListener")
-    public BroadcastMessageListenerHandler broadcastMessageListenerHandler()
+    public BroadcastMessageListenerHandler broadcastMessageListenerHandler() throws GeneralSecurityException
     {
         log.info("注册 RabbitMQ 广播消息监听器");
         return new BroadcastMessageListenerHandler(connectionFactory(), messageListenerScanner().scanBroadcastListener());

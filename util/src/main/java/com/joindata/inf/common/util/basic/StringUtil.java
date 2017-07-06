@@ -675,6 +675,21 @@ public class StringUtil
     }
 
     /**
+     * 在字符串中截取处于指定的第一个和最后一个字符串中间的字符串，比较方便读取括号中的东西
+     * 
+     * @param str 原始字符串
+     * @param first 第一个出现的什么东西
+     * @param last 最后一个出现的什么东西
+     * @return 截取后的字符串
+     */
+    public static final String substringBetweenFirstAndLast(String str, String first, String last)
+    {
+        String s = StringUtil.substringAfterFirst(str, first);
+        s = StringUtil.substringBeforeLast(s, last);
+        return s;
+    }
+
+    /**
      * 获取字符串最后几位
      * 
      * @param str 要操作的字符串<i>如果是 null 或 空字符串，原样返回</i>

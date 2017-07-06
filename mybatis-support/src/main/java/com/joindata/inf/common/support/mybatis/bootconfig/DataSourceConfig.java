@@ -1,10 +1,13 @@
 package com.joindata.inf.common.support.mybatis.bootconfig;
 
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.joindata.inf.common.basic.cst.PanguConfusing;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.sterotype.jdbc.support.DataSourceRoutingHolder;
 import com.joindata.inf.common.sterotype.jdbc.support.RoutingDataSource;
@@ -12,6 +15,7 @@ import com.joindata.inf.common.sterotype.jdbc.support.RoutingDatasourceAspect;
 import com.joindata.inf.common.support.mybatis.EnableMyBatis;
 import com.joindata.inf.common.support.mybatis.properties.DatasourceConf;
 import com.joindata.inf.common.support.mybatis.support.properties.DataSourceProperties;
+import com.joindata.inf.common.util.basic.CodecUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
 
@@ -33,9 +37,11 @@ public class DataSourceConfig
 
     /**
      * 数据源路由键管理对象
+     * 
+     * @throws GeneralSecurityException
      */
     @Bean
-    public DataSourceRoutingHolder holder()
+    public DataSourceRoutingHolder holder() throws GeneralSecurityException
     {
         log.info("默认数据源是: {}", Utils.defaultDatasource());
         DataSourceRoutingHolder holder = new DataSourceRoutingHolder(routingDataSource());
@@ -57,7 +63,6 @@ public class DataSourceConfig
             ds.setName(properties.getName());
             ds.setUrl(properties.getUrl());
             ds.setUsername(properties.getUsername());
-            ds.setPassword(properties.getPassword());
             ds.setInitialSize(properties.getInitialSize());
             ds.setMinIdle(properties.getMinIdle());
             ds.setMaxActive(properties.getMaxActive());
@@ -68,6 +73,16 @@ public class DataSourceConfig
             ds.setTestWhileIdle(properties.isTestWhileIdle());
             ds.setTestOnBorrow(properties.isTestOnBorrow());
             ds.setTestOnReturn(properties.isTestOnReturn());
+
+            String password = properties.getPassword();
+            if(StringUtil.startsWith(password, "enc("))
+            {
+                ds.setPassword(CodecUtil.decryptDES(StringUtil.substringBetweenFirstAndLast(password, "enc(", ")"), PanguConfusing.KEY));
+            }
+            else
+            {
+                ds.setPassword(password);
+            }
 
             if(StringUtil.isNullOrEmpty(properties.getName()))
             {

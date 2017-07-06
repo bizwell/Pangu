@@ -18,7 +18,7 @@ import redis.clients.jedis.JedisCluster;
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Mar 24, 2017 3:42:59 PM
  */
-public class ClusterRedisClient implements RedisClient
+public class ClusterRedisClient extends RedisClient
 {
     /** Jedis 对象 */
     private JedisCluster jedis;
@@ -58,7 +58,7 @@ public class ClusterRedisClient implements RedisClient
      */
     public void put(String key, String value)
     {
-        jedis.set(key, value);
+        jedis.set(this.getRealKey(key), value);
     }
 
     /**
@@ -70,7 +70,7 @@ public class ClusterRedisClient implements RedisClient
      */
     public String putWithExpire(String key, int seconds, String value)
     {
-        return jedis.setex(key, seconds, value);
+        return jedis.setex(this.getRealKey(key), seconds, value);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ClusterRedisClient implements RedisClient
      */
     public long putIfNone(String key, String value)
     {
-        return jedis.setnx(key, value);
+        return jedis.setnx(this.getRealKey(key), value);
     }
 
     /**
@@ -95,9 +95,9 @@ public class ClusterRedisClient implements RedisClient
     // TODO 考虑调用原生 API 做成安全的
     public String putWithExpireIfNone(String key, int seconds, String value)
     {
-        if(jedis.exists(key))
+        if(jedis.exists(getRealKey(key)))
         {
-            return jedis.setex(key, seconds, value);
+            return jedis.setex(this.getRealKey(key), seconds, value);
         }
 
         return null;
@@ -110,7 +110,7 @@ public class ClusterRedisClient implements RedisClient
      */
     public String getString(String key)
     {
-        String ret = jedis.get(key);
+        String ret = jedis.get(getRealKey(key));
 
         return ret;
     }
@@ -122,8 +122,8 @@ public class ClusterRedisClient implements RedisClient
      */
     public void delete(String key)
     {
-        jedis.del(key);
-        jedis.del(StringUtil.toBytes(key));
+        jedis.del(getRealKey(key));
+        jedis.del(StringUtil.toBytes(getRealKey(key)));
     }
 
     /**
@@ -134,7 +134,7 @@ public class ClusterRedisClient implements RedisClient
      */
     public void put(String key, Serializable obj)
     {
-        jedis.set(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
+        jedis.set(StringUtil.toBytes(getRealKey(key)), BeanUtil.serializeObject(obj));
     }
 
     /**
@@ -147,7 +147,7 @@ public class ClusterRedisClient implements RedisClient
     public <T extends Serializable> T get(String key, Class<T> clz)
     {
 
-        byte[] objByte = jedis.get(StringUtil.toBytes(key));
+        byte[] objByte = jedis.get(StringUtil.toBytes(getRealKey(key)));
 
         if(objByte == null)
         {
@@ -166,7 +166,7 @@ public class ClusterRedisClient implements RedisClient
      */
     public String putWithExpire(String key, int seconds, Serializable obj)
     {
-        return jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
+        return jedis.setex(StringUtil.toBytes(getRealKey(key)), seconds, BeanUtil.serializeObject(obj));
     }
 
     /**
@@ -177,7 +177,7 @@ public class ClusterRedisClient implements RedisClient
      */
     public long putIfNone(String key, Serializable obj)
     {
-        return jedis.setnx(StringUtil.toBytes(key), BeanUtil.serializeObject(obj));
+        return jedis.setnx(StringUtil.toBytes(getRealKey(key)), BeanUtil.serializeObject(obj));
     }
 
     /**
@@ -191,9 +191,9 @@ public class ClusterRedisClient implements RedisClient
     // TODO 考虑调用原生 API 做成安全的
     public String putWithExpireIfNone(String key, int seconds, Serializable obj)
     {
-        if(jedis.exists(key))
+        if(jedis.exists(getRealKey(key)))
         {
-            return jedis.setex(StringUtil.toBytes(key), seconds, BeanUtil.serializeObject(obj));
+            return jedis.setex(StringUtil.toBytes(getRealKey(key)), seconds, BeanUtil.serializeObject(obj));
         }
 
         return null;
@@ -218,7 +218,7 @@ public class ClusterRedisClient implements RedisClient
 
         for(String value: values)
         {
-            jedis.rpush(key, value);
+            jedis.rpush(this.getRealKey(key), value);
         }
 
     }
@@ -241,7 +241,7 @@ public class ClusterRedisClient implements RedisClient
         int size = values.length;
         for(int i = size - 1; i >= 0; i--)
         {
-            jedis.rpush(key, values[i]);
+            jedis.rpush(this.getRealKey(key), values[i]);
         }
 
     }
@@ -263,7 +263,7 @@ public class ClusterRedisClient implements RedisClient
 
         for(String value: values)
         {
-            jedis.rpush(key, value);
+            jedis.rpush(this.getRealKey(key), value);
         }
 
     }
@@ -285,7 +285,7 @@ public class ClusterRedisClient implements RedisClient
 
         for(String value: values)
         {
-            jedis.rpush(key, value);
+            jedis.rpush(this.getRealKey(key), value);
         }
 
     }
@@ -305,7 +305,7 @@ public class ClusterRedisClient implements RedisClient
         {
             return null;
         }
-        List<String> ret = jedis.lrange(key, start, end);
+        List<String> ret = jedis.lrange(this.getRealKey(key), start, end);
 
         return ret;
     }
@@ -323,7 +323,7 @@ public class ClusterRedisClient implements RedisClient
         {
             return null;
         }
-        List<String> ret = jedis.lrange(key, 0, -1);
+        List<String> ret = jedis.lrange(this.getRealKey(key), 0, -1);
 
         return ret;
     }
@@ -343,7 +343,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        List<String> ret = jedis.lrange(key, start, -1);
+        List<String> ret = jedis.lrange(this.getRealKey(key), start, -1);
 
         return ret;
     }
@@ -357,7 +357,7 @@ public class ClusterRedisClient implements RedisClient
     public long getListSize(String key)
     {
 
-        long ret = jedis.llen(key);
+        long ret = jedis.llen(getRealKey(key));
 
         return ret;
     }
@@ -378,7 +378,7 @@ public class ClusterRedisClient implements RedisClient
 
         CollectionUtil.reverse(values);
 
-        byte keyBytes[] = StringUtil.toBytes(key);
+        byte keyBytes[] = StringUtil.toBytes(getRealKey(key));
 
         for(Serializable value: values)
         {
@@ -400,7 +400,7 @@ public class ClusterRedisClient implements RedisClient
             return;
         }
 
-        byte keyBytes[] = StringUtil.toBytes(key);
+        byte keyBytes[] = StringUtil.toBytes(getRealKey(key));
 
         int size = values.length;
         for(int i = size - 1; i >= 0; i--)
@@ -425,7 +425,7 @@ public class ClusterRedisClient implements RedisClient
             return;
         }
 
-        byte keyBytes[] = StringUtil.toBytes(key);
+        byte keyBytes[] = StringUtil.toBytes(getRealKey(key));
 
         for(Serializable value: values)
         {
@@ -449,7 +449,7 @@ public class ClusterRedisClient implements RedisClient
             return;
         }
 
-        byte keyBytes[] = StringUtil.toBytes(key);
+        byte keyBytes[] = StringUtil.toBytes(getRealKey(key));
 
         for(Serializable value: values)
         {
@@ -475,7 +475,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(key), start, end);
+        List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(getRealKey(key)), start, end);
 
         List<T> list = CollectionUtil.newList();
         if(byteList != null)
@@ -509,7 +509,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(key), 0, -1);
+        List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(getRealKey(key)), 0, -1);
 
         List<T> list = CollectionUtil.newList();
         if(byteList != null)
@@ -542,7 +542,7 @@ public class ClusterRedisClient implements RedisClient
         {
             return null;
         }
-        List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(key), start, -1);
+        List<byte[]> byteList = jedis.lrange(StringUtil.toBytes(getRealKey(key)), start, -1);
 
         List<T> list = CollectionUtil.newList();
         if(byteList != null)
@@ -574,7 +574,7 @@ public class ClusterRedisClient implements RedisClient
             return;
         }
 
-        jedis.hmset(key, map);
+        jedis.hmset(this.getRealKey(key), map);
 
     }
 
@@ -587,13 +587,12 @@ public class ClusterRedisClient implements RedisClient
      */
     public String getMapValue(String key, String entry)
     {
-
         if(StringUtil.isBlank(key) || StringUtil.isBlank(entry))
         {
             return null;
         }
 
-        String ret = jedis.hget(key, entry);
+        String ret = jedis.hget(this.getRealKey(key), entry);
 
         return ret;
     }
@@ -613,7 +612,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        List<String> ret = jedis.hmget(key, entries);
+        List<String> ret = jedis.hmget(this.getRealKey(key), entries);
 
         return ret;
     }
@@ -632,7 +631,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        Map<String, String> ret = jedis.hgetAll(key);
+        Map<String, String> ret = jedis.hgetAll(getRealKey(key));
 
         return ret;
     }
@@ -651,14 +650,14 @@ public class ClusterRedisClient implements RedisClient
             return;
         }
 
-        jedis.hdel(key, entries);
+        jedis.hdel(this.getRealKey(key), entries);
 
         byte[][] bytes = new byte[entries.length][];
         for(int i = 0; i < entries.length; i++)
         {
             bytes[i] = StringUtil.toBytes(entries[i]);
         }
-        jedis.hdel(StringUtil.toBytes(key), bytes);
+        jedis.hdel(StringUtil.toBytes(getRealKey(key)), bytes);
 
     }
 
@@ -685,7 +684,7 @@ public class ClusterRedisClient implements RedisClient
             bytesMap.put(name.getBytes(), BeanUtil.serializeObject(map.get(name)));
         }
 
-        jedis.hmset(StringUtil.toBytes(key), bytesMap);
+        jedis.hmset(StringUtil.toBytes(getRealKey(key)), bytesMap);
 
     }
 
@@ -711,7 +710,7 @@ public class ClusterRedisClient implements RedisClient
             entriesBytes[i] = entries[i].getBytes();
         }
 
-        List<byte[]> bytesList = jedis.hmget(StringUtil.toBytes(key), entriesBytes);
+        List<byte[]> bytesList = jedis.hmget(StringUtil.toBytes(getRealKey(key)), entriesBytes);
         List<T> list = CollectionUtil.newList();
 
         for(byte[] bytes: bytesList)
@@ -743,7 +742,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        Map<byte[], byte[]> bytesMap = jedis.hgetAll(StringUtil.toBytes(key));
+        Map<byte[], byte[]> bytesMap = jedis.hgetAll(StringUtil.toBytes(getRealKey(key)));
         Map<String, T> map = CollectionUtil.newMap();
 
         Iterator<byte[]> iter = CollectionUtil.iteratorMapKey(bytesMap);
@@ -758,7 +757,7 @@ public class ClusterRedisClient implements RedisClient
             byte[] valueBytes = bytesMap.get(entryBytes);
             if(valueBytes == null)
             {
-                map.put(key, null);
+                map.put(this.getRealKey(key), null);
                 continue;
             }
 
@@ -784,7 +783,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        byte bytes[] = jedis.hget(StringUtil.toBytes(key), entry.getBytes());
+        byte bytes[] = jedis.hget(StringUtil.toBytes(getRealKey(key)), entry.getBytes());
 
         if(bytes == null)
         {
@@ -808,7 +807,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        Long ret = jedis.incr(key);
+        Long ret = jedis.incr(getRealKey(key));
 
         return ret;
     }
@@ -821,7 +820,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        return jedis.getSet(key, newValue);
+        return jedis.getSet(this.getRealKey(key), newValue);
     }
 
     @Override
@@ -832,7 +831,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        return BeanUtil.deserializeObject(jedis.getSet(StringUtil.toBytes(key), BeanUtil.serializeObject(newValue)));
+        return BeanUtil.deserializeObject(jedis.getSet(StringUtil.toBytes(getRealKey(key)), BeanUtil.serializeObject(newValue)));
     }
 
     @Override
@@ -843,7 +842,7 @@ public class ClusterRedisClient implements RedisClient
             return 0;
         }
 
-        return jedis.lpush(key, value);
+        return jedis.lpush(this.getRealKey(key), value);
     }
 
     @Override
@@ -861,7 +860,7 @@ public class ClusterRedisClient implements RedisClient
             bs[i] = BeanUtil.serializeObject(value[i]);
         }
 
-        return jedis.lpush(StringUtil.toBytes(key), bs);
+        return jedis.lpush(StringUtil.toBytes(getRealKey(key)), bs);
     }
 
     @Override
@@ -872,7 +871,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        return jedis.lpop(key);
+        return jedis.lpop(getRealKey(key));
     }
 
     @Override
@@ -883,7 +882,7 @@ public class ClusterRedisClient implements RedisClient
             return null;
         }
 
-        byte data[] = jedis.lpop(StringUtil.toBytes(key));
+        byte data[] = jedis.lpop(StringUtil.toBytes(getRealKey(key)));
         return BeanUtil.deserializeObject(data, clz);
     }
 
@@ -895,6 +894,6 @@ public class ClusterRedisClient implements RedisClient
             return -1;
         }
 
-        return jedis.expire(key, seconds);
+        return jedis.expire(this.getRealKey(key), seconds);
     }
 }

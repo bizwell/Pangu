@@ -1,5 +1,6 @@
 package com.joindata.inf.common.support.mybatis.properties;
 
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -43,8 +44,9 @@ public class DatasourceConf implements InitializingBean
      * 当前配置生成可用的数据源 Map
      * 
      * @return 数据源 Map
+     * @throws GeneralSecurityException
      */
-    public Map<String, DataSource> toDatasourceMap()
+    public Map<String, DataSource> toDatasourceMap() throws GeneralSecurityException
     {
         parse();
 
@@ -52,10 +54,10 @@ public class DatasourceConf implements InitializingBean
 
         if(this.dataSources != null)
         {
-            this.dataSources.forEach((name, ds) ->
+            for(String name: dataSources.keySet())
             {
-                map.put(name, ds.toDataSource());
-            });
+                map.put(name, dataSources.get(name).toDataSource());
+            }
         }
 
         return map;

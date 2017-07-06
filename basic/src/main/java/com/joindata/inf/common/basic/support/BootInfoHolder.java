@@ -136,11 +136,23 @@ public class BootInfoHolder
      * <i>不懂就<strong>不要瞎调</strong></i><br />
      * <i>这个方法主要用于检查组件依赖</i>
      * 
-     * @return 启动类 Class
+     * @return true, 如果包含
      */
     public static boolean hasBootAnno(Class<? extends Annotation> annoClz)
     {
         return BOOT_CLASS.getAnnotation(annoClz) != null;
+    }
+
+    /**
+     * 获取启动类的指定注解<br />
+     * <i>不懂就<strong>不要瞎调</strong></i><br />
+     * <i>这个方法主要用于检查组件依赖</i>
+     * 
+     * @return 指定的启动注解
+     */
+    public static <T extends Annotation> T getBootAnno(Class<T> annoClz)
+    {
+        return BOOT_CLASS.getAnnotation(annoClz);
     }
 
     /**
@@ -288,5 +300,4 @@ public class BootInfoHolder
             return ENV.equals("PROD");
         }
     }
-
 }

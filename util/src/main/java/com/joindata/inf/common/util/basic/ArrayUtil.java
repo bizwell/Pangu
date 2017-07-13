@@ -1,5 +1,7 @@
 package com.joindata.inf.common.util.basic;
 
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.xiaoleilu.hutool.util.ObjectUtil;
@@ -167,6 +169,80 @@ public class ArrayUtil
         return false;
     }
 
+    /**
+     * 把字符串数组转换成 int 数组<br />
+     * <strong>风险自控</strong>
+     * 
+     * @param arr 字符串数组
+     * @return int 数组
+     */
+    public static int[] toIntArray(String... arr)
+    {
+        if(arr == null)
+        {
+            return null;
+        }
+
+        return Stream.of(arr).mapToInt(p -> Integer.parseInt(StringUtil.trim(p))).toArray();
+    }
+
+    /**
+     * 把字符串数组转换成 long 数组<br />
+     * <strong>风险自控</strong>
+     * 
+     * @param arr 字符串数组
+     * @return long 数组
+     */
+    public static long[] toLongArray(String... arr)
+    {
+        if(arr == null)
+        {
+            return null;
+        }
+
+        return Stream.of(arr).mapToLong(p -> Integer.parseInt(StringUtil.trim(p))).toArray();
+    }
+
+    /**
+     * 把字符串切成数组后将该数组转换成 int 数组<br />
+     * <strong>风险自控</strong>
+     * 
+     * @see StringUtil#splitToArray(String, String)
+     * @param str 字符串
+     * @param separators 元素分隔符
+     * @return int 数组
+     */
+    public static int[] toIntArray(String str, String separators)
+    {
+        String[] arr = StringUtil.splitToArray(str, separators);
+        if(arr == null)
+        {
+            return null;
+        }
+
+        return Stream.of(arr).mapToInt(p -> Integer.parseInt(StringUtil.trim(p))).toArray();
+    }
+
+    /**
+     * 把字符串切成数组后将该数组转换成 long 数组<br />
+     * <strong>风险自控</strong>
+     * 
+     * @see StringUtil#splitToArray(String, String)
+     * @param str 字符串
+     * @param separators 元素分隔符
+     * @return long 数组
+     */
+    public static long[] toLongArray(String str, String separators)
+    {
+        String[] arr = StringUtil.splitToArray(str, separators);
+        if(arr == null)
+        {
+            return null;
+        }
+
+        return Stream.of(arr).mapToLong(p -> Integer.parseInt(StringUtil.trim(p))).toArray();
+    }
+
     public static void main(String[] args)
     {
         System.out.println(join("A", "B", "C"));
@@ -174,5 +250,9 @@ public class ArrayUtil
         System.out.println(join(deleteNulls(new String[]{"a", "b", null}, new String[]{"a", null, null, "c"})));
         System.out.println(isEmpty(new String[]{}));
         System.out.println(toString("A", "B", "C"));
+        System.out.println(toIntArray("1", "2", "3")[2]);
+        System.out.println(toLongArray("1", "2", "3")[2]);
+        System.out.println(toIntArray("1, 2,3", ",")[1]);
+        System.out.println(toLongArray("1,2 ,3", ",")[0]);
     }
 }

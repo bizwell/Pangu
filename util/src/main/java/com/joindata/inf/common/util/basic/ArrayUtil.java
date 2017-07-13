@@ -27,25 +27,27 @@ public class ArrayUtil
     }
 
     /**
-     * 字符串数组转换为逗号分隔的字符串
+     * 各种类型数组转换为逗号分隔的字符串
      * 
-     * @param strs 字符串数组
+     * @param objs 各种类型数组
      * @return 逗号分隔数组元素的字符串
      */
-    public static final String join(String... strs)
+    @SuppressWarnings("unchecked")
+    public static final <T> String join(T... objs)
     {
-        if(strs == null)
+        if(objs == null)
         {
             return null;
         }
+
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < strs.length; i++)
+        for(int i = 0; i < objs.length; i++)
         {
             if(i != 0)
             {
                 sb.append(',');
             }
-            sb.append(strs[i]);
+            sb.append(objs[i]);
         }
         return sb.toString();
     }

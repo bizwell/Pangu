@@ -5,7 +5,7 @@ import javax.servlet.annotation.WebInitParam;
 
 import org.camunda.bpm.engine.rest.security.auth.ProcessEngineAuthenticationFilter;
 
-@WebFilter(filterName = "camunda-auth", urlPatterns = "/*", initParams = @WebInitParam(name = "authentication-provider", value = "org.camunda.bpm.engine.rest.security.auth.impl.HttpBasicAuthenticationProvider"))
+@WebFilter(filterName = "camunda-auth", urlPatterns = "/app/*", initParams = @WebInitParam(name = "authentication-provider", value = "org.camunda.bpm.engine.rest.security.auth.impl.HttpBasicAuthenticationProvider"))
 public class CustomAuthenticationFilter extends ProcessEngineAuthenticationFilter
 {
 }

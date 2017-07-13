@@ -145,7 +145,7 @@ public class CamundaConfig extends WebMvcConfigurerAdapter implements Applicatio
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
         registry.addResourceHandler("/app/**").addResourceLocations("classpath:/app/");
-        registry.addResourceHandler("/lib/**").addResourceLocations("classpath:/lib/");
+        // TODO 马勒戈壁的 registry.addResourceHandler("/lib/**").addResourceLocations("classpath:/lib/");
         registry.addResourceHandler("/api/admin/plugin/adminPlugins/static/**").addResourceLocations("classpath:/plugin/admin/");
         registry.addResourceHandler("/api/tasklist/plugin/tasklistPlugins/static/**").addResourceLocations("classpath:/plugin/tasklist/");
         registry.addResourceHandler("/api/cockpit/plugin/cockpitPlugins/static/**").addResourceLocations("classpath:/plugin/cockpit/");

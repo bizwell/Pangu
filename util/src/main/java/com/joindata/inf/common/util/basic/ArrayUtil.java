@@ -212,7 +212,7 @@ public class ArrayUtil
      * @param separators 元素分隔符
      * @return int 数组
      */
-    public static int[] toIntArray(String str, String separators)
+    public static int[] splitToIntArray(String str, String separators)
     {
         String[] arr = StringUtil.splitToArray(str, separators);
         if(arr == null)
@@ -232,7 +232,7 @@ public class ArrayUtil
      * @param separators 元素分隔符
      * @return long 数组
      */
-    public static long[] toLongArray(String str, String separators)
+    public static long[] splitToLongArray(String str, String separators)
     {
         String[] arr = StringUtil.splitToArray(str, separators);
         if(arr == null)
@@ -252,7 +252,7 @@ public class ArrayUtil
         System.out.println(toString("A", "B", "C"));
         System.out.println(toIntArray("1", "2", "3")[2]);
         System.out.println(toLongArray("1", "2", "3")[2]);
-        System.out.println(toIntArray("1, 2,3", ",")[1]);
-        System.out.println(toLongArray("1,2 ,3", ",")[0]);
+        System.out.println(splitToIntArray("1, 2,3", ",")[1]);
+        System.out.println(splitToLongArray("1,2 ,3", ",")[0]);
     }
 }

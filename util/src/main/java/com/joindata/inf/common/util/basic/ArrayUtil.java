@@ -53,6 +53,31 @@ public class ArrayUtil
     }
 
     /**
+     * int 数组转换为逗号分隔的字符串
+     * 
+     * @param objs int 数组
+     * @return 逗号分隔数组元素的字符串
+     */
+    public static final <T> String join(int... objs)
+    {
+        if(objs == null)
+        {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < objs.length; i++)
+        {
+            if(i != 0)
+            {
+                sb.append(',');
+            }
+            sb.append(objs[i]);
+        }
+        return sb.toString();
+    }
+
+    /**
      * 合并字符串数组
      * 
      * @param arr 数组
@@ -248,6 +273,7 @@ public class ArrayUtil
     public static void main(String[] args)
     {
         System.out.println(join("A", "B", "C"));
+        System.out.println(join(new int[]{1, 2, 3}));
         System.out.println(merge(new String[]{"a", "b"}, "c", "d"));
         System.out.println(join(deleteNulls(new String[]{"a", "b", null}, new String[]{"a", null, null, "c"})));
         System.out.println(isEmpty(new String[]{}));

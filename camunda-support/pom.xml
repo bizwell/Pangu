@@ -21,6 +21,13 @@
 			<artifactId>disconf-support</artifactId>
 			<version>${pangu.version}</version>
 		</dependency>
+		
+		<!-- JDBC 组件必须的 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>jdbc-sterotype</artifactId>
+			<version>${pangu.version}</version>
+		</dependency>
 
 		<!-- Camunda 是必须要滴 -->
 		<dependency>

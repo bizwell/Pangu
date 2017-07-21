@@ -1,7 +1,11 @@
 package com.joindata.inf.common.support.session.bootconfig;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+
+import com.joindata.inf.common.util.log.Logger;
 
 /**
  * SpringSession 配置
@@ -13,58 +17,11 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableRedisHttpSession
 public class SpringSessionConfig
 {
-    // private static final Logger log = Logger.get();
+    private static final Logger log = Logger.get();
 
-    // @Autowired
-    // private RedisProperties properties;
-
-    // @Bean
-    // public JedisConnectionFactory jedisConnectionFactory()
-    // {
-    // log.info("初始化 session 的 jedis 连接工厂");
-    //
-    // JedisConnectionFactory factory = null;
-    //
-    // JedisPoolConfig config = new JedisPoolConfig();
-    // config.setMaxIdle(properties.getMaxIdle());
-    // config.setMaxTotal(properties.getMaxActive());
-    // config.setMaxWaitMillis(properties.getMaxWait());
-    // config.setTestOnBorrow(properties.isTestOnBorrow());
-    // config.setTestOnReturn(properties.isTestOnReturn());
-    //
-    // HostPort[] hostPorts = NetworkUtil.parseHostPort(properties.getHost());
-    //
-    // switch(properties.getType())
-    // {
-    // case RedisType.SHARD:
-    // log.warn("Spring Data 目前不支持使用 SHARD 集群，将通过 redis 集群来连接");
-    // // TODO SpringData 傻逼乎乎的不能用 SHARD POOL
-    // // log.info("HTTP Session 将通过 redis 分片来存储，主机列表: {}", properties.getHost());
-    // //
-    // // List<JedisShardInfo> shardInfo = CollectionUtil.newList();
-    // // for(HostPort hostPort: hostPorts)
-    // // {
-    // // shardInfo.add(new JedisShardInfo(hostPort.getHost(), hostPort.getPort()));
-    // // }
-    // //
-    // // ShardedJedisPool pool = new ShardedJedisPool(config, shardInfo);
-    // //
-    // // factory = new JedisConnectionFactory(shardInfo.get(0));
-    // // break;
-    // case RedisType.CLUSTER:
-    // log.info("HTTP Session 将通过 redis 集群来存储，主机列表: {}", properties.getHost());
-    //
-    // RedisClusterConfiguration clusterConfig = new RedisClusterConfiguration();
-    // for(HostPort hostPort: hostPorts)
-    // {
-    // clusterConfig.addClusterNode(new RedisNode(hostPort.getHost(), hostPort.getPort()));
-    // }
-    //
-    // factory = new JedisConnectionFactory(clusterConfig, config);
-    // new jedisconnectionfac
-    // break;
-    // }
-    //
-    // return factory;
-    // }
+    @PostConstruct
+    public void log()
+    {
+        log.info("已启用 Redis 管理的 HttpSession");
+    }
 }

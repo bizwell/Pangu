@@ -112,12 +112,14 @@ public class DubboConfig
         config.setLoadbalance(properties.getProviderLoadbalance());
         config.setHost(NetworkUtil.getLocalIpv4(properties.getDubboHostPrefix()));
         config.setFilter(properties.getProviderFilter());
+        config.setDelay(-1);
 
         log.info("Dubbo 服务默认超时时间: {}", config.getTimeout());
         log.info("Dubbo 服务默认重试次数: {}", config.getRetries());
         log.info("Dubbo 服务负载均衡方式: {}", config.getLoadbalance());
         log.info("Dubbo 服务拦截扩展: {}", config.getFilter());
         log.info("Dubbo 服务地址: {}", config.getHost());
+        log.info("Dubbo 延迟暴露时间: {}", config.getDelay() > -1 ? config.getDelay() : "容器启动后");
 
         return config;
     }

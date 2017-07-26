@@ -42,7 +42,7 @@ public class DailySequence extends AbstractBaseSequence implements InitializingB
     public DailySequence()
     {
         String tomorrow = DateUtil.formatDate(DateUtil.plusDays(DateUtil.getCurrentDate(), 1));
-        new Timer().schedule(new DailyResetSequenceTask(), DateUtil.parseDate(tomorrow), DateUtil.DAY_MILLIS + 1000);
+        new Timer().schedule(new DailyResetSequenceTask(), DateUtil.parseDate(tomorrow), DateUtil.DAY_MILLIS);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class RedisConfig
         config.setJmxNameBase("Jedis 连接池");
         config.setJmxNamePrefix("Pangu");
 
-        log.info("Redis 连接池最大活动连接数: {}, 最大空闲数: {}, 连接超时时间: {}, 获取连接时测试: {}", properties.getHost(), properties.getMaxActive(), properties.getMaxIdle(), properties.getTimeout(), properties.isTestOnBorrow());
+        log.info("Redis 连接池最大活动连接数: {}, 最大空闲数: {}, 连接超时时间: {}, 获取连接时测试: {}", properties.getMaxActive(), properties.getMaxIdle(), properties.getTimeout(), properties.isTestOnBorrow());
 
         return config;
     }

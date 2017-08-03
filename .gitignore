@@ -27,4 +27,9 @@ target/
 *.gitignore
 bin
 
+# idea
+*.iml
+#idea
+.idea/*
+
 # Don't want see the fuckin' file again!

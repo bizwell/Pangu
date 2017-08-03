@@ -180,6 +180,11 @@
 			<artifactId>commons-jxpath</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>

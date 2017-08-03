@@ -23,8 +23,6 @@ deploy_key_rsa
 .project
 .classpath
 target/
-.gitignore
-*.gitignore
 bin
 
 # idea

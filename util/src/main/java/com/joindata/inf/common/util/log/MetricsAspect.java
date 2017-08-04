@@ -7,22 +7,31 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.Annotation;
+import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 日志切面类
+ *
+ * @author <a href="mailto:zhugongyi@niwodai.net">诸龚毅</a>
+ * @date 2017年08月04日15:40:52
+ */
 @Aspect
-@Component
+@Configuration
 public class MetricsAspect {
-
-    private Logger logger = Logger.get();
 
     public MetricsAspect() {
     }
 
     @Around("@annotation(com.joindata.inf.common.util.log.Metrics))")
     public Object around(ProceedingJoinPoint point) throws Throwable {
+
         MethodSignature signature = (MethodSignature) point.getSignature();
+
+        Logger logger = getLogger(signature);
+
         Metrics metrics = signature.getMethod().getAnnotation(Metrics.class);
         if (metrics == null) {
             metrics = defaultMetrics;
@@ -57,6 +66,16 @@ public class MetricsAspect {
         }
     }
 
+    private Logger getLogger(MethodSignature signature){
+        Logger logger = cachedLoggers.get(signature.getMethod().getDeclaringClass());
+        if(logger == null){
+            logger = Logger.newLogger(signature.getMethod().getDeclaringClass());
+            cachedLoggers.put(signature.getMethod().getDeclaringClass(), logger);
+        }
+        return logger;
+    }
+
+    private static ConcurrentHashMap<Class, Logger> cachedLoggers = new ConcurrentHashMap<>();
 
     private static final Metrics defaultMetrics = new Metrics() {
 

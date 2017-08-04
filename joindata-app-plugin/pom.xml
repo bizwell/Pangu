@@ -70,6 +70,10 @@
 					<groupId>com.joindata.inf.common</groupId>
 					<artifactId>registry</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.aspectj</groupId>
+					<artifactId>aspectjtools</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 	</dependencies>

@@ -508,6 +508,7 @@ public class Bootstrap
         log.info("注册公共扫描包...");
         context.scan("com.joindata.inf.common.basic.support");
         context.scan("com.joindata.inf.boot.mechanism");
+        context.scan("com.joindata.inf.common.util.log");
 
         // 注册启动类
         log.info("注册启动类: {}", bootClz.getName());

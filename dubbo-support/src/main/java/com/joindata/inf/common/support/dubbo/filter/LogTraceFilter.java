@@ -10,6 +10,7 @@ import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
+import com.joindata.inf.common.basic.cst.RequestLogCst;
 import com.joindata.inf.common.util.tools.UuidUtil;
 
 /**
@@ -22,28 +23,27 @@ public class LogTraceFilter implements Filter
 {
     public static final String FILTER_NAME = "logTraceFilter";
 
-    public static final String REQ_ID = "requestId";
-
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException
     {
         Map<String, String> attachment = invocation.getAttachments();
         try
         {
-            String reqId = attachment.get(REQ_ID);
+            String requestIdKey = RequestLogCst.REQUEST_ID;
+            String reqId = attachment.get(requestIdKey);
             if(!StringUtils.isEmpty(reqId))
             {
-                MDC.put(REQ_ID, reqId);
+                MDC.put(requestIdKey, reqId);
             }
             else
             {
-                reqId = MDC.get(REQ_ID);
+                reqId = MDC.get(requestIdKey);
                 if(StringUtils.isEmpty(reqId))
                 {
                     reqId = UuidUtil.makeNoSlash();
-                    MDC.put(REQ_ID, reqId);
+                    MDC.put(requestIdKey, reqId);
                 }
 
-                attachment.put(REQ_ID, reqId);
+                attachment.put(requestIdKey, reqId);
             }
         }
         catch(RpcException e)

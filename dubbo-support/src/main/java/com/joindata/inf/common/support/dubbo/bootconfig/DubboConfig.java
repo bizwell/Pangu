@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.config.ApplicationConfig;
@@ -17,6 +18,7 @@ import com.alibaba.dubbo.config.spring.AnnotationBean;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.dubbo.adapter.log.Log4j2LoggerAdapter;
 import com.joindata.inf.common.support.dubbo.cst.DubboCst;
+import com.joindata.inf.common.support.dubbo.filter.LogTraceFilter;
 import com.joindata.inf.common.support.dubbo.properties.DubboProperties;
 import com.joindata.inf.common.util.log.Logger;
 import com.joindata.inf.common.util.network.NetworkUtil;
@@ -111,7 +113,12 @@ public class DubboConfig
         config.setRetries(properties.getProviderRetries());
         config.setLoadbalance(properties.getProviderLoadbalance());
         config.setHost(NetworkUtil.getLocalIpv4(properties.getDubboHostPrefix()));
-        config.setFilter(properties.getProviderFilter());
+        String filter = properties.getProviderFilter();
+        if(!StringUtils.isEmpty(properties.getProviderFilter()))
+        {
+            filter = StringUtils.isEmpty(properties.getConsumerFilter()) ? LogTraceFilter.FILTER_NAME : filter + "," + LogTraceFilter.FILTER_NAME;
+        }
+        config.setFilter(filter);
         config.setDelay(-1);
 
         log.info("Dubbo 服务默认超时时间: {}", config.getTimeout());
@@ -157,7 +164,12 @@ public class DubboConfig
         config.setRetries(properties.getConsumerRetries());
         config.setLoadbalance(properties.getConsumerLoadbalance());
         config.setCheck(properties.isConsumerCheck());
-        config.setFilter(properties.getConsumerFilter());
+        String filter = properties.getConsumerFilter();
+        if(!StringUtils.isEmpty(properties.getConsumerFilter()))
+        {
+            filter = StringUtils.isEmpty(properties.getConsumerFilter()) ? LogTraceFilter.FILTER_NAME : filter + "," + LogTraceFilter.FILTER_NAME;
+        }
+        config.setFilter(filter);
 
         log.info("Dubbo 调用默认超时时间: {}", config.getTimeout());
         log.info("Dubbo 调用默认重试次数: {}", config.getRetries());

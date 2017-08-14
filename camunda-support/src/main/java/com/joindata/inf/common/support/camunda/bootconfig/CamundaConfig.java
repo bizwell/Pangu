@@ -1,10 +1,14 @@
 package com.joindata.inf.common.support.camunda.bootconfig;
 
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParseListener;
 import org.camunda.bpm.engine.impl.cfg.auth.DefaultAuthorizationProvider;
 import org.camunda.bpm.engine.impl.history.HistoryLevel;
 import org.camunda.bpm.engine.spring.ProcessEngineFactoryBean;
@@ -23,9 +27,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.alibaba.druid.pool.DruidDataSource;
 import com.joindata.inf.common.basic.cst.PanguConfusing;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
+import com.joindata.inf.common.basic.support.SpringContextHolder;
+import com.joindata.inf.common.support.camunda.BpmnParseListenerComponent;
 import com.joindata.inf.common.support.camunda.EnableCamunda;
 import com.joindata.inf.common.support.camunda.properties.CamundaProperties;
 import com.joindata.inf.common.util.basic.ArrayUtil;
+import com.joindata.inf.common.util.basic.ClassUtil;
 import com.joindata.inf.common.util.basic.CodecUtil;
 import com.joindata.inf.common.util.basic.ResourceUtil;
 import com.joindata.inf.common.util.basic.StringUtil;
@@ -89,6 +96,20 @@ public class CamundaConfig extends WebMvcConfigurerAdapter implements Applicatio
         configuration.setAuthorizationEnabled(true);
         configuration.setResourceAuthorizationProvider(new DefaultAuthorizationProvider());
         configuration.setHistoryLevel(HistoryLevel.HISTORY_LEVEL_FULL);
+
+        List<BpmnParseListener> listeners = configuration.getCustomPostBPMNParseListeners();
+        if(listeners == null)
+        {
+            listeners = new ArrayList<>();
+        }
+
+        Set<Class<?>> listenerClasses = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), BpmnParseListenerComponent.class);
+        for(Class<?> clz: listenerClasses)
+        {
+            listeners.add((BpmnParseListener)SpringContextHolder.getBean(clz));
+        }
+
+        configuration.setCustomPostBPMNParseListeners(listeners);
 
         return configuration;
     }

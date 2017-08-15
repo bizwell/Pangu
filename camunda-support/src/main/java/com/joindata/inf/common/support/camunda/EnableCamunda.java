@@ -26,13 +26,4 @@ public @interface EnableCamunda
      * BPMN 文件目录, 默认在 bpmn 目录下
      */
     String[] bpmnDir() default {"/bpmn"};
-
-    /** 数据库地址 // TODO */
-    String url();
-
-    /** 数据库地址 // TODO */
-    String username();
-
-    /** 数据库密码 // TODO */
-    String password();
 }

@@ -1,5 +1,7 @@
 package com.joindata.inf.common.util.basic;
 
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.xiaoleilu.hutool.util.ObjectUtil;
@@ -25,25 +27,52 @@ public class ArrayUtil
     }
 
     /**
-     * 字符串数组转换为逗号分隔的字符串
+     * 各种类型数组转换为逗号分隔的字符串
      * 
-     * @param strs 字符串数组
+     * @param objs 各种类型数组
      * @return 逗号分隔数组元素的字符串
      */
-    public static final String join(String... strs)
+    @SuppressWarnings("unchecked")
+    public static final <T> String join(T... objs)
     {
-        if(strs == null)
+        if(objs == null)
         {
             return null;
         }
+
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < strs.length; i++)
+        for(int i = 0; i < objs.length; i++)
         {
             if(i != 0)
             {
                 sb.append(',');
             }
-            sb.append(strs[i]);
+            sb.append(objs[i]);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * int 数组转换为逗号分隔的字符串
+     * 
+     * @param objs int 数组
+     * @return 逗号分隔数组元素的字符串
+     */
+    public static final <T> String join(int... objs)
+    {
+        if(objs == null)
+        {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < objs.length; i++)
+        {
+            if(i != 0)
+            {
+                sb.append(',');
+            }
+            sb.append(objs[i]);
         }
         return sb.toString();
     }
@@ -167,12 +196,91 @@ public class ArrayUtil
         return false;
     }
 
+    /**
+     * 把字符串数组转换成 int 数组<br />
+     * <strong>风险自控</strong>
+     * 
+     * @param arr 字符串数组
+     * @return int 数组
+     */
+    public static int[] toIntArray(String... arr)
+    {
+        if(arr == null)
+        {
+            return null;
+        }
+
+        return Stream.of(arr).mapToInt(p -> Integer.parseInt(StringUtil.trim(p))).toArray();
+    }
+
+    /**
+     * 把字符串数组转换成 long 数组<br />
+     * <strong>风险自控</strong>
+     * 
+     * @param arr 字符串数组
+     * @return long 数组
+     */
+    public static long[] toLongArray(String... arr)
+    {
+        if(arr == null)
+        {
+            return null;
+        }
+
+        return Stream.of(arr).mapToLong(p -> Integer.parseInt(StringUtil.trim(p))).toArray();
+    }
+
+    /**
+     * 把字符串切成数组后将该数组转换成 int 数组<br />
+     * <strong>风险自控</strong>
+     * 
+     * @see StringUtil#splitToArray(String, String)
+     * @param str 字符串
+     * @param separators 元素分隔符
+     * @return int 数组
+     */
+    public static int[] splitToIntArray(String str, String separators)
+    {
+        String[] arr = StringUtil.splitToArray(str, separators);
+        if(arr == null)
+        {
+            return null;
+        }
+
+        return Stream.of(arr).mapToInt(p -> Integer.parseInt(StringUtil.trim(p))).toArray();
+    }
+
+    /**
+     * 把字符串切成数组后将该数组转换成 long 数组<br />
+     * <strong>风险自控</strong>
+     * 
+     * @see StringUtil#splitToArray(String, String)
+     * @param str 字符串
+     * @param separators 元素分隔符
+     * @return long 数组
+     */
+    public static long[] splitToLongArray(String str, String separators)
+    {
+        String[] arr = StringUtil.splitToArray(str, separators);
+        if(arr == null)
+        {
+            return null;
+        }
+
+        return Stream.of(arr).mapToLong(p -> Integer.parseInt(StringUtil.trim(p))).toArray();
+    }
+
     public static void main(String[] args)
     {
         System.out.println(join("A", "B", "C"));
+        System.out.println(join(new int[]{1, 2, 3}));
         System.out.println(merge(new String[]{"a", "b"}, "c", "d"));
         System.out.println(join(deleteNulls(new String[]{"a", "b", null}, new String[]{"a", null, null, "c"})));
         System.out.println(isEmpty(new String[]{}));
         System.out.println(toString("A", "B", "C"));
+        System.out.println(toIntArray("1", "2", "3")[2]);
+        System.out.println(toLongArray("1", "2", "3")[2]);
+        System.out.println(splitToIntArray("1, 2,3", ",")[1]);
+        System.out.println(splitToLongArray("1,2 ,3", ",")[0]);
     }
 }

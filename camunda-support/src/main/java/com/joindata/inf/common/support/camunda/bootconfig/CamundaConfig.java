@@ -1,13 +1,20 @@
 package com.joindata.inf.common.support.camunda.bootconfig;
 
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import javax.sql.DataSource;
 
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParseListener;
 import org.camunda.bpm.engine.impl.cfg.auth.DefaultAuthorizationProvider;
 import org.camunda.bpm.engine.impl.history.HistoryLevel;
 import org.camunda.bpm.engine.spring.ProcessEngineFactoryBean;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -18,10 +25,17 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.joindata.inf.common.basic.cst.PanguConfusing;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
+import com.joindata.inf.common.basic.support.SpringContextHolder;
+import com.joindata.inf.common.support.camunda.BpmnParseListenerComponent;
 import com.joindata.inf.common.support.camunda.EnableCamunda;
+import com.joindata.inf.common.support.camunda.properties.CamundaProperties;
 import com.joindata.inf.common.util.basic.ArrayUtil;
+import com.joindata.inf.common.util.basic.ClassUtil;
+import com.joindata.inf.common.util.basic.CodecUtil;
 import com.joindata.inf.common.util.basic.ResourceUtil;
+import com.joindata.inf.common.util.basic.StringUtil;
 import com.joindata.inf.common.util.log.Logger;
 import com.mysql.jdbc.Driver;
 
@@ -38,24 +52,31 @@ public class CamundaConfig extends WebMvcConfigurerAdapter implements Applicatio
 
     private ApplicationContext applicationContext = null;
 
+    @Autowired
+    private CamundaProperties properties;
+
     @Bean
-    public DataSource dataSource()
+    public DataSource dataSource() throws GeneralSecurityException
     {
         DruidDataSource dataSource = new DruidDataSource();
 
-        // TODO fuck 后续要改成集中式平台
-        EnableCamunda enableCamunda = BootInfoHolder.getBootClass().getAnnotation(EnableCamunda.class);
-
         dataSource.setDriverClassName(Driver.class.getCanonicalName());
-        dataSource.setUrl(enableCamunda.url());
-        dataSource.setUsername(enableCamunda.username());
-        dataSource.setPassword(enableCamunda.password());
+        dataSource.setUrl(properties.getDbUrl());
+        dataSource.setUsername(properties.getDbUsername());
+
+        String password = properties.getDbPassword();
+        if(StringUtil.startsWith(password, "enc("))
+        {
+            password = CodecUtil.decryptDES(StringUtil.substringBetweenFirstAndLast(password, "enc(", ")"), PanguConfusing.KEY);
+        }
+
+        dataSource.setPassword(password);
 
         return dataSource;
     }
 
     @Bean
-    public DataSourceTransactionManager dataSourceTransactionManager()
+    public DataSourceTransactionManager dataSourceTransactionManager() throws GeneralSecurityException
     {
         DataSourceTransactionManager manager = new DataSourceTransactionManager();
         manager.setDataSource(dataSource());
@@ -64,7 +85,7 @@ public class CamundaConfig extends WebMvcConfigurerAdapter implements Applicatio
     }
 
     @Bean
-    public SpringProcessEngineConfiguration springProcessEngineConfiguration()
+    public SpringProcessEngineConfiguration springProcessEngineConfiguration() throws GeneralSecurityException
     {
         SpringProcessEngineConfiguration configuration = new SpringProcessEngineConfiguration();
         configuration.setDeploymentResources(Util.getBpmnResources());
@@ -75,6 +96,20 @@ public class CamundaConfig extends WebMvcConfigurerAdapter implements Applicatio
         configuration.setAuthorizationEnabled(true);
         configuration.setResourceAuthorizationProvider(new DefaultAuthorizationProvider());
         configuration.setHistoryLevel(HistoryLevel.HISTORY_LEVEL_FULL);
+
+        List<BpmnParseListener> listeners = configuration.getCustomPostBPMNParseListeners();
+        if(listeners == null)
+        {
+            listeners = new ArrayList<>();
+        }
+
+        Set<Class<?>> listenerClasses = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), BpmnParseListenerComponent.class);
+        for(Class<?> clz: listenerClasses)
+        {
+            listeners.add((BpmnParseListener)SpringContextHolder.getBean(clz));
+        }
+
+        configuration.setCustomPostBPMNParseListeners(listeners);
 
         return configuration;
     }
@@ -98,35 +133,6 @@ public class CamundaConfig extends WebMvcConfigurerAdapter implements Applicatio
         return processEngineFactoryBean().getObject();
     }
 
-    // @Bean
-    // public static DefaultCockpitRuntimeDelegate cockpitRuntimeDelegate()
-    // {
-    // DefaultCockpitRuntimeDelegate cockpit = new DefaultCockpitRuntimeDelegate();
-    // Cockpit.setCockpitRuntimeDelegate(cockpit);
-    // return cockpit;
-    // }
-    //
-    // @Bean
-    // public static AdminRuntimeDelegate adminRuntimeDelegate()
-    // {
-    // Admin.setAdminRuntimeDelegate(new DefaultAdminRuntimeDelegate());
-    // return Admin.getRuntimeDelegate();
-    // }
-    //
-    // @Bean
-    // public static WelcomeRuntimeDelegate welcomeRuntimeDelegate()
-    // {
-    // Welcome.setRuntimeDelegate(new DefaultWelcomeRuntimeDelegate());
-    // return Welcome.getRuntimeDelegate();
-    // }
-    //
-    // @Bean
-    // public static TasklistRuntimeDelegate tasklistRuntimeDelegate()
-    // {
-    // Tasklist.setTasklistRuntimeDelegate(new DefaultTasklistRuntimeDelegate());
-    // return Tasklist.getRuntimeDelegate();
-    // }
-
     private static final class Util
     {
         public static final Resource[] getBpmnResources()
@@ -145,7 +151,7 @@ public class CamundaConfig extends WebMvcConfigurerAdapter implements Applicatio
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
         registry.addResourceHandler("/app/**").addResourceLocations("classpath:/app/");
-        registry.addResourceHandler("/lib/**").addResourceLocations("classpath:/lib/");
+        // TODO 马勒戈壁的 registry.addResourceHandler("/lib/**").addResourceLocations("classpath:/lib/");
         registry.addResourceHandler("/api/admin/plugin/adminPlugins/static/**").addResourceLocations("classpath:/plugin/admin/");
         registry.addResourceHandler("/api/tasklist/plugin/tasklistPlugins/static/**").addResourceLocations("classpath:/plugin/tasklist/");
         registry.addResourceHandler("/api/cockpit/plugin/cockpitPlugins/static/**").addResourceLocations("classpath:/plugin/cockpit/");

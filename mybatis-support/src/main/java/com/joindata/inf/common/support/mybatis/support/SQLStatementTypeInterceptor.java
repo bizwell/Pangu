@@ -16,7 +16,6 @@ import org.apache.ibatis.session.RowBounds;
 import com.alibaba.druid.sql.parser.Lexer;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
-import com.joindata.inf.common.util.log.Logger;
 
 /**
  * mybatis插件用于获取运行时执行的sql的类型（select， update）
@@ -27,8 +26,6 @@ import com.joindata.inf.common.util.log.Logger;
 @Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}), @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})})
 public class SQLStatementTypeInterceptor implements Interceptor
 {
-    private static final Logger log = Logger.get();
-
     @Override
     public void setProperties(Properties properties)
     {
@@ -52,7 +49,6 @@ public class SQLStatementTypeInterceptor implements Interceptor
         }
         BoundSql boundSql = mappedStatement.getBoundSql(parameter);
         SQLStatementType sqlStatementType = getTypeByStart(boundSql.getSql());
-        log.info("sql statment type ： {}", sqlStatementType);
         SQLStatementTypeHolder.set(sqlStatementType);
         Object result = invocation.proceed();
         SQLStatementTypeHolder.clear();

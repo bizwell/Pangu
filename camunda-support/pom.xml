@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.3</version>
 	</parent>
 
 	<artifactId>camunda-support</artifactId>
@@ -19,6 +19,13 @@
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>
 			<artifactId>disconf-support</artifactId>
+			<version>${pangu.version}</version>
+		</dependency>
+		
+		<!-- JDBC 组件必须的 -->
+		<dependency>
+			<groupId>com.joindata.inf.common</groupId>
+			<artifactId>jdbc-sterotype</artifactId>
 			<version>${pangu.version}</version>
 		</dependency>
 

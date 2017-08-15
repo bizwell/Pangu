@@ -34,6 +34,7 @@ import com.joindata.inf.boot.mechanism.Jetty2Log4j2Bridge;
 import com.joindata.inf.boot.mechanism.JoindataAnnotationBeanNameGenerator;
 import com.joindata.inf.boot.support.DelegatingServletProxy;
 import com.joindata.inf.boot.webserver.JettyServerFactory;
+import com.joindata.inf.boot.webserver.filter.RequestLogFilter;
 import com.joindata.inf.common.basic.annotation.FilterComponent;
 import com.joindata.inf.common.basic.annotation.FilterConfig;
 import com.joindata.inf.common.basic.annotation.JoindataComponent;
@@ -410,6 +411,7 @@ public class Bootstrap
                 // 归 Spring 代理的 Filter
                 {
                     Set<Class<?>> filterClasses = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), FilterComponent.class);
+                    filterClasses.add(RequestLogFilter.class);
                     {
                         for(Class<?> clz: filterClasses)
                         {
@@ -508,6 +510,8 @@ public class Bootstrap
         log.info("注册公共扫描包...");
         context.scan("com.joindata.inf.common.basic.support");
         context.scan("com.joindata.inf.boot.mechanism");
+        context.scan("com.joindata.inf.common.util.log");
+        context.scan("com.joindata.inf.boot.webserver.filter");
 
         // 注册启动类
         log.info("注册启动类: {}", bootClz.getName());

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.3</version>
 	</parent>
 
 	<artifactId>util</artifactId>
@@ -178,6 +178,11 @@
 		<dependency>
 			<groupId>commons-jxpath</groupId>
 			<artifactId>commons-jxpath</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
 		</dependency>
 
 	</dependencies>

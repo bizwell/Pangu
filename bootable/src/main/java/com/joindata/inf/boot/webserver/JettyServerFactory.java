@@ -60,7 +60,6 @@ public class JettyServerFactory
         {
             CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
             encodingFilter.setEncoding("UTF-8");
-            encodingFilter.setForceEncoding(true);
 
             FilterHolder encodingFilterHolder = new FilterHolder(encodingFilter);
             webAppContext.addFilter(encodingFilterHolder, "/*", EnumSet.allOf(DispatcherType.class));

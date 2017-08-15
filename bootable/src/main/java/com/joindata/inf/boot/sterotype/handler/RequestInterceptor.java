@@ -7,6 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.joindata.inf.boot.sterotype.RestResponse;
+import com.joindata.inf.common.basic.exceptions.BizException;
 import com.joindata.inf.common.basic.exceptions.GenericException;
 import com.joindata.inf.common.util.basic.JsonUtil;
 
@@ -26,8 +27,10 @@ public abstract class RequestInterceptor implements HandlerInterceptor
         {
             beforeRequest(request);
         }
-        catch(GenericException e)
+        catch(BizException | GenericException e)
         {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; Charset=UTF-8");
             response.getWriter().write(JsonUtil.toJSON(RestResponse.fail(e)));
             return false;
         }

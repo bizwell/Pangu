@@ -3,6 +3,7 @@ package com.joindata.inf.boot.sterotype;
 import java.util.Map;
 
 import com.joindata.inf.common.basic.exceptions.BizException;
+import com.joindata.inf.common.basic.exceptions.GenericException;
 import com.joindata.inf.common.util.basic.CollectionUtil;
 
 import io.swagger.annotations.ApiModel;
@@ -74,6 +75,13 @@ public class RestResponse<T>
     public static final <TT> RestResponse<TT> fail(BizException e)
     {
         return new RestResponse<TT>(500, e.getErrorEntity().getCode(), e.getMessage());
+    }
+
+    public static final <TT> RestResponse<TT> fail(GenericException e)
+    {
+        RestResponse<TT> response = new RestResponse<TT>(500, e.getCode(), e.getMessage());
+        response.getExtra().putAll(e.getExtra());
+        return response;
     }
 
     public static final <TT> RestResponse<TT> fail(Exception e)

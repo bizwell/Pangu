@@ -1,0 +1,1 @@
+logTraceFilter=com.joindata.inf.common.support.dubbo.filter.LogTraceFilter

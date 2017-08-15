@@ -45,6 +45,7 @@ public class LogTraceFilter implements Filter
 
                 attachment.put(requestIdKey, reqId);
             }
+            return invoker.invoke(invocation);
         }
         catch(RpcException e)
         {
@@ -55,6 +56,5 @@ public class LogTraceFilter implements Filter
         {
             throw new RpcException(e.getMessage(), e);
         }
-        return invoker.invoke(invocation);
     }
 }

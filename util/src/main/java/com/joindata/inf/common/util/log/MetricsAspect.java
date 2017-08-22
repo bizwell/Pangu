@@ -3,6 +3,7 @@ package com.joindata.inf.common.util.log;
 import java.lang.annotation.Annotation;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.joindata.inf.common.basic.exceptions.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -60,6 +61,14 @@ public class MetricsAspect
             }
             return result;
         }
+        catch (ServiceException se){
+            if(StringUtils.isEmpty(inputJson))
+            {
+                inputJson = JsonUtil.toJSON(point.getArgs());
+            }
+            logger.error("{} 调用【{}】业务异常 - 【参数 = {}】-【异常信息:code = {}, msg = {}】", metrics.desc(), metricsName, inputJson, se.getCode(), se.getMessage());
+            throw se;
+        }
         catch(BizException be)
         {
             if(StringUtils.isEmpty(inputJson))
@@ -69,6 +78,7 @@ public class MetricsAspect
             logger.error("{} 调用【{}】业务异常 - 【参数 = {}】-【异常信息:code = {}, msg = {}】", metrics.desc(), metricsName, inputJson, be.getErrorEntity().getCode(), be.getErrorEntity().getMessage());
             throw be;
         }
+
         catch(Exception e)
         {
             if(StringUtils.isEmpty(inputJson))

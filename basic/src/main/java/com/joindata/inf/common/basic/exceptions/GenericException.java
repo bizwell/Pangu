@@ -92,6 +92,21 @@ public class GenericException extends RuntimeException
         this.message = message;
     }
 
+    protected GenericException(int code, String message, Throwable cause){
+        super(cause);
+        this.code = code;
+        this.message = message;
+    }
+
+    protected GenericException(String message, Throwable cause){
+        super(message, cause);
+    }
+
+    protected GenericException(ErrorEntity entity, Throwable cause){
+        super(entity.getMessage(), cause);
+        this.setCode(entity.getCode());
+    }
+
     /**
      * 指定错误代码，错误消息，以及额外的附加数据
      * 

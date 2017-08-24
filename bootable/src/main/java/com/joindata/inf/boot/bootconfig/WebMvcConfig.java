@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
@@ -40,22 +41,34 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
     {
         super.configureMessageConverters(converters);
 
-        FastJsonHttpMessageConverter messageConverter = new FastJsonHttpMessageConverter();
-        FastJsonConfig config = new FastJsonConfig();
+        {
+            StringHttpMessageConverter messageConverter = new StringHttpMessageConverter(Charset.forName("UTF-8"));
+            List<MediaType> mediaTypeList = new ArrayList<MediaType>();
+            mediaTypeList.add(MediaType.TEXT_PLAIN);
+            messageConverter.setSupportedMediaTypes(mediaTypeList);
+            converters.add(messageConverter);
 
-        config.setSerializerFeatures(Util.getJsonFeature());
-        messageConverter.setFastJsonConfig(config);
-        messageConverter.setDefaultCharset(Charset.forName("UTF-8"));
+            log.info("注册 HTTP 字符串消息转换器: {}", messageConverter.getSupportedMediaTypes());
+        }
 
-        List<MediaType> mediaTypeList = new ArrayList<MediaType>();
-        mediaTypeList.add(MediaType.APPLICATION_JSON);
-        mediaTypeList.add(MediaType.APPLICATION_JSON_UTF8);
-        messageConverter.setSupportedMediaTypes(mediaTypeList);
+        {
+            FastJsonHttpMessageConverter messageConverter = new FastJsonHttpMessageConverter();
+            FastJsonConfig config = new FastJsonConfig();
 
-        converters.add(messageConverter);
+            config.setSerializerFeatures(Util.getJsonFeature());
+            messageConverter.setFastJsonConfig(config);
+            messageConverter.setDefaultCharset(Charset.forName("UTF-8"));
 
-        log.info("HTTP JSON 消息转换器特性: {}", ArrayUtil.toString(Util.getJsonFeature()));
-        log.info("注册 HTTP 消息转换器: {}", messageConverter.toString());
+            List<MediaType> mediaTypeList = new ArrayList<MediaType>();
+            mediaTypeList.add(MediaType.APPLICATION_JSON);
+            mediaTypeList.add(MediaType.APPLICATION_JSON_UTF8);
+            messageConverter.setSupportedMediaTypes(mediaTypeList);
+
+            converters.add(messageConverter);
+            log.info("HTTP JSON 消息转换器特性: {}", ArrayUtil.toString(Util.getJsonFeature()));
+            log.info("注册 HTTP JSON 消息转换器: {}", messageConverter.getSupportedMediaTypes());
+        }
+
     }
 
     @Override

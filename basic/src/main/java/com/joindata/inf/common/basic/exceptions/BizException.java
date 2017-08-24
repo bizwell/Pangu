@@ -33,6 +33,23 @@ public class BizException extends RuntimeException
         this.message = message;
     }
 
+    public BizException(int code, String message, Throwable e)
+    {
+        super(message, e);
+        this.code = code;
+    }
+
+    public BizException(ErrorEntity entity, Throwable e)
+    {
+        super(entity.getMessage(), e);
+        this.code = entity.getCode();
+    }
+
+    public BizException(String message, Throwable e)
+    {
+        super(message, e);
+    }
+
     public BizException()
     {
     }

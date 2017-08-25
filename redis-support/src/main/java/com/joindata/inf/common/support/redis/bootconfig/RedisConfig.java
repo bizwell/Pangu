@@ -160,7 +160,7 @@ public class RedisConfig
         {
             factory = new JedisConnectionFactory(jedisConnectionPoolConfig());
             factory.setHostName(hostPorts[0].getHost());
-            factory.setPort(hostPorts[1].getPort());
+            factory.setPort(hostPorts[0].getPort());
 
             log.info("以单实例 Jedis 连接池方式连接 Redis");
         }

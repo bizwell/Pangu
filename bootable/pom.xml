@@ -21,6 +21,12 @@
 			<version>${pangu.version}</version>
 		</dependency>
 
+		<!-- HTTP 异步 -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpasyncclient</artifactId>
+		</dependency>
+
 		<!-- 注册中心 -->
 		<dependency>
 			<groupId>com.joindata.inf.common</groupId>

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.joindata</groupId>
 		<artifactId>joindata-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<groupId>com.joindata.inf.common</groupId>
@@ -98,6 +98,7 @@
 		<paho.version>1.1.1</paho.version>
 		<asciidoctorj.version>1.5.5</asciidoctorj.version>
 		<reflections.version>1.9.11</reflections.version>
+		<tkmapper.version>3.4.2</tkmapper.version>
 	</properties>
 
 	<dependencyManagement>
@@ -863,7 +864,14 @@
 				<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
 				<version>${paho.version}</version>
 			</dependency>
-			
+
+			<!-- MyBatis 通用 Mapper -->
+			<dependency>
+				<groupId>tk.mybatis</groupId>
+				<artifactId>mapper</artifactId>
+				<version>${tkmapper.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

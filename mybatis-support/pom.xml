@@ -62,7 +62,7 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
 		</dependency>
-		
+
 		<!-- Sharding JDBC -->
 		<dependency>
 			<groupId>com.dangdang</groupId>
@@ -73,6 +73,12 @@
 		<dependency>
 			<groupId>com.github.pagehelper</groupId>
 			<artifactId>pagehelper</artifactId>
+		</dependency>
+
+		<!-- 通用 Mapper -->
+		<dependency>
+			<groupId>tk.mybatis</groupId>
+			<artifactId>mapper</artifactId>
 		</dependency>
 
 	</dependencies>

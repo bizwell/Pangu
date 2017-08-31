@@ -99,13 +99,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
         {
             WebRequestInterceptor pathParams = clz.getAnnotation(WebRequestInterceptor.class);
 
-            if(ArrayUtil.isEmpty(pathParams.include()) && ArrayUtil.isEmpty(pathParams.value()))
+            if(ArrayUtil.isEmpty(pathParams.value()))
             {
-                log.info("注册拦截器: {}, 拦截目录(默认): {}, 排除目录: {}", clz.getCanonicalName(), new String[]{"/**"}, pathParams.exclude());
+                log.info("注册拦截器: {}, 拦截目录(默认): {}, 排除目录: {}", clz.getCanonicalName(), pathParams.value(), pathParams.exclude());
             }
             else
             {
-                log.info("注册拦截器: {}, 拦截目录: {}, 排除目录: {}", clz.getCanonicalName(), ArrayUtil.merge(pathParams.include(), pathParams.value()), pathParams.exclude());
+                log.info("注册拦截器: {}, 拦截目录: {}, 排除目录: {}", clz.getCanonicalName(), pathParams.value(), pathParams.exclude());
             }
 
             Object obj = SpringContextHolder.getBean(clz);
@@ -115,7 +115,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
                 // 创建拦截器实例
                 RequestInterceptor interceptor = (RequestInterceptor)obj;
 
-                MappedInterceptor mappedInterceptor = new MappedInterceptor(ArrayUtil.merge(pathParams.include(), pathParams.value()), pathParams.exclude(), interceptor);
+                MappedInterceptor mappedInterceptor = new MappedInterceptor(pathParams.value(), pathParams.exclude(), interceptor);
                 registry.addInterceptor(mappedInterceptor);
 
                 log.warn("注册 RequestInterceptor 拦截器: {}", clz.getCanonicalName());
@@ -125,7 +125,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter
                 // 创建拦截器实例
                 com.joindata.inf.boot.sterotype.handler.WebRequestInterceptor interceptor = (com.joindata.inf.boot.sterotype.handler.WebRequestInterceptor)obj;
 
-                MappedInterceptor mappedInterceptor = new MappedInterceptor(ArrayUtil.merge(pathParams.include(), pathParams.value()), pathParams.exclude(), interceptor);
+                MappedInterceptor mappedInterceptor = new MappedInterceptor(pathParams.value(), pathParams.exclude(), interceptor);
                 registry.addInterceptor(mappedInterceptor);
 
                 log.warn("注册 WebRequestInterceptor 拦截器: {}", clz.getCanonicalName());

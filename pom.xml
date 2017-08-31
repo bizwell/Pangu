@@ -99,6 +99,7 @@
 		<asciidoctorj.version>1.5.5</asciidoctorj.version>
 		<reflections.version>1.9.11</reflections.version>
 		<tkmapper.version>3.4.2</tkmapper.version>
+		<jpa.version>1.0</jpa.version>
 	</properties>
 
 	<dependencyManagement>
@@ -871,6 +872,12 @@
 				<artifactId>mapper</artifactId>
 				<version>${tkmapper.version}</version>
 			</dependency>
+			<!-- JPA -->
+			<dependency>
+	            <groupId>javax.persistence</groupId>
+	            <artifactId>persistence-api</artifactId>
+	            <version>${jpa.version}</version>
+	        </dependency>
 
 		</dependencies>
 	</dependencyManagement>

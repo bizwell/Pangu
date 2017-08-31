@@ -81,6 +81,12 @@
 			<artifactId>mapper</artifactId>
 		</dependency>
 
+		<!-- JPA -->
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>

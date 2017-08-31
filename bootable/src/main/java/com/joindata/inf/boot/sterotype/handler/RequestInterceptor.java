@@ -25,7 +25,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor
         // 执行自定义拦截处理
         try
         {
-            beforeRequest(request, response);
+            beforeRequest(request);
         }
         catch(BizException | GenericException e)
         {
@@ -56,19 +56,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor
      * @param request 请求
      * @throws GenericException 遇到任何不允许后续再访问的情况，抛出异常
      */
-    protected void beforeRequest(HttpServletRequest request) throws GenericException;
-
-    /**
-     * 请求之前所做的工作
-     * 
-     * @param request 请求
-     * @param response 响应预处理可以用这个对象
-     * @throws GenericException 遇到任何不允许后续再访问的情况，抛出异常
-     */
-    protected void beforeRequest(HttpServletRequest request, HttpServletResponse response) throws GenericException
-    {
-        this.beforeRequest(request);
-    }
+    protected abstract void beforeRequest(HttpServletRequest request) throws GenericException;
 
     /**
      * 请求之前所做的工作

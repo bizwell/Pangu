@@ -50,6 +50,11 @@ public class BizException extends RuntimeException
         super(message, e);
     }
 
+    public int getCode()
+    {
+        return code;
+    }
+
     public BizException()
     {
     }

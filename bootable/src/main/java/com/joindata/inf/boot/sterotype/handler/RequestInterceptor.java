@@ -29,7 +29,21 @@ public abstract class RequestInterceptor implements HandlerInterceptor
         {
             beforeRequest(request);
         }
-        catch(BizException | GenericException e)
+        catch(BizException e)
+        {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; Charset=UTF-8");
+            response.getWriter().write(JsonUtil.toJSON(RestResponse.fail(e)));
+            return false;
+        }
+        catch(GenericException e)
+        {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; Charset=UTF-8");
+            response.getWriter().write(JsonUtil.toJSON(RestResponse.fail(e)));
+            return false;
+        }
+        catch(Exception e)
         {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; Charset=UTF-8");

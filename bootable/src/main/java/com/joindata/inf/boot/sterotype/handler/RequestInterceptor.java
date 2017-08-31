@@ -32,7 +32,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; Charset=UTF-8");
             response.getWriter().write(JsonUtil.toJSON(RestResponse.fail(e)));
-            return true;
+            return false;
         }
 
         return true;
@@ -57,6 +57,18 @@ public abstract class RequestInterceptor implements HandlerInterceptor
      * @throws GenericException 遇到任何不允许后续再访问的情况，抛出异常
      */
     protected abstract void beforeRequest(HttpServletRequest request) throws GenericException;
+
+    /**
+     * 请求之前所做的工作
+     * 
+     * @param request 请求
+     * @param response 响应预处理可以用这个对象
+     * @throws GenericException 遇到任何不允许后续再访问的情况，抛出异常
+     */
+    protected void beforeRequest(HttpServletRequest request, HttpServletResponse response) throws GenericException
+    {
+        this.beforeRequest(request);
+    }
 
     /**
      * 请求之前所做的工作

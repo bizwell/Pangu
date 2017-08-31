@@ -32,7 +32,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; Charset=UTF-8");
             response.getWriter().write(JsonUtil.toJSON(RestResponse.fail(e)));
-            return false;
+            return true;
         }
 
         return true;

@@ -22,7 +22,7 @@ public abstract class RequestInterceptor implements HandlerInterceptor
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
     {
-        beforeResponse(response);
+        beforeResponse(request, response);
 
         // 执行自定义拦截处理
         try
@@ -53,9 +53,9 @@ public abstract class RequestInterceptor implements HandlerInterceptor
     }
 
     /**
-     * 设置 response 相关的东西
+     * 设置request/response 相关的东西
      */
-    protected void beforeResponse(HttpServletResponse response)
+    protected void beforeResponse(HttpServletRequest request, HttpServletResponse response)
     {
     }
 

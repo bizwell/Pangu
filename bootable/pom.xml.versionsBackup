@@ -14,6 +14,7 @@
 	<name>应用启动器</name>
 	<url>http://www.joindata.com</url>
 
+
 	<dependencies>
 		<!-- 工具包 -->
 		<dependency>

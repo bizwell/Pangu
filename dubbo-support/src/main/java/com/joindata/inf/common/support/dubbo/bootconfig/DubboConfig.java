@@ -118,6 +118,10 @@ public class DubboConfig
         {
             filter = StringUtils.isEmpty(properties.getConsumerFilter()) ? LogTraceFilter.FILTER_NAME : filter + "," + LogTraceFilter.FILTER_NAME;
         }
+        else
+        {
+            filter = LogTraceFilter.FILTER_NAME;
+        }
         config.setFilter(filter);
         config.setDelay(-1);
 
@@ -168,6 +172,10 @@ public class DubboConfig
         if(!StringUtils.isEmpty(properties.getConsumerFilter()))
         {
             filter = StringUtils.isEmpty(properties.getConsumerFilter()) ? LogTraceFilter.FILTER_NAME : filter + "," + LogTraceFilter.FILTER_NAME;
+        }
+        else
+        {
+            filter = LogTraceFilter.FILTER_NAME;
         }
         config.setFilter(filter);
 

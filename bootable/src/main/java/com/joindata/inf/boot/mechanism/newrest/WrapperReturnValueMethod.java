@@ -21,7 +21,7 @@ import com.joindata.inf.common.basic.support.BootInfoHolder;
 @Component
 public class WrapperReturnValueMethod implements InitializingBean
 {
-    @Autowired
+    @Autowired(required = false)
     private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
     public void afterPropertiesSet() throws Exception

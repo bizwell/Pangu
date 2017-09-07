@@ -45,7 +45,6 @@ public class LogTraceFilter implements Filter
 
                 attachment.put(requestIdKey, reqId);
             }
-
             return invoker.invoke(invocation);
         }
         catch(RpcException e)

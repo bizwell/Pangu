@@ -64,19 +64,19 @@ public class AppSummaryCache
     {
         if(!SUMMARY.containsKey(appId))
         {
-            log.info("没有应用缓存，将创建应用 {} 的缓存", appId);
+            log.debug("没有应用缓存，将创建应用 {} 的缓存", appId);
             SUMMARY.put(appId, new AppVersionSummary());
         }
 
         if(!SUMMARY.get(appId).containsKey(version))
         {
-            log.info("没有应用 {} 的版本缓存，将创建版本 {} 的缓存", appId, version);
+            log.debug("没有应用 {} 的版本缓存，将创建版本 {} 的缓存", appId, version);
             SUMMARY.get(appId).put(version, CollectionUtil.newMap());
         }
 
         if(!SUMMARY.get(appId).get(version).containsKey(instanceId))
         {
-            log.info("没有应用 {} 的 {} 版本的实例缓存，将创建实例 {} 的缓存", appId, version, instanceId);
+            log.debug("没有应用 {} 的 {} 版本的实例缓存，将创建实例 {} 的缓存", appId, version, instanceId);
             SUMMARY.get(appId).get(version).put(instanceId, new AppInstanceSummary());
         }
     }

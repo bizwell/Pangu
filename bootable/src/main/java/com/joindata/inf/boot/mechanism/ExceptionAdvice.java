@@ -25,7 +25,7 @@ import com.joindata.inf.common.util.log.Logger;
  */
 @RestControllerAdvice
 @ControllerAdvice
-@Order(1)
+@Order()
 public class ExceptionAdvice
 {
     private static final Logger log = Logger.get();

@@ -144,7 +144,14 @@ public class DubboConfig
     {
         ProtocolConfig config = new ProtocolConfig();
         config.setName("dubbo");
-        config.setPort(-1);
+        if(properties.getPort() != null)
+        {
+            config.setPort(properties.getPort());
+        }
+        else
+        {
+            config.setPort(-1);
+        }
         config.setThreads(properties.getDubboThreads());
         config.setHost(NetworkUtil.getLocalIpv4(properties.getDubboHostPrefix()));
         config.setSerialization(properties.getDubboSerialization());

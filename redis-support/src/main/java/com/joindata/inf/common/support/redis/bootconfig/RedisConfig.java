@@ -44,7 +44,6 @@ public class RedisConfig
     @Bean
     public JedisPoolConfig jedisConnectionPoolConfig()
     {
-        log.info("FUCK....................................................");
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(properties.getMaxActive());
         config.setMaxIdle(properties.getMaxIdle());

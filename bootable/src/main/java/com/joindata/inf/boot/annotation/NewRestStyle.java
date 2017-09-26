@@ -1,5 +1,8 @@
 package com.joindata.inf.boot.annotation;
 
+import com.joindata.inf.boot.mechanism.newrest.WrapperReturnValueMethod;
+import org.springframework.context.annotation.Import;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,6 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
+@Import(value =  WrapperReturnValueMethod.class)
 public @interface NewRestStyle
 {
     String value() default "0";

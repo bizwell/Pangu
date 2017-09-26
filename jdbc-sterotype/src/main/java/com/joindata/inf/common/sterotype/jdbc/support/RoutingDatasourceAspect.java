@@ -1,6 +1,7 @@
 package com.joindata.inf.common.sterotype.jdbc.support;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -9,7 +10,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 
 import com.joindata.inf.common.sterotype.jdbc.annotation.Datasource;
-import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.log.Logger;
 
 @Aspect
@@ -17,7 +17,7 @@ public class RoutingDatasourceAspect
 {
     private static final Logger log = Logger.get();
 
-    private static Map<MethodSignature, String> MethodDs = CollectionUtil.newMap();
+    private static Map<MethodSignature, String> MethodDs = new ConcurrentHashMap<>();
 
     @Pointcut("execution(* *(..))")
     public void method()
@@ -33,7 +33,7 @@ public class RoutingDatasourceAspect
             MethodDs.put(sig, sig.getMethod().getAnnotation(Datasource.class).value());
         }
 
-        log.debug("方法 {} 包含 @Datasource，将切换到数据源: {}", sig, MethodDs.get(sig));
+        log.info("方法 {} 包含 @Datasource，将切换到数据源: {}", sig, MethodDs.get(sig));
 
         DataSourceRoutingHolder.useDatasource(MethodDs.get(sig));
         Object ret = joinPoint.proceed();
@@ -57,7 +57,7 @@ public class RoutingDatasourceAspect
             MethodDs.put(sig, joinPoint.getTarget().getClass().getAnnotation(Datasource.class).value());
         }
 
-        log.debug("方法 {} 所在类包含 @Datasource，将切换到数据源: {}", sig, MethodDs.get(sig));
+        log.info("方法 {} 所在类包含 @Datasource，将切换到数据源: {}", sig, MethodDs.get(sig));
 
         DataSourceRoutingHolder.useDatasource(MethodDs.get(sig));
         Object ret = joinPoint.proceed();

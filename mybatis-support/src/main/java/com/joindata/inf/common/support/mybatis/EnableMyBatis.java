@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.joindata.inf.common.basic.annotation.JoindataComponent;
+import com.joindata.inf.common.support.mybatis.support.MapperHelperProps;
 
 /**
  * 启用 MyBatis
@@ -30,4 +31,10 @@ public @interface EnableMyBatis
 
     /** 默认数据源（用于多数据源路由） */
     String defaultDatasource() default "";
+
+    /** 额外添加的 Mapper */
+    Class<?>[] mappers() default {};
+
+    /** 通用 Mapper 参数 */
+    MapperHelperProps mapperHelperProps() default @MapperHelperProps;
 }

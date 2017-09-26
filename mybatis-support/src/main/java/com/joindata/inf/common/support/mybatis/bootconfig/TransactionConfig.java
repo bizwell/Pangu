@@ -5,7 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.joindata.inf.common.sterotype.jdbc.support.RoutingDataSource;
@@ -13,7 +15,7 @@ import com.joindata.inf.common.util.log.Logger;
 
 @Configuration
 @EnableTransactionManagement
-public class TransactionConfig
+public class TransactionConfig implements TransactionManagementConfigurer
 {
     private static final Logger log = Logger.get();
 
@@ -24,7 +26,7 @@ public class TransactionConfig
     /**
      * Spring 事务管理器
      */
-    @Bean
+    @Bean("mybatisDsMgr")
     public DataSourceTransactionManager dataSourceTransactionManager()
     {
         log.info("启用注解事务管理器");
@@ -41,5 +43,11 @@ public class TransactionConfig
     {
         log.info("启用 TransactionTemplate 事务管理器");
         return new TransactionTemplate(dataSourceTransactionManager());
+    }
+
+    @Override
+    public PlatformTransactionManager annotationDrivenTransactionManager()
+    {
+        return dataSourceTransactionManager();
     }
 }

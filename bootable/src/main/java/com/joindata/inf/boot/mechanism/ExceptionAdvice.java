@@ -1,5 +1,6 @@
 package com.joindata.inf.boot.mechanism;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,6 +25,7 @@ import com.joindata.inf.common.util.log.Logger;
  */
 @RestControllerAdvice
 @ControllerAdvice
+@Order()
 public class ExceptionAdvice
 {
     private static final Logger log = Logger.get();

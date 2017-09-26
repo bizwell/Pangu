@@ -74,7 +74,7 @@ public class RestResponse<T>
 
     public static final <TT> RestResponse<TT> fail(BizException e)
     {
-        return new RestResponse<TT>(500, e.getErrorEntity().getCode(), e.getMessage());
+        return new RestResponse<TT>(500, e.getErrorEntity().getCode(), e.getErrorEntity().getMessage());
     }
 
     public static final <TT> RestResponse<TT> fail(GenericException e)

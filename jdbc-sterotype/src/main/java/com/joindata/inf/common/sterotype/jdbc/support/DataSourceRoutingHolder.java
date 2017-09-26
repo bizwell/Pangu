@@ -1,11 +1,11 @@
 package com.joindata.inf.common.sterotype.jdbc.support;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
 import com.joindata.inf.common.sterotype.jdbc.exception.NoSuchDatasourceException;
-import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.log.Logger;
 
 /**
@@ -22,7 +22,7 @@ public class DataSourceRoutingHolder
     public static final ThreadLocal<String> RoutingKey = new ThreadLocal<>();
 
     /** 数据源 Map */
-    private static Map<Object, Object> DS_MAP = CollectionUtil.newMap();
+    private static Map<Object, Object> DS_MAP = new ConcurrentHashMap<>();
 
     /** 默认数据源 key */
     private static String DefaultDatasource = null;

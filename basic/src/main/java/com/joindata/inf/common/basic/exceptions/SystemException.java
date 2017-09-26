@@ -47,6 +47,14 @@ public class SystemException extends GenericException
         super(code, message);
     }
 
+    public SystemException(int code, String message, Throwable cause){
+        super(code, message, cause);
+    }
+
+    public SystemException(String message, Throwable cause){
+        super(message, cause);
+    }
+
     public SystemException(int code, String message, Map<String, Object> extra)
     {
         super(code, message, extra);

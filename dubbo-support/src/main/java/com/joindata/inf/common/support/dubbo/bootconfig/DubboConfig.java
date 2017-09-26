@@ -118,6 +118,10 @@ public class DubboConfig
         {
             filter = StringUtils.isEmpty(properties.getConsumerFilter()) ? LogTraceFilter.FILTER_NAME : filter + "," + LogTraceFilter.FILTER_NAME;
         }
+        else
+        {
+            filter = LogTraceFilter.FILTER_NAME;
+        }
         config.setFilter(filter);
         config.setDelay(-1);
 
@@ -140,7 +144,14 @@ public class DubboConfig
     {
         ProtocolConfig config = new ProtocolConfig();
         config.setName("dubbo");
-        config.setPort(-1);
+        if(properties.getPort() != null)
+        {
+            config.setPort(properties.getPort());
+        }
+        else
+        {
+            config.setPort(-1);
+        }
         config.setThreads(properties.getDubboThreads());
         config.setHost(NetworkUtil.getLocalIpv4(properties.getDubboHostPrefix()));
         config.setSerialization(properties.getDubboSerialization());
@@ -168,6 +179,10 @@ public class DubboConfig
         if(!StringUtils.isEmpty(properties.getConsumerFilter()))
         {
             filter = StringUtils.isEmpty(properties.getConsumerFilter()) ? LogTraceFilter.FILTER_NAME : filter + "," + LogTraceFilter.FILTER_NAME;
+        }
+        else
+        {
+            filter = LogTraceFilter.FILTER_NAME;
         }
         config.setFilter(filter);
 

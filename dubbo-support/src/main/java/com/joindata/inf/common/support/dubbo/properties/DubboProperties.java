@@ -59,6 +59,24 @@ public class DubboProperties
     /** 默认是否检测服务是否存在 */
     private boolean consumerCheck;
 
+    /**
+     * 服务端口号
+     * 
+     * @return
+     */
+    private Integer port;
+
+    @DisconfFileItem(name = "port", associateField = "port")
+    public Integer getPort()
+    {
+        return port;
+    }
+
+    public void setPort(Integer port)
+    {
+        this.port = port;
+    }
+
     @DisconfFileItem(name = "app.owner", associateField = "appOwner")
     public String getAppOwner()
     {

@@ -1,5 +1,6 @@
 package com.joindata.inf.common.basic.exceptions;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.joindata.inf.common.basic.entities.ErrorEntity;
@@ -22,13 +23,13 @@ public class GenericException extends RuntimeException
     protected String message;
 
     /** 附加数据 */
-    protected Map<String, Object> extra;
+    protected Map<String, Object> extra = new HashMap<String, Object>();
 
     protected GenericException(GenericException e)
     {
         this.code = e.getCode();
         this.message = e.getMessage();
-        this.extra = e.getExtra();
+        this.extra.putAll(e.getExtra());
     }
 
     protected GenericException(Exception e)
@@ -92,6 +93,24 @@ public class GenericException extends RuntimeException
         this.message = message;
     }
 
+    protected GenericException(int code, String message, Throwable cause)
+    {
+        super(cause);
+        this.code = code;
+        this.message = message;
+    }
+
+    protected GenericException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
+
+    protected GenericException(ErrorEntity entity, Throwable cause)
+    {
+        super(entity.getMessage(), cause);
+        this.setCode(entity.getCode());
+    }
+
     /**
      * 指定错误代码，错误消息，以及额外的附加数据
      * 
@@ -103,7 +122,7 @@ public class GenericException extends RuntimeException
     {
         this.code = code;
         this.message = message;
-        this.extra = extra;
+        this.extra.putAll(extra);
     }
 
     public int getCode()

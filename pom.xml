@@ -5,19 +5,19 @@
 	<parent>
 		<groupId>com.joindata</groupId>
 		<artifactId>joindata-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<groupId>com.joindata.inf.common</groupId>
 	<artifactId>root</artifactId>
 	<packaging>pom</packaging>
-	<version>1.2.3</version>
+	<version>1.2.5</version>
 
 	<name>公共组件</name>
 	<url>http://www.joindata.com</url>
 
 	<properties>
-		<pangu.version>1.2.3</pangu.version>
+		<pangu.version>1.2.5</pangu.version>
 		<java.version>1.8</java.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<spring-security.version>4.2.0.RELEASE</spring-security.version>
@@ -33,7 +33,7 @@
 		<assembly-plugin.version>3.0.0</assembly-plugin.version>
 		<compiler-plugin.version>3.6.1</compiler-plugin.version>
 		<servlet.version>3.1.0</servlet.version>
-		<fastjson.version>1.2.21</fastjson.version>
+		<fastjson.version>1.2.38</fastjson.version>
 		<javassist.version>3.20.0-GA</javassist.version>
 		<log4j2.version>2.8.1</log4j2.version>
 		<commons-logging.version>1.2</commons-logging.version>
@@ -66,7 +66,7 @@
 		<netty-old.version>3.7.0.Final</netty-old.version>
 		<mysql.version>5.1.40</mysql.version>
 		<mybatis.version>3.4.4</mybatis.version>
-		<mybatis-pagehelper.version>5.0.1</mybatis-pagehelper.version>
+		<mybatis-pagehelper.version>4.1.0</mybatis-pagehelper.version>
 		<mybatis-spring.version>1.3.0</mybatis-spring.version>
 		<druid.version>1.0.12</druid.version>
 		<springfox.version>2.7.0</springfox.version>
@@ -98,6 +98,8 @@
 		<paho.version>1.1.1</paho.version>
 		<asciidoctorj.version>1.5.5</asciidoctorj.version>
 		<reflections.version>1.9.11</reflections.version>
+		<tkmapper.version>3.4.2</tkmapper.version>
+		<jpa.version>1.0</jpa.version>
 	</properties>
 
 	<dependencyManagement>
@@ -863,7 +865,20 @@
 				<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
 				<version>${paho.version}</version>
 			</dependency>
-			
+
+			<!-- MyBatis 通用 Mapper -->
+			<dependency>
+				<groupId>tk.mybatis</groupId>
+				<artifactId>mapper</artifactId>
+				<version>${tkmapper.version}</version>
+			</dependency>
+			<!-- JPA -->
+			<dependency>
+	            <groupId>javax.persistence</groupId>
+	            <artifactId>persistence-api</artifactId>
+	            <version>${jpa.version}</version>
+	        </dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

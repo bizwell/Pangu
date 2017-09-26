@@ -22,12 +22,28 @@ public abstract class RequestInterceptor implements HandlerInterceptor
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
     {
+        beforeResponse(request, response);
+
         // 执行自定义拦截处理
         try
         {
             beforeRequest(request);
         }
-        catch(BizException | GenericException e)
+        catch(BizException e)
+        {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; Charset=UTF-8");
+            response.getWriter().write(JsonUtil.toJSON(RestResponse.fail(e)));
+            return false;
+        }
+        catch(GenericException e)
+        {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; Charset=UTF-8");
+            response.getWriter().write(JsonUtil.toJSON(RestResponse.fail(e)));
+            return false;
+        }
+        catch(Exception e)
         {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; Charset=UTF-8");
@@ -48,6 +64,13 @@ public abstract class RequestInterceptor implements HandlerInterceptor
     {
         // 执行自定义拦截处理
         afterResponse(request, response, ex);
+    }
+
+    /**
+     * 设置request/response 相关的东西
+     */
+    protected void beforeResponse(HttpServletRequest request, HttpServletResponse response)
+    {
     }
 
     /**

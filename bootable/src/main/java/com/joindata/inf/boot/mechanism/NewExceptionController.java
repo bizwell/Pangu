@@ -3,6 +3,7 @@ package com.joindata.inf.boot.mechanism;
 
 import com.joindata.inf.common.basic.errors.BaseErrorCode;
 import com.joindata.inf.common.basic.exceptions.BaseRunTimeException;
+import com.joindata.inf.common.util.basic.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import sun.util.locale.LocaleUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +38,9 @@ import java.util.Locale;
 @Slf4j
 @Configuration
 public class NewExceptionController extends ResponseEntityExceptionHandler {
+    private static final String LOCALEPARAM = "locale";
 
+    private static final Locale  DEFAULTLOCALE = Locale.SIMPLIFIED_CHINESE;
 
     @Autowired
     private MessageSource messageSource;
@@ -69,9 +73,9 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
 
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public Message hanldeIllegalArgumentException(IllegalArgumentException ex)  throws  Exception{
+    public Message hanldeIllegalArgumentException(IllegalArgumentException ex) throws Exception {
         log.warn(ex.toString(), ex);
-         return handleMessage(BaseErrorCode.S400.toString());
+        return handleMessage(BaseErrorCode.S400.toString());
 
     }
 
@@ -97,19 +101,26 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
         /**
          * 获取国际化参数
          */
-        String local = httpServletRequest.getParameter("locale");
+        Locale locale  = getLocale(httpServletRequest.getParameter(LOCALEPARAM));
         String method = httpServletRequest.getMethod();
-        String message = messageSource.getMessage(errorCode, params, new Locale(local));
+        String message = messageSource.getMessage(errorCode, params, locale);
         String[] data = message.split(";");
-        String url = data[1];
         String errorMessage = data[0];
-        boolean isGetOrPost = "GET".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method);
+        String url = data[1];
+        boolean canRedirect = "GET".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method);
         boolean isAjaxRequest = "XMLHttpRequest".equalsIgnoreCase(httpServletRequest.getHeader("X-Requested-With"));
-        if (!isAjaxRequest && isGetOrPost) {
+        if (!isAjaxRequest && canRedirect) {
             httpServletResponse.sendRedirect(url);
             return null;
         }
         return new Message(errorCode, errorMessage);
+    }
+
+    private Locale getLocale(String param){
+        if(StringUtil.isNullOrEmpty(param)){
+            return   DEFAULTLOCALE;
+        }
+        return org.apache.commons.lang3.LocaleUtils.toLocale(param);
     }
 
     public static class Message {

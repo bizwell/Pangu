@@ -1,11 +1,11 @@
 package com.joindata.inf.boot.annotation;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * 启用新的 REST 风格<br />
@@ -19,4 +19,5 @@ import java.lang.annotation.Target;
 @Documented
 public @interface NewRestStyle
 {
+    String value() default "0";
 }

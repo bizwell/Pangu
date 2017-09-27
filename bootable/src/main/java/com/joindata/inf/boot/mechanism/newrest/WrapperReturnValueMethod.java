@@ -46,19 +46,10 @@ public class WrapperReturnValueMethod implements InitializingBean {
                     }
 
                     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
-                        if (!returnType.getDeclaringClass().getCanonicalName().startsWith(BootInfoHolder.getAppPackage())) {
-                            return;
-                        }
                         if (returnType.getMethod().isAnnotationPresent(Raw.class)) {
                             delegate.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
                             return;
                         }
-
-                        if (!returnType.getDeclaringClass().getCanonicalName().startsWith(BootInfoHolder.getAppPackage())) {
-                            delegate.handleReturnValue(methodReturnValueHandlers, returnType, mavContainer, webRequest);
-                            return;
-                        }
-
                         // 加code:200 表示请求成功
                         delegate.handleReturnValue(ReturnValueWrapper.wrapper(successCode,returnValue), returnType, mavContainer, webRequest);
                     }
@@ -73,10 +64,6 @@ public class WrapperReturnValueMethod implements InitializingBean {
                     @SuppressWarnings("rawtypes")
                     public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
                         if (returnType.getMethod().isAnnotationPresent(Raw.class)) {
-                            delegate.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
-                            return;
-                        }
-                        if (!returnType.getDeclaringClass().getCanonicalName().startsWith(BootInfoHolder.getAppPackage())) {
                             delegate.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
                             return;
                         }

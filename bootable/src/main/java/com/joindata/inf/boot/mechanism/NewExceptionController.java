@@ -7,9 +7,7 @@ import com.joindata.inf.common.util.basic.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -39,7 +37,7 @@ import java.util.Locale;
 public class NewExceptionController extends ResponseEntityExceptionHandler {
     private static final String LOCALEPARAM = "locale";
 
-    private static final Locale  DEFAULTLOCALE = Locale.SIMPLIFIED_CHINESE;
+    private static final Locale DEFAULTLOCALE = Locale.SIMPLIFIED_CHINESE;
 
     @Autowired
     private MessageSource messageSource;
@@ -51,14 +49,6 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
     @Autowired
     private HttpServletResponse httpServletResponse;
 
-
-    @Bean
-    public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setCacheSeconds(60);
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
 
     /**
      * 程序抛出的异常
@@ -100,11 +90,11 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
         /**
          * 获取国际化参数
          */
-        Locale locale  = getLocale(httpServletRequest.getParameter(LOCALEPARAM));
+        Locale locale = getLocale(httpServletRequest.getParameter(LOCALEPARAM));
         String method = httpServletRequest.getMethod();
         String message = messageSource.getMessage(errorCode, params, locale);
-        if(StringUtil.isNullOrEmpty(message)){
-            return  new Message(errorCode);
+        if (StringUtil.isNullOrEmpty(message)) {
+            return new Message(errorCode);
         }
         String[] data = message.split(";");
         String errorMessage = data[0];
@@ -118,9 +108,9 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
         return new Message(errorCode, errorMessage);
     }
 
-    private Locale getLocale(String param){
-        if(StringUtil.isNullOrEmpty(param)){
-            return   DEFAULTLOCALE;
+    private Locale getLocale(String param) {
+        if (StringUtil.isNullOrEmpty(param)) {
+            return DEFAULTLOCALE;
         }
         return org.apache.commons.lang3.LocaleUtils.toLocale(param);
     }

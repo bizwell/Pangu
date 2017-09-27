@@ -1,5 +1,6 @@
 package com.joindata.inf.boot.annotation;
 
+import com.joindata.inf.boot.mechanism.MessageSourceConfiguration;
 import com.joindata.inf.boot.mechanism.NewExceptionController;
 import org.springframework.context.annotation.Import;
 
@@ -16,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import(NewExceptionController.class)
+@Import({MessageSourceConfiguration.class,NewExceptionController.class})
 public @interface EnableNewExceptionAdvice {
 
 }

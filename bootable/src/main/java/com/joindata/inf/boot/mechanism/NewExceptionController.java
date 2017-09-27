@@ -104,6 +104,9 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
         Locale locale  = getLocale(httpServletRequest.getParameter(LOCALEPARAM));
         String method = httpServletRequest.getMethod();
         String message = messageSource.getMessage(errorCode, params, locale);
+        if(StringUtil.isNullOrEmpty(message)){
+            return  new Message(errorCode);
+        }
         String[] data = message.split(";");
         String errorMessage = data[0];
         String url = data[1];

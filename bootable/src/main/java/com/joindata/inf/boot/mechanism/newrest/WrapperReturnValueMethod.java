@@ -25,8 +25,7 @@ public class WrapperReturnValueMethod implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         NewRestStyle newRestStyle = null;
         // 是否启用新 REST 风格
-        if (null == (newRestStyle = BootInfoHolder.getBootAnno(NewRestStyle.class)))
-        {
+        if (null == (newRestStyle = BootInfoHolder.getBootAnno(NewRestStyle.class))) {
             return;
         }
 
@@ -51,7 +50,7 @@ public class WrapperReturnValueMethod implements InitializingBean {
                             return;
                         }
                         // 加code:200 表示请求成功
-                        delegate.handleReturnValue(ReturnValueWrapper.wrapper(successCode,returnValue), returnType, mavContainer, webRequest);
+                        delegate.handleReturnValue(ReturnValueWrapper.wrapper(successCode, returnValue), returnType, mavContainer, webRequest);
                     }
                 });
             } else if (delegate instanceof HttpEntityMethodProcessor) {

@@ -9,7 +9,7 @@ import com.joindata.inf.common.support.mybatis.annotation.MyBatisPlugin;
 import com.joindata.inf.common.support.mybatis.sterotype.PluginTemplate;
 import com.joindata.inf.common.support.mybatis.support.CustomVfs;
 import com.joindata.inf.common.support.mybatis.support.SQLStatementTypeInterceptor;
-import com.joindata.inf.common.support.mybatis.support.annotation.EnablePageHelp;
+import com.joindata.inf.common.support.mybatis.support.annotation.EnablePageHelper;
 import com.joindata.inf.common.support.mybatis.support.typehandler.DateTimeTypeHandler;
 import com.joindata.inf.common.support.mybatis.support.typehandler.DateTypeHandler;
 import com.joindata.inf.common.support.mybatis.support.typehandler.TimeTypeHandler;
@@ -81,13 +81,13 @@ public class MyBatisConfig {
             List<Interceptor> interceptors = CollectionUtil.newList();
             // 用于获取运行期间sql的类型： update or select
             interceptors.add(new SQLStatementTypeInterceptor());
-            EnablePageHelp enablePageHelp = BootInfoHolder.getBootAnno(EnablePageHelp.class);
+            EnablePageHelper enablePageHelp = BootInfoHolder.getBootAnno(EnablePageHelper.class);
             if (null != enablePageHelp) {
-                EnablePageHelp.PageHelpProperties[] pageHelpProperties = enablePageHelp.value();
+                EnablePageHelper.PageHelpProperties[] pageHelpProperties = enablePageHelp.value();
                 PageHelper pageHelper = new PageHelper();
                 if (!ArrayUtil.isEmpty(pageHelpProperties)) {
                     Properties properties = new Properties();
-                    for (EnablePageHelp.PageHelpProperties pageHelptmp : pageHelpProperties) {
+                    for (EnablePageHelper.PageHelpProperties pageHelptmp : pageHelpProperties) {
                         properties.put(pageHelptmp.key(), pageHelptmp.value());
                     }
                     pageHelper.setProperties(properties);

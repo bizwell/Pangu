@@ -8,7 +8,7 @@ import com.joindata.inf.common.support.mybatis.EnableMyBatis;
 import com.joindata.inf.common.support.mybatis.annotation.MyBatisPlugin;
 import com.joindata.inf.common.support.mybatis.sterotype.PluginTemplate;
 import com.joindata.inf.common.support.mybatis.support.CustomVfs;
-import com.joindata.inf.common.support.mybatis.support.InsertEntityPlugin;
+import com.joindata.inf.common.support.mybatis.support.InsertEntityInterceptor;
 import com.joindata.inf.common.support.mybatis.support.SQLStatementTypeInterceptor;
 import com.joindata.inf.common.support.mybatis.support.annotation.EnablePageHelper;
 import com.joindata.inf.common.support.mybatis.support.typehandler.DateTimeTypeHandler;
@@ -82,7 +82,7 @@ public class MyBatisConfig {
             List<Interceptor> interceptors = CollectionUtil.newList();
             // 用于获取运行期间sql的类型： update or select
             interceptors.add(new SQLStatementTypeInterceptor());
-            interceptors.add(new InsertEntityPlugin());
+            interceptors.add(new InsertEntityInterceptor());
             EnablePageHelper enablePageHelp = BootInfoHolder.getBootAnno(EnablePageHelper.class);
             if (null != enablePageHelp) {
                 EnablePageHelper.PageHelpProperties[] pageHelpProperties = enablePageHelp.value();

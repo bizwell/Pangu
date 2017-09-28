@@ -8,20 +8,18 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.session.defaults.DefaultSqlSession.StrictMap;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by likanghua on 2017/3/2.
  */
 @Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})})
-public class InsertEntityPlugin implements Interceptor {
+public class InsertEntityInterceptor implements Interceptor {
 
-    private final static Map<Class, IdPolicy.Policy> cache = new ConcurrentHashMap<>();
 
     public Object intercept(Invocation invocation) throws Throwable {
         MappedStatement ms = (MappedStatement) invocation.getArgs()[0];
@@ -61,13 +59,8 @@ public class InsertEntityPlugin implements Interceptor {
     }
 
     private void processDomain(BaseDomain domain) {
-        Class clazz = domain.getClass();
-        IdPolicy.Policy policy = cache.get(clazz);
-        if (policy == null) {
-            IdPolicy idPolicy = (IdPolicy) clazz.getAnnotation(IdPolicy.class);
-            policy = idPolicy.value();
-            cache.put(clazz, policy);
-        }
+        IdPolicy idPolicy = AnnotationUtils.findAnnotation(domain.getClass(), IdPolicy.class);
+        IdPolicy.Policy policy = idPolicy.value();
         if (null == domain.getId()) {
             if (policy == IdPolicy.Policy.UUID || null == policy)
                 domain.setId(UUIDUtil2.getUUIdString());

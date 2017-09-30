@@ -27,7 +27,7 @@ import java.util.Locale;
  * 异常处理类
  * 继承spring默认的异常类  只需要重写异常handler就可以
  *
- * @author <a href="mailto:zhangkai@joindata.com">Zhang Kai</a>
+ * @author <a href="mailto:likanghua@joindata.com">li kang hua</a>
  * @since 2016年12月14日
  */
 @RestControllerAdvice

@@ -16,7 +16,6 @@ import com.joindata.inf.common.support.mybatis.support.typehandler.DateTypeHandl
 import com.joindata.inf.common.support.mybatis.support.typehandler.TimeTypeHandler;
 import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.basic.ClassUtil;
-import com.joindata.inf.common.util.basic.CollectionUtil;
 import com.joindata.inf.common.util.log.Logger;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.type.TypeHandler;
@@ -26,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -79,7 +79,7 @@ public class MyBatisConfig {
          */
         public static final Interceptor[] instantPlugins() {
             Set<Class<?>> clzes = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), MyBatisPlugin.class);
-            List<Interceptor> interceptors = CollectionUtil.newList();
+            List<Interceptor> interceptors = new ArrayList<>();
             // 用于获取运行期间sql的类型： update or select
             interceptors.add(new SQLStatementTypeInterceptor());
             interceptors.add(new InsertEntityInterceptor());
@@ -109,7 +109,7 @@ public class MyBatisConfig {
                 log.info("MyBatis 使用插件: {}", interceptor.getClass().getCanonicalName());
             }
 
-            return CollectionUtil.toArray(interceptors);
+            return interceptors.toArray(new Interceptor[interceptors.size()]);
         }
 
         /**

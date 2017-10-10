@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 @Data
 public class BasePojo implements Serializable {
+    private static final long serialVersionUID = -1l;
 
 
 }

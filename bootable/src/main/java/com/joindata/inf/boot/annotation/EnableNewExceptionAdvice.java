@@ -1,7 +1,7 @@
 package com.joindata.inf.boot.annotation;
 
-import com.joindata.inf.boot.mechanism.MessageSourceConfiguration;
-import com.joindata.inf.boot.mechanism.NewExceptionController;
+import com.joindata.inf.boot.mechanismx.MessageSourceConfiguration;
+import com.joindata.inf.boot.mechanismx.NewExceptionController;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;

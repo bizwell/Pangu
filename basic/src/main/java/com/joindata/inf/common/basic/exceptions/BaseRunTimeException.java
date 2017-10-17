@@ -12,7 +12,7 @@ public class BaseRunTimeException extends RuntimeException {
     /**
      * 业务枚举code 该枚举定义在自身业务包中
      */
-    private final Enum code;
+    private final String code;
 
     private Object[] args;
 
@@ -20,22 +20,22 @@ public class BaseRunTimeException extends RuntimeException {
         return args;
     }
 
-    public Enum getCode() {
+    public String getCode() {
         return code;
     }
 
 
     public BaseRunTimeException() {
-        this.code = BaseErrorCode.S408;
+        this.code = BaseErrorCode.S408.toString();
     }
 
 
     public BaseRunTimeException(@NonNull Enum code) {
-        this.code = code;
+        this.code = code.name();
     }
 
     public BaseRunTimeException(@NonNull Enum code, Object... args) {
-        this.code = code;
+        this.code = code.name();
         this.args = args;
     }
 

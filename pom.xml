@@ -11,13 +11,13 @@
 	<groupId>com.joindata.inf.common</groupId>
 	<artifactId>root</artifactId>
 	<packaging>pom</packaging>
-	<version>1.2.5</version>
+	<version>1.2.6-SNAPSHOT</version>
 
 	<name>公共组件</name>
 	<url>http://www.joindata.com</url>
 
 	<properties>
-		<pangu.version>1.2.5</pangu.version>
+		<pangu.version>1.2.6-SNAPSHOT</pangu.version>
 		<java.version>1.8</java.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<spring-security.version>4.2.0.RELEASE</spring-security.version>
@@ -1042,11 +1042,12 @@
 		<module>registry</module>
 		<module>disconf-support</module>
 		<module>mybatis-support</module>
-		<module>fastdfs-support</module>
+ 		<module>fastdfs-support</module>
 		<module>swagger-support</module>
 		<module>elasticsearch-support</module>
 		<module>redis-support</module>
 		<module>sso-support</module>
+		<module>restTemplate-support</module>
 		<module>session-support</module>
 		<module>dubbo-support</module>
 		<module>elasticjob-support</module>

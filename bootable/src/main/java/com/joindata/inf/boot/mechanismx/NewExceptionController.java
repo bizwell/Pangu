@@ -5,6 +5,7 @@ import com.joindata.inf.common.basic.errors.BaseErrorCode;
 import com.joindata.inf.common.basic.exceptions.BaseRunTimeException;
 import com.joindata.inf.common.util.basic.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Configuration;
@@ -101,11 +102,14 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
             }
         }
         String[] data = message.split(";");
-        String errorMessage = data[0];
-        String url = data[1];
+        String url = data[0];
+        String errorMessage = null;
+        if (data.length > 1) {
+            errorMessage = data[1];
+        }
         boolean canRedirect = "GET".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method);
         boolean isAjaxRequest = "XMLHttpRequest".equalsIgnoreCase(httpServletRequest.getHeader("X-Requested-With"));
-        if (!isAjaxRequest && canRedirect) {
+        if (!isAjaxRequest && canRedirect && StringUtils.isNotBlank(url)) {
             httpServletResponse.sendRedirect(url);
             return null;
         }
@@ -157,4 +161,9 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
             this.code = code;
         }
     }
+
+    public static void main(String[] args) {
+        System.out.print("".split(";")[0] + "+++++");
+    }
 }
+

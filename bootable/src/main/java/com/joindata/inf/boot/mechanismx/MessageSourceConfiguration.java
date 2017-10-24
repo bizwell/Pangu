@@ -1,5 +1,6 @@
 package com.joindata.inf.boot.mechanismx;
 
+import com.joindata.inf.common.basic.support.BootInfoHolder;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +15,12 @@ public class MessageSourceConfiguration {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setCacheSeconds(60);
+        messageSource.setCacheSeconds(300);
+        String env = BootInfoHolder.Env.get();
+        String[] basenames = {"message_".concat(env), "success_".concat(env)};
+        messageSource.setBasenames(basenames);
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
 }
+

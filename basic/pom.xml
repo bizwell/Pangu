@@ -6,11 +6,11 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.5</version>
+		<version>1.2.6-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>basic</artifactId>
-	<packaging>jar</packaging>
+ 	<packaging>jar</packaging>
 
 	<name>公共基础类</name>
 	<url>http://www.joindata.com</url>
@@ -22,7 +22,19 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate-validator.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>${jsr-validator.version}</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

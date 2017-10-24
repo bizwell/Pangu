@@ -4,13 +4,12 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.5</version>
+		<version>1.2.6-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>rabbitmq-support</artifactId>
 	<packaging>jar</packaging>
-
-	<name>RabbitMQ 消息队列支持</name>
+ 	<name>RabbitMQ 消息队列支持</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>

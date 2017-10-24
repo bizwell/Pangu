@@ -4,13 +4,12 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.5</version>
+		<version>1.2.6-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>jdbc-sterotype</artifactId>
 	<packaging>jar</packaging>
-
-	<name>与 JDBC 相关的一些模板</name>
+ 	<name>与 JDBC 相关的一些模板</name>
 	<url>http://www.joindata.com</url>
 
 

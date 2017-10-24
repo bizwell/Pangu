@@ -4,13 +4,11 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.5</version>
-	</parent>
+		<version>1.2.6-SNAPSHOT</version>	</parent>
 
 	<artifactId>redis-support</artifactId>
 	<packaging>jar</packaging>
-
-	<name>Redis 支持</name>
+ 	<name>Redis 支持</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>

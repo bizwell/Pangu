@@ -5,7 +5,8 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.5</version>
+		<version>1.2.6-SNAPSHOT</version>
+
 	</parent>
 
 	<artifactId>session-support</artifactId>

@@ -5,13 +5,12 @@
 	<parent>
 		<groupId>com.joindata.inf.common</groupId>
 		<artifactId>root</artifactId>
-		<version>1.2.5</version>
+		<version>1.2.6-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>elasticsearch-support</artifactId>
 	<packaging>jar</packaging>
-
-	<name>ElasticSearch 搜索服务支持</name>
+ 	<name>ElasticSearch 搜索服务支持</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>

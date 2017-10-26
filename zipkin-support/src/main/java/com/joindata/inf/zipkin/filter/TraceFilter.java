@@ -16,9 +16,7 @@ import com.twitter.zipkin.gen.Annotation;
 import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -28,8 +26,6 @@ import java.util.concurrent.TimeUnit;
  * 过滤器，创建请求的唯一ID
  * Created by Rayee on 2017/10/23.
  */
-@Component
-@FilterComponent
 public class TraceFilter implements Filter {
 
     private Logger logger = Logger.get();
@@ -37,10 +33,13 @@ public class TraceFilter implements Filter {
 //    @Resource
 //    private ZipkinProperties zipkinProperties;
 
-    @Resource
     private DubboProperties dubboProperties;
 
-    private TraceAgent agent;
+    private TraceAgent agent = new TraceAgent("http://172.168.168.153:9411");
+
+    public TraceFilter(DubboProperties dubboProperties) {
+        this.dubboProperties = dubboProperties;
+    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -48,8 +47,6 @@ public class TraceFilter implements Filter {
 //            return;
 //        }
 //        agent = new TraceAgent(zipkinProperties.getServer());
-        agent = new TraceAgent("http://172.168.168.153:9411");
-        logger.info("init zipkin filter with config {}", JsonUtil.toJSON(new Object[]{filterConfig}));
     }
 
     @Override

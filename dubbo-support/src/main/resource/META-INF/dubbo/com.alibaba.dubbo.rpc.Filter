@@ -1,1 +1,3 @@
 logTraceFilter=com.joindata.inf.common.support.dubbo.filter.LogTraceFilter
+consumerFilter=com.joindata.inf.zipkin.filter.ConsumerFilter
+providerFilter=com.joindata.inf.zipkin.filter.ProviderFilter

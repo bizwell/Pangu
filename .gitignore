@@ -15,19 +15,72 @@ build
 db.ini
 deploy_key_rsa
 
-# Java
+#java
 *.class
 *.classpath
 *.project
 *.settings
-.project
 .classpath
+.project
+.temp
 target/
+*classpath
+.gitignore
+*.gitignore
 bin
 
-# idea
+*.class
+/**/.class
+/*/.*
+/*/*/.*
+/*/*/*/.*
+/*/*/*/*/.*
+/*/class/*
+/*/classes/*
+/*/.gitignore
+/*/*/target/*
+/**/target/*
+/*/*/*/target/*
+
+*.log
+/**/.log
+*_Main.java
+
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+inner.properties
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/*/.settings/*
+**/target/**
+/*/bin/*
+/*/*/bin/*
+/*/log/*
+# jetbrains project files
+/*/.idea/
+.DS_Store
+.springBeans
 *.iml
+*/*.iml
+*/*/*.iml
+# eclipse project files
+**/.classpath
+*.project
+
+.settings/*
+
 #idea
 .idea/*
+**/backList
 
-# Don't want see the fuckin' file again!
+#disconf
+disconf/*
+*.rdb

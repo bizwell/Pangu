@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.joindata.inf.common</groupId>
+        <artifactId>root</artifactId>
+        <version>1.2.6-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>zipkin-support</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Zipkin 调用链跟踪</name>
+    <url>http://www.joindata.com</url>
+
+    <dependencies>
+
+        <!-- Disconf 支持 -->
+        <dependency>
+            <groupId>com.joindata.inf.common</groupId>
+            <artifactId>disconf-support</artifactId>
+            <version>${pangu.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dubbo</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.auto.value</groupId>
+            <artifactId>auto-value</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.joindata.inf.common</groupId>
+            <artifactId>dubbo-support</artifactId>
+            <version>${pangu.version}</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

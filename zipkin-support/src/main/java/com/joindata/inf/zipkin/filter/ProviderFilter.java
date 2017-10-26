@@ -1,5 +1,7 @@
 package com.joindata.inf.zipkin.filter;
 
+import com.alibaba.dubbo.common.Constants;
+import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.*;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.agent.TraceAgent;
@@ -12,6 +14,7 @@ import java.util.Map;
 /**
  * Created by Rayee on 2017/10/23.
  */
+@Activate(group = {Constants.PROVIDER})
 public class ProviderFilter implements Filter {
 
 //    @Resource
@@ -19,6 +22,8 @@ public class ProviderFilter implements Filter {
 
 //    private TraceAgent agent = new TraceAgent(zipkinProperties.getServer());
     private TraceAgent agent = new TraceAgent("http://172.168.168.153:9411");
+
+    public static final String FILTER_NAME = "providerFilter";
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {

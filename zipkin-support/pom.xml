@@ -24,6 +24,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.joindata.inf.common</groupId>
+            <artifactId>dubbo-support</artifactId>
+            <version>${pangu.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-core</artifactId>
         </dependency>
@@ -53,11 +59,6 @@
             <artifactId>auto-value</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.joindata.inf.common</groupId>
-            <artifactId>dubbo-support</artifactId>
-            <version>${pangu.version}</version>
-        </dependency>
 
     </dependencies>
 

@@ -9,7 +9,6 @@ import com.joindata.inf.common.util.log.Logger;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.agent.TraceAgent;
 import com.joindata.inf.zipkin.cst.TraceConstants;
-import com.joindata.inf.zipkin.properties.ZipkinProperties;
 import com.joindata.inf.zipkin.util.Ids;
 import com.joindata.inf.zipkin.util.ServerInfo;
 import com.joindata.inf.zipkin.util.Times;
@@ -30,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Rayee on 2017/10/23.
  */
 @Component
-@FilterComponent(path = "/*")
+@FilterComponent
 public class TraceFilter implements Filter {
 
     private Logger logger = Logger.get();

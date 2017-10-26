@@ -1071,6 +1071,7 @@
 		<module>jdbc-sterotype</module>
 		<module>joindata-app</module>
 		<module>joindata-app-plugin</module>
+		<module>zipkin-support</module>
 		<!-- <module>joindata-app-template</module> -->
 	</modules>
 

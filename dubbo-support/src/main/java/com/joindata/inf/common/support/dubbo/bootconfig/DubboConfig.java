@@ -25,7 +25,7 @@ import com.joindata.inf.common.util.network.NetworkUtil;
 
 /**
  * Dubbox 配置
- * 
+ *
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Dec 28, 2016 5:05:47 PM
  */
@@ -114,13 +114,14 @@ public class DubboConfig
         config.setLoadbalance(properties.getProviderLoadbalance());
         config.setHost(NetworkUtil.getLocalIpv4(properties.getDubboHostPrefix()));
         String filter = properties.getProviderFilter();
+        String defaultFilter = LogTraceFilter.FILTER_NAME  + ",consumerFilter,providerFilter";
         if(!StringUtils.isEmpty(properties.getProviderFilter()))
         {
-            filter = StringUtils.isEmpty(properties.getConsumerFilter()) ? LogTraceFilter.FILTER_NAME : filter + "," + LogTraceFilter.FILTER_NAME;
+            filter = StringUtils.isEmpty(properties.getConsumerFilter()) ? defaultFilter : filter + "," + defaultFilter;
         }
         else
         {
-            filter = LogTraceFilter.FILTER_NAME;
+            filter = defaultFilter;
         }
         config.setFilter(filter);
         config.setDelay(-1);

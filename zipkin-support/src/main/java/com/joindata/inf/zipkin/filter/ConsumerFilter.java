@@ -1,6 +1,8 @@
 package com.joindata.inf.zipkin.filter;
 
+import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
+import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.*;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
@@ -20,7 +22,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Rayee on 2017/10/23.
  */
+@Activate(group = {Constants.CONSUMER})
 public class ConsumerFilter implements Filter {
+
+    public static final String FILTER_NAME = "consumerFilter";
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {

@@ -19,8 +19,7 @@
         <dependency>
             <groupId>com.joindata.inf.common</groupId>
             <artifactId>basic</artifactId>
-            <version>${pangu.version}</version>
-        </dependency>
+         </dependency>
 
         <!-- 字节码增强 -->
         <dependency>

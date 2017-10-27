@@ -110,7 +110,7 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
         boolean canRedirect = "GET".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method);
         boolean isAjaxRequest = "XMLHttpRequest".equalsIgnoreCase(httpServletRequest.getHeader("X-Requested-With"));
         if (!isAjaxRequest && canRedirect && StringUtils.isNotBlank(url)) {
-            httpServletResponse.sendRedirect(url);
+            httpServletResponse.sendRedirect(url.concat("?code=").concat(errorCode));
             return null;
         }
         return new Message(errorCode, errorMessage);

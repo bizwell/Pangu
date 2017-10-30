@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Rayee on 2017/10/23.
  */
-@Activate(group = {Constants.CONSUMER})
+//@Activate(group = {Constants.CONSUMER})
 public class ConsumerFilter implements Filter {
 
     public static final String FILTER_NAME = "consumerFilter";

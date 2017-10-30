@@ -18,7 +18,7 @@ import javax.servlet.annotation.WebFilter;
  */
 @Configuration
 @Import(ZipkinConfig.class)
-//@FilterConfig({@WebAppFilterItem(filter = DelegatingFilterProxy.class, config = @WebFilter(filterName = "traceFilter", urlPatterns = "/*"))})
+@FilterConfig({@WebAppFilterItem(filter = DelegatingFilterProxy.class, config = @WebFilter(filterName = "traceFilter", urlPatterns = "/*"))})
 @EnableDisconf
 public class ConfigHub extends AbstractConfigHub {
     @Override

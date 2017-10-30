@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by Rayee on 2017/10/23.
  */
-//@Activate(group = {Constants.PROVIDER})
+@Activate(group = {Constants.PROVIDER})
 public class ProviderFilter implements Filter {
 
 //    @Resource

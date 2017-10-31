@@ -25,41 +25,41 @@ public class LogTraceFilter implements Filter
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException
     {
-        Map<String, String> attachment = invocation.getAttachments();
-        try
-        {
-            String requestIdKey = RequestLogCst.REQUEST_ID;
-            String reqId = attachment.get(requestIdKey);
-            if(!StringUtils.isEmpty(reqId))
-            {
-                MDC.put(requestIdKey, reqId);
-            }
-            else
-            {
-                reqId = MDC.get(requestIdKey);
-                if(StringUtils.isEmpty(reqId))
-                {
-                    reqId = UuidUtil.makeNoSlash();
-                    MDC.put(requestIdKey, reqId);
-                }
-
-                attachment.put(requestIdKey, reqId);
-            }
+//        Map<String, String> attachment = invocation.getAttachments();
+//        try
+//        {
+//            String requestIdKey = RequestLogCst.REQUEST_ID;
+//            String reqId = attachment.get(requestIdKey);
+//            if(!StringUtils.isEmpty(reqId))
+//            {
+//                MDC.put(requestIdKey, reqId);
+//            }
+//            else
+//            {
+//                reqId = MDC.get(requestIdKey);
+//                if(StringUtils.isEmpty(reqId))
+//                {
+//                    reqId = UuidUtil.makeNoSlash();
+//                    MDC.put(requestIdKey, reqId);
+//                }
+//
+//                attachment.put(requestIdKey, reqId);
+//            }
             return invoker.invoke(invocation);
-        }
-        catch(RpcException e)
-        {
-            throw e;
-        }
-
-        catch(Exception e)
-        {
-            throw new RpcException(e.getMessage(), e);
-        }
-        finally
-        {
-            MDC.clear();
-        }
+//        }
+//        catch(RpcException e)
+//        {
+//            throw e;
+//        }
+//
+//        catch(Exception e)
+//        {
+//            throw new RpcException(e.getMessage(), e);
+//        }
+//        finally
+//        {
+//            MDC.clear();
+//        }
 
     }
 }

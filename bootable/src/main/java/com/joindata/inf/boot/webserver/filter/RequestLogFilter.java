@@ -39,15 +39,15 @@ public class RequestLogFilter implements Filter
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
     {
-        String reqId = MDC.get(RequestLogCst.REQUEST_ID);
-        if(StringUtils.isEmpty(reqId))
-        {
-            reqId = UuidUtil.makeNoSlash();
-            MDC.put(RequestLogCst.REQUEST_ID, reqId);
-        }
+//        String reqId = MDC.get(RequestLogCst.REQUEST_ID);
+//        if(StringUtils.isEmpty(reqId))
+//        {
+//            reqId = UuidUtil.makeNoSlash();
+//            MDC.put(RequestLogCst.REQUEST_ID, reqId);
+//        }
 
         chain.doFilter(request, response);
-        MDC.clear();
+//        MDC.clear();
     }
 
     @Override

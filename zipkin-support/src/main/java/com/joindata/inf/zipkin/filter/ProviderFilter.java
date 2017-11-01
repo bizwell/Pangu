@@ -2,6 +2,7 @@ package com.joindata.inf.zipkin.filter;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.config.spring.ServiceBean;
 import com.alibaba.dubbo.rpc.*;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
 import com.joindata.inf.zipkin.TraceContext;
@@ -19,10 +20,7 @@ import java.util.Map;
 @Activate(group = {Constants.PROVIDER})
 public class ProviderFilter implements Filter {
 
-    @Resource
-    private ZipkinProperties zipkinProperties;
-
-    private TraceAgent agent = new TraceAgent(zipkinProperties.getServer());
+    private TraceAgent agent = new TraceAgent(ServiceBean.getSpringContext().getBean(ZipkinProperties.class).getServer());
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
@@ -40,7 +38,7 @@ public class ProviderFilter implements Filter {
         TraceContext.start();
         TraceContext.setTraceId(Long.parseLong(attaches.get(TraceConstants.TRACE_ID)));
         TraceContext.setSpanId(Long.parseLong(attaches.get(TraceConstants.SPAN_ID)));
-        MDC.put(RequestLogCst.REQUEST_ID, attaches.get(TraceConstants.TRACE_ID));
+        MDC.put(RequestLogCst.REQUEST_ID, Long.toHexString(Long.parseLong(attaches.get(TraceConstants.TRACE_ID))));
     }
 
     private void endTrace() {

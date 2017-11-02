@@ -7,6 +7,7 @@ import com.alibaba.dubbo.rpc.*;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
+import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.cst.TraceConstants;
 import com.joindata.inf.zipkin.util.Ids;
@@ -46,7 +47,7 @@ public class ConsumerFilter implements Filter {
         consumerSpan.setId(Ids.get());
         consumerSpan.setTrace_id(TraceContext.getTraceId());
         consumerSpan.setParent_id(TraceContext.getSpanId());
-        String serviceName = invoker.getInterface().getSimpleName() + "." + invocation.getMethodName();
+        String serviceName = BootInfoHolder.getAppId().concat(":").concat(invoker.getInterface().getSimpleName() + "." + invocation.getMethodName());
         consumerSpan.setName(serviceName);
         long timestamp = Times.currentMicros();
         consumerSpan.setTimestamp(timestamp);

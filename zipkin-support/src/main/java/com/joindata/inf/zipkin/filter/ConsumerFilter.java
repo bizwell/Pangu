@@ -47,7 +47,7 @@ public class ConsumerFilter implements Filter {
         consumerSpan.setId(Ids.get());
         consumerSpan.setTrace_id(TraceContext.getTraceId());
         consumerSpan.setParent_id(TraceContext.getSpanId());
-        String serviceName = BootInfoHolder.getAppId().concat(":").concat(invoker.getInterface().getSimpleName() + "." + invocation.getMethodName());
+        String serviceName = BootInfoHolder.getAppId().concat(" : ").concat(invoker.getInterface().getSimpleName() + "." + invocation.getMethodName());
         consumerSpan.setName(serviceName);
         long timestamp = Times.currentMicros();
         consumerSpan.setTimestamp(timestamp);

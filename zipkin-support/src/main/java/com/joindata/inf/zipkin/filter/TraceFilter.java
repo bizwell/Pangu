@@ -57,7 +57,7 @@ public class TraceFilter implements Filter {
     }
 
     private Span startTrace(HttpServletRequest request) {
-        String apiName = BootInfoHolder.getAppId().concat(":").concat(request.getRequestURI());
+        String apiName = BootInfoHolder.getAppId().concat(" : ").concat(request.getRequestURI());
         Span apiSpan = new Span();
         //调用链初始化信息
         long id = Ids.get();

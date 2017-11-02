@@ -8,6 +8,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
+import com.joindata.inf.common.util.basic.JsonUtil;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.cst.TraceConstants;
 import com.joindata.inf.zipkin.util.Ids;
@@ -53,6 +54,7 @@ public class ConsumerFilter implements Filter {
         consumerSpan.setTimestamp(timestamp);
         URL provider = invoker.getUrl();
         consumerSpan.addToAnnotations(Annotation.create(timestamp, TraceConstants.ANNO_CS, Endpoint.create(serviceName, Networks.ip2Num(provider.getHost()), provider.getPort())));
+        consumerSpan.addToBinary_annotations(BinaryAnnotation.create(TraceConstants.ARGS, JsonUtil.toJSON(invocation.getArguments()), null));
         Map<String, String> attches = invocation.getAttachments();
         attches.put(TraceConstants.TRACE_ID, String.valueOf(consumerSpan.getTrace_id()));
         attches.put(TraceConstants.SPAN_ID, String.valueOf(consumerSpan.getId()));

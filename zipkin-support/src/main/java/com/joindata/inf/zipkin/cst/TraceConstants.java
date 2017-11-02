@@ -45,4 +45,7 @@ public interface TraceConstants {
      * The ss time
      */
     String SS_TIME = "sst";
+
+    String ARGS = "参数";
+
 }

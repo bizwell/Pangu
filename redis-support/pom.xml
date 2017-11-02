@@ -9,8 +9,7 @@
 
 	<artifactId>redis-support</artifactId>
 	<packaging>jar</packaging>
-
-	<name>Redis 支持</name>
+ 	<name>Redis 支持</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>

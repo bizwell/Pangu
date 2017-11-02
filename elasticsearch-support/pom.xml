@@ -10,8 +10,7 @@
 
 	<artifactId>elasticsearch-support</artifactId>
 	<packaging>jar</packaging>
-
-	<name>ElasticSearch 搜索服务支持</name>
+ 	<name>ElasticSearch 搜索服务支持</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>

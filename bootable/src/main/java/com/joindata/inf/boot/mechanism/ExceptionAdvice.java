@@ -23,7 +23,6 @@ import com.joindata.inf.common.util.log.Logger;
  * @author 宋翔
  * @date 2015年11月17日 下午3:52:32
  */
-@RestControllerAdvice
 @ControllerAdvice
 @Order()
 public class ExceptionAdvice

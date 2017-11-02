@@ -25,6 +25,8 @@
 		<spring-security-cas.version>3.0.8.RELEASE</spring-security-cas.version>
 		<spring-session.version>1.3.0.RELEASE</spring-session.version>
 		<javadoc.version>2.10.4</javadoc.version>
+		<hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
+		<jsr-validator.version>1.1.0.Final</jsr-validator.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<dependency-plugin.version>2.10</dependency-plugin.version>
@@ -311,6 +313,19 @@
 				<artifactId>httpcore</artifactId>
 				<version>${httpcore.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>${hibernate-validator.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${jsr-validator.version}</version>
+			</dependency>
+
 
 			<!-- Apache HTTP 多媒体处理客户端 -->
 			<dependency>
@@ -1050,11 +1065,12 @@
 		<module>registry</module>
 		<module>disconf-support</module>
 		<module>mybatis-support</module>
-		<module>fastdfs-support</module>
+ 		<module>fastdfs-support</module>
 		<module>swagger-support</module>
 		<module>elasticsearch-support</module>
 		<module>redis-support</module>
 		<module>sso-support</module>
+		<module>restTemplate-support</module>
 		<module>session-support</module>
 		<module>dubbo-support</module>
 		<module>elasticjob-support</module>

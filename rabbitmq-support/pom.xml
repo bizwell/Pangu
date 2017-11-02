@@ -9,8 +9,7 @@
 
 	<artifactId>rabbitmq-support</artifactId>
 	<packaging>jar</packaging>
-
-	<name>RabbitMQ 消息队列支持</name>
+ 	<name>RabbitMQ 消息队列支持</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>

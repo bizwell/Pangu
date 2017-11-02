@@ -9,8 +9,7 @@
 
 	<artifactId>jdbc-sterotype</artifactId>
 	<packaging>jar</packaging>
-
-	<name>与 JDBC 相关的一些模板</name>
+ 	<name>与 JDBC 相关的一些模板</name>
 	<url>http://www.joindata.com</url>
 
 

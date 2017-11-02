@@ -11,7 +11,7 @@
 	<artifactId>kafka-support</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Kafka 消息队列支持</name>
+ 	<name>Kafka 消息队列支持</name>
 	<url>http://www.joindata.com</url>
 
 	<dependencies>

@@ -79,6 +79,7 @@ public class TraceFilter implements Filter {
         span.addToAnnotations(Annotation.create(Times.currentMicros(), TraceConstants.ANNO_SS, Endpoint.create(span.getName(), ServerInfo.IP4, request.getLocalPort())));
         span.setDuration(stopwatch.stop().elapsed(TimeUnit.MICROSECONDS));
         agent.send(TraceContext.getSpans());
+        TraceContext.clear();
         MDC.clear();
     }
 

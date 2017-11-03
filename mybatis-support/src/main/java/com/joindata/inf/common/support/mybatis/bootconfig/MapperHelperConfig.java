@@ -8,6 +8,7 @@ import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.log.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Repository;
 import tk.mybatis.spring.mapper.MapperScannerConfigurer;
 
 import java.util.Properties;
@@ -34,6 +35,8 @@ public class MapperHelperConfig {
         MapperScannerConfigurer scan = new MapperScannerConfigurer();
         scan.setSqlSessionFactoryBeanName("sqlSessionFactory"); // 多数据源时，必须配置
         scan.setBasePackage(ArrayUtil.join(Util.getScanPackage()));// 扫描包
+        scan.setAnnotationClass(Repository.class);
+
         for (Class<?> clz : Util.getExternalMappers()) {
             scan.getMapperHelper().registerMapper(clz);
         }

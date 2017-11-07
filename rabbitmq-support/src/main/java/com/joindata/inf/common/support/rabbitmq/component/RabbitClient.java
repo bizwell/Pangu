@@ -1,28 +1,19 @@
 package com.joindata.inf.common.support.rabbitmq.component;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.joindata.inf.common.basic.entities.Pair;
 import com.joindata.inf.common.basic.exceptions.ResourceException;
 import com.joindata.inf.common.support.rabbitmq.cst.RabbitDefault;
 import com.joindata.inf.common.support.rabbitmq.enums.RabbitFeature;
-import com.joindata.inf.common.util.basic.BeanUtil;
-import com.joindata.inf.common.util.basic.CollectionUtil;
-import com.joindata.inf.common.util.basic.EnumUtil;
-import com.joindata.inf.common.util.basic.JsonUtil;
-import com.joindata.inf.common.util.basic.StringUtil;
+import com.joindata.inf.common.util.basic.*;
 import com.joindata.inf.common.util.log.Logger;
-import com.rabbitmq.client.BuiltinExchangeType;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.MessageProperties;
+import com.rabbitmq.client.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * RabbitMQ 客户端<br />
@@ -31,13 +22,12 @@ import com.rabbitmq.client.MessageProperties;
  * </p>
  * <br />
  * <strong>注意: </strong>本类中提供的简单发送、接收方法的连接均是长连接，一旦创建如果不主动关闭将会一直存在，请依据情况使用
- * 
+ *
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date Apr 11, 2017 3:09:43 PM
  */
 @Component
-public class RabbitClient
-{
+public class RabbitClient {
     private static final Logger log = Logger.get();
 
     private static final Map<String, Connection> ConnMap = CollectionUtil.newMap();
@@ -49,15 +39,14 @@ public class RabbitClient
 
     /**
      * 发送直达消息
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param directExchange 绑定交换机名
-     * @param routingKey 路由键
-     * @param feature 队列设置
+     * @param routingKey     路由键
+     * @param feature        队列设置
      */
-    public void sendDirect(String queue, String content, String directExchange, String routingKey, RabbitFeature... feature)
-    {
+    public void sendDirect(String queue, String content, String directExchange, String routingKey, RabbitFeature... feature) {
         directExchange = directExchange == null ? RabbitDefault.DEFAULT_DIRECT_EXCHANGE : directExchange;
         routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
 
@@ -65,10 +54,8 @@ public class RabbitClient
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
-        try
-        {
-            if(StringUtil.isNotEmpty(directExchange))
-            {
+        try {
+            if (StringUtil.isNotEmpty(directExchange)) {
                 boolean durable = !EnumUtil.hasItem(feature, RabbitFeature.ExchangeTransient);
                 boolean autoDelete = EnumUtil.hasItem(feature, RabbitFeature.ExchangeAutoDelete);
                 boolean internal = EnumUtil.hasItem(feature, RabbitFeature.ExchangeInternal);
@@ -84,11 +71,9 @@ public class RabbitClient
 
                 channel.queueDeclare(queue, durable, exclusive, autoDelete, null);
             }
-
+            channel.queueBind(queue, directExchange, routingKey);
             channel.basicPublish(directExchange, routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, StringUtil.toBytes(content));
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             log.error("发送队列到 {} 的消息出错: {}", queue, e.getMessage(), e);
         }
     }
@@ -96,41 +81,38 @@ public class RabbitClient
     /**
      * 发送直达消息<br />
      * <i>路由键用默认的</i>
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param directExchange 绑定交换机名
-     * @param feature 队列设置
+     * @param feature        队列设置
      */
-    public void sendDirect(String queue, String content, String directExchange, RabbitFeature... feature)
-    {
+    public void sendDirect(String queue, String content, String directExchange, RabbitFeature... feature) {
         sendDirect(queue, content, directExchange, null, feature);
     }
 
     /**
      * 发送直达消息<br />
      * <i>绑定交换机名和路由键用默认的</i>
-     * 
-     * @param queue 队列名
+     *
+     * @param queue   队列名
      * @param content 消息内容
      * @param feature 队列设置
      */
-    public void sendDirect(String queue, String content, RabbitFeature... feature)
-    {
+    public void sendDirect(String queue, String content, RabbitFeature... feature) {
         sendDirect(queue, content, null, null, feature);
     }
 
     /**
      * 发送广播消息
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param fanoutExchange 绑定交换机名
-     * @param routingKey 路由键
-     * @param feature 队列设置
+     * @param routingKey     路由键
+     * @param feature        队列设置
      */
-    public void sendBroadcastBindQueue(String queue, String content, String fanoutExchange, String routingKey, RabbitFeature... feature)
-    {
+    public void sendBroadcastBindQueue(String queue, String content, String fanoutExchange, String routingKey, RabbitFeature... feature) {
         fanoutExchange = fanoutExchange == null ? RabbitDefault.DEFAULT_FANOUT_EXCHANGE : fanoutExchange;
         routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
 
@@ -138,11 +120,9 @@ public class RabbitClient
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
-        try
-        {
+        try {
 
-            if(StringUtil.isNotEmpty(fanoutExchange))
-            {
+            if (StringUtil.isNotEmpty(fanoutExchange)) {
                 boolean durable = !EnumUtil.hasItem(feature, RabbitFeature.ExchangeTransient);
                 boolean autoDelete = EnumUtil.hasItem(feature, RabbitFeature.ExchangeAutoDelete);
                 boolean internal = EnumUtil.hasItem(feature, RabbitFeature.ExchangeInternal);
@@ -159,9 +139,7 @@ public class RabbitClient
             }
 
             channel.basicPublish(fanoutExchange, routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, StringUtil.toBytes(content));
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             log.error("发送广播到 {} 的消息出错: {}", queue, e.getMessage(), e);
         }
     }
@@ -169,14 +147,13 @@ public class RabbitClient
     /**
      * 发送广播消息<br />
      * <strong>不设定绑定队列</strong>
-     * 
-     * @param content 消息内容
+     *
+     * @param content        消息内容
      * @param fanoutExchange 绑定交换机名
-     * @param routingKey 路由键
-     * @param feature 队列设置
+     * @param routingKey     路由键
+     * @param feature        队列设置
      */
-    public void sendBroadcast(String content, String fanoutExchange, String routingKey, RabbitFeature... feature)
-    {
+    public void sendBroadcast(String content, String fanoutExchange, String routingKey, RabbitFeature... feature) {
         fanoutExchange = fanoutExchange == null ? RabbitDefault.DEFAULT_FANOUT_EXCHANGE : fanoutExchange;
         routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
 
@@ -184,11 +161,9 @@ public class RabbitClient
         Pair<Connection, Channel> pair = getChannel(fanoutExchange + "$GLOBAL_BROADCAST");
         Channel channel = pair.getValue();
 
-        try
-        {
+        try {
 
-            if(StringUtil.isNotEmpty(fanoutExchange))
-            {
+            if (StringUtil.isNotEmpty(fanoutExchange)) {
                 boolean durable = !EnumUtil.hasItem(feature, RabbitFeature.ExchangeTransient);
                 boolean autoDelete = EnumUtil.hasItem(feature, RabbitFeature.ExchangeAutoDelete);
                 boolean internal = EnumUtil.hasItem(feature, RabbitFeature.ExchangeInternal);
@@ -197,9 +172,7 @@ public class RabbitClient
             }
 
             channel.basicPublish(fanoutExchange, routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, StringUtil.toBytes(content));
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             log.error("发送广播到交换机 {} 的消息出错: {}", fanoutExchange, e.getMessage(), e);
         }
     }
@@ -207,68 +180,63 @@ public class RabbitClient
     /**
      * 发送广播消息<br />
      * <strong>不绑定队列</strong>， <i>路由键用默认的</i>
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param fanoutExchange 绑定交换机名
-     * @param feature 队列设置
+     * @param feature        队列设置
      */
-    public void sendBroadcast(String content, String fanoutExchange, RabbitFeature... feature)
-    {
+    public void sendBroadcast(String content, String fanoutExchange, RabbitFeature... feature) {
         sendBroadcast(content, fanoutExchange, null, feature);
     }
 
     /**
      * 发送广播消息<br />
      * <strong>不绑定队列</strong>， <i>绑定交换机名和路由键用默认的</i>
-     * 
-     * @param queue 队列名
+     *
+     * @param queue   队列名
      * @param content 消息内容
      * @param feature 队列设置
      */
-    public void sendBroadcast(String content, RabbitFeature... feature)
-    {
+    public void sendBroadcast(String content, RabbitFeature... feature) {
         sendBroadcast(content, null, null, feature);
     }
 
     /**
      * 发送广播消息<br />
      * <i>路由键用默认的</i>
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param fanoutExchange 绑定交换机名
-     * @param feature 队列设置
+     * @param feature        队列设置
      */
-    public void sendBroadcastBindQueue(String queue, String content, String fanoutExchange, RabbitFeature... feature)
-    {
+    public void sendBroadcastBindQueue(String queue, String content, String fanoutExchange, RabbitFeature... feature) {
         sendBroadcastBindQueue(queue, content, fanoutExchange, null, feature);
     }
 
     /**
      * 发送广播消息<br />
      * <i>绑定交换机名和路由键用默认的</i>
-     * 
-     * @param queue 队列名
+     *
+     * @param queue   队列名
      * @param content 消息内容
      * @param feature 队列设置
      */
-    public void sendBroadcastBindQueue(String queue, String content, RabbitFeature... feature)
-    {
+    public void sendBroadcastBindQueue(String queue, String content, RabbitFeature... feature) {
         sendBroadcastBindQueue(queue, content, null, null, feature);
     }
 
     /**
      * 发送主题消息
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue         队列名
+     * @param content       消息内容
      * @param topicExchange 绑定交换机名
-     * @param routingKey 路由键
-     * @param feature 队列设置
+     * @param routingKey    路由键
+     * @param feature       队列设置
      */
-    public void sendTopic(String queue, String content, String topicExchange, String routingKey, RabbitFeature... feature)
-    {
+    public void sendTopic(String queue, String content, String topicExchange, String routingKey, RabbitFeature... feature) {
         topicExchange = topicExchange == null ? RabbitDefault.DEFAULT_TOPIC_EXCHANGE : topicExchange;
         routingKey = routingKey == null ? RabbitDefault.DEFAULT_ROUTING_KEY : routingKey;
 
@@ -276,10 +244,8 @@ public class RabbitClient
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
-        try
-        {
-            if(StringUtil.isNotEmpty(topicExchange))
-            {
+        try {
+            if (StringUtil.isNotEmpty(topicExchange)) {
                 boolean durable = !EnumUtil.hasItem(feature, RabbitFeature.ExchangeTransient);
                 boolean autoDelete = EnumUtil.hasItem(feature, RabbitFeature.ExchangeAutoDelete);
                 boolean internal = EnumUtil.hasItem(feature, RabbitFeature.ExchangeInternal);
@@ -295,9 +261,7 @@ public class RabbitClient
 
             }
             channel.basicPublish(topicExchange, routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, StringUtil.toBytes(content));
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             log.error("发送主题到 {} 的消息出错: {}", queue, e.getMessage(), e);
         }
     }
@@ -305,44 +269,40 @@ public class RabbitClient
     /**
      * 发送主题消息<br />
      * <i>路由键用默认的</i>
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue         队列名
+     * @param content       消息内容
      * @param topicExchange 绑定交换机名
-     * @param feature 队列设置
+     * @param feature       队列设置
      */
-    public void sendTopic(String queue, String content, String topicExchange, RabbitFeature... feature)
-    {
+    public void sendTopic(String queue, String content, String topicExchange, RabbitFeature... feature) {
         sendTopic(queue, content, topicExchange, null, feature);
     }
 
     /**
      * 发送主题消息<br />
      * <i>绑定交换机名和路由键用默认的</i>
-     * 
-     * @param queue 队列名
+     *
+     * @param queue   队列名
      * @param content 消息内容
      * @param feature 队列设置
      */
-    public void sendTopic(String queue, String content, RabbitFeature... feature)
-    {
+    public void sendTopic(String queue, String content, RabbitFeature... feature) {
         sendTopic(queue, content, null, null, feature);
     }
 
     /**
      * 发送直达消息
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param directExchange 绑定交换机名
-     * @param routingKey 路由键
-     * @param feature 队列设置
+     * @param routingKey     路由键
+     * @param feature        队列设置
      */
-    public void sendDirect(String queue, Serializable content, String directExchange, String routingKey, RabbitFeature... feature)
-    {
+    public void sendDirect(String queue, Serializable content, String directExchange, String routingKey, RabbitFeature... feature) {
         // 如果用 JSON，直接算字符串的
-        if(EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization))
-        {
+        if (EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization)) {
             sendDirect(queue, JsonUtil.toJSON(content), directExchange, routingKey, feature);
             return;
         }
@@ -354,10 +314,8 @@ public class RabbitClient
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
-        try
-        {
-            if(StringUtil.isNotEmpty(directExchange))
-            {
+        try {
+            if (StringUtil.isNotEmpty(directExchange)) {
                 boolean durable = !EnumUtil.hasItem(feature, RabbitFeature.ExchangeTransient);
                 boolean autoDelete = EnumUtil.hasItem(feature, RabbitFeature.ExchangeAutoDelete);
                 boolean internal = EnumUtil.hasItem(feature, RabbitFeature.ExchangeInternal);
@@ -375,9 +333,7 @@ public class RabbitClient
             }
 
             channel.basicPublish(directExchange, routingKey, null, BeanUtil.serializeObject(content));
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             log.error("发送队列到 {} 的消息出错: {}", queue, e.getMessage(), e);
         }
     }
@@ -385,44 +341,40 @@ public class RabbitClient
     /**
      * 发送直达消息<br />
      * <i>路由键用默认的</i>
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param directExchange 绑定交换机名
-     * @param feature 队列设置
+     * @param feature        队列设置
      */
-    public void sendDirect(String queue, Serializable content, String directExchange, RabbitFeature... feature)
-    {
+    public void sendDirect(String queue, Serializable content, String directExchange, RabbitFeature... feature) {
         sendDirect(queue, content, directExchange, null, feature);
     }
 
     /**
      * 发送直达消息<br />
      * <i>绑定交换机名和路由键用默认的</i>
-     * 
-     * @param queue 队列名
+     *
+     * @param queue   队列名
      * @param content 消息内容
      * @param feature 队列设置
      */
-    public void sendDirect(String queue, Serializable content, RabbitFeature... feature)
-    {
+    public void sendDirect(String queue, Serializable content, RabbitFeature... feature) {
         sendDirect(queue, content, null, null, feature);
     }
 
     /**
      * 发送广播消息
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param fanoutExchange 绑定交换机名
-     * @param routingKey 路由键
-     * @param feature 队列设置
+     * @param routingKey     路由键
+     * @param feature        队列设置
      */
-    public void sendBroadcastBindQueue(String queue, Serializable content, String fanoutExchange, String routingKey, RabbitFeature... feature)
-    {
+    public void sendBroadcastBindQueue(String queue, Serializable content, String fanoutExchange, String routingKey, RabbitFeature... feature) {
         // 如果用 JSON，直接算字符串的
-        if(EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization))
-        {
+        if (EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization)) {
             sendBroadcastBindQueue(queue, JsonUtil.toJSON(content), fanoutExchange, routingKey, feature);
             return;
         }
@@ -434,11 +386,9 @@ public class RabbitClient
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
-        try
-        {
+        try {
 
-            if(StringUtil.isNotEmpty(fanoutExchange))
-            {
+            if (StringUtil.isNotEmpty(fanoutExchange)) {
                 boolean durable = !EnumUtil.hasItem(feature, RabbitFeature.ExchangeTransient);
                 boolean autoDelete = EnumUtil.hasItem(feature, RabbitFeature.ExchangeAutoDelete);
                 boolean internal = EnumUtil.hasItem(feature, RabbitFeature.ExchangeInternal);
@@ -455,9 +405,7 @@ public class RabbitClient
             }
 
             channel.basicPublish(fanoutExchange, routingKey, null, BeanUtil.serializeObject(content));
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             log.error("发送广播到 {} 的消息出错: {}", queue, e.getMessage(), e);
         }
     }
@@ -465,17 +413,15 @@ public class RabbitClient
     /**
      * 发送广播消息<br />
      * <strong>不绑定队列</strong>
-     * 
-     * @param content 消息内容
+     *
+     * @param content        消息内容
      * @param fanoutExchange 绑定交换机名
-     * @param routingKey 路由键
-     * @param feature 队列设置
+     * @param routingKey     路由键
+     * @param feature        队列设置
      */
-    public void sendBroadcast(Serializable content, String fanoutExchange, String routingKey, RabbitFeature... feature)
-    {
+    public void sendBroadcast(Serializable content, String fanoutExchange, String routingKey, RabbitFeature... feature) {
         // 如果用 JSON，直接算字符串的
-        if(EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization))
-        {
+        if (EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization)) {
             sendBroadcast(JsonUtil.toJSON(content), fanoutExchange, routingKey, feature);
             return;
         }
@@ -487,11 +433,9 @@ public class RabbitClient
         Pair<Connection, Channel> pair = getChannel(fanoutExchange + "$GLOBAL_BROADCAST");
         Channel channel = pair.getValue();
 
-        try
-        {
+        try {
 
-            if(StringUtil.isNotEmpty(fanoutExchange))
-            {
+            if (StringUtil.isNotEmpty(fanoutExchange)) {
                 boolean durable = !EnumUtil.hasItem(feature, RabbitFeature.ExchangeTransient);
                 boolean autoDelete = EnumUtil.hasItem(feature, RabbitFeature.ExchangeAutoDelete);
                 boolean internal = EnumUtil.hasItem(feature, RabbitFeature.ExchangeInternal);
@@ -500,9 +444,7 @@ public class RabbitClient
             }
 
             channel.basicPublish(fanoutExchange, routingKey, null, BeanUtil.serializeObject(content));
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             log.error("发送广播到交换机 {} 的消息出错: {}", fanoutExchange, e.getMessage(), e);
         }
     }
@@ -510,71 +452,65 @@ public class RabbitClient
     /**
      * 发送广播消息<br />
      * <i>路由键用默认的</i>
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param fanoutExchange 绑定交换机名
-     * @param feature 队列设置
+     * @param feature        队列设置
      */
-    public void sendBroadcastBindQueue(String queue, Serializable content, String fanoutExchange, RabbitFeature... feature)
-    {
+    public void sendBroadcastBindQueue(String queue, Serializable content, String fanoutExchange, RabbitFeature... feature) {
         sendBroadcastBindQueue(queue, content, fanoutExchange, null, feature);
     }
 
     /**
      * 发送广播消息<br />
      * <i>绑定交换机名和路由键用默认的</i>
-     * 
-     * @param queue 队列名
+     *
+     * @param queue   队列名
      * @param content 消息内容
      * @param feature 队列设置
      */
-    public void sendBroadcastBindQueue(String queue, Serializable content, RabbitFeature... feature)
-    {
+    public void sendBroadcastBindQueue(String queue, Serializable content, RabbitFeature... feature) {
         sendBroadcastBindQueue(queue, content, null, null, feature);
     }
 
     /**
      * 发送广播消息<br />
      * <strong>不绑定队列，</strong> <i>路由键用默认的</i>
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue          队列名
+     * @param content        消息内容
      * @param fanoutExchange 绑定交换机名
-     * @param feature 队列设置
+     * @param feature        队列设置
      */
-    public void sendBroadcast(Serializable content, String fanoutExchange, RabbitFeature... feature)
-    {
+    public void sendBroadcast(Serializable content, String fanoutExchange, RabbitFeature... feature) {
         sendBroadcast(content, fanoutExchange, null, feature);
     }
 
     /**
      * 发送广播消息<br />
      * <strong>不绑定队列，</strong> <i>绑定交换机名和路由键用默认的</i>
-     * 
-     * @param queue 队列名
+     *
+     * @param queue   队列名
      * @param content 消息内容
      * @param feature 队列设置
      */
-    public void sendBroadcast(Serializable content, RabbitFeature... feature)
-    {
+    public void sendBroadcast(Serializable content, RabbitFeature... feature) {
         sendBroadcast(content, null, null, feature);
     }
 
     /**
      * 发送主题消息
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue         队列名
+     * @param content       消息内容
      * @param topicExchange 绑定交换机名
-     * @param routingKey 路由键
-     * @param feature 队列设置
+     * @param routingKey    路由键
+     * @param feature       队列设置
      */
-    public void sendTopic(String queue, Serializable content, String topicExchange, String routingKey, RabbitFeature... feature)
-    {
+    public void sendTopic(String queue, Serializable content, String topicExchange, String routingKey, RabbitFeature... feature) {
         // 如果用 JSON，直接算字符串的
-        if(EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization))
-        {
+        if (EnumUtil.hasItem(feature, RabbitFeature.JsonSerialization)) {
             sendTopic(queue, JsonUtil.toJSON(content), topicExchange, routingKey, feature);
             return;
         }
@@ -586,10 +522,8 @@ public class RabbitClient
         Pair<Connection, Channel> pair = getChannel(queue);
         Channel channel = pair.getValue();
 
-        try
-        {
-            if(StringUtil.isNotEmpty(topicExchange))
-            {
+        try {
+            if (StringUtil.isNotEmpty(topicExchange)) {
                 boolean durable = !EnumUtil.hasItem(feature, RabbitFeature.ExchangeTransient);
                 boolean autoDelete = EnumUtil.hasItem(feature, RabbitFeature.ExchangeAutoDelete);
                 boolean internal = EnumUtil.hasItem(feature, RabbitFeature.ExchangeInternal);
@@ -605,9 +539,7 @@ public class RabbitClient
 
             }
             channel.basicPublish(topicExchange, routingKey, null, BeanUtil.serializeObject(content));
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             log.error("发送主题到 {} 的消息出错: {}", queue, e.getMessage(), e);
         }
     }
@@ -615,66 +547,55 @@ public class RabbitClient
     /**
      * 发送主题消息<br />
      * <i>路由键用默认的</i>
-     * 
-     * @param queue 队列名
-     * @param content 消息内容
+     *
+     * @param queue         队列名
+     * @param content       消息内容
      * @param topicExchange 绑定交换机名
-     * @param feature 队列设置
+     * @param feature       队列设置
      */
-    public void sendTopic(String queue, Serializable content, String topicExchange, RabbitFeature... feature)
-    {
+    public void sendTopic(String queue, Serializable content, String topicExchange, RabbitFeature... feature) {
         sendTopic(queue, content, topicExchange, null, feature);
     }
 
     /**
      * 发送主题消息<br />
      * <i>绑定交换机名和路由键用默认的</i>
-     * 
-     * @param queue 队列名
+     *
+     * @param queue   队列名
      * @param content 消息内容
      * @param feature 队列设置
      */
-    public void sendTopic(String queue, Serializable content, RabbitFeature... feature)
-    {
+    public void sendTopic(String queue, Serializable content, RabbitFeature... feature) {
         sendTopic(queue, content, null, null, feature);
     }
 
     /**
      * 获取通道<br />
      * <i>如果被关闭或尚未创建，会尝试创建</i>
-     * 
+     *
      * @param queue 该连接所属队列
      * @return 该队列所属通道
      */
     @SuppressWarnings("unchecked")
-    public Pair<Connection, Channel> getChannel(String queue)
-    {
+    public Pair<Connection, Channel> getChannel(String queue) {
         Connection conn = getConnection(queue);
-        if(!ChannelMap.containsKey(conn) || ChannelMap.get(conn) == null)
-        {
-            try
-            {
+        if (!ChannelMap.containsKey(conn) || ChannelMap.get(conn) == null) {
+            try {
                 log.info("创建队列 {} 的通道", queue);
                 ChannelMap.put(conn, conn.createChannel());
-            }
-            catch(IOException e)
-            {
+            } catch (IOException e) {
                 log.error("创建队列 {} 的通道出错: {}", queue, e.getMessage(), e);
             }
         }
 
         Channel channel = ChannelMap.get(conn);
-        if(!channel.isOpen())
-        {
+        if (!channel.isOpen()) {
             log.debug("队列 {} 的通道已经被关闭, 原因: {}", queue, channel.getCloseReason().getMessage());
 
-            try
-            {
+            try {
                 log.debug("重新创建队列 {} 的通道", queue);
                 ChannelMap.put(conn, conn.createChannel());
-            }
-            catch(IOException e)
-            {
+            } catch (IOException e) {
                 log.error("重新创建队列 {} 的通道出错: {}", queue, e.getMessage(), e);
                 throw new ResourceException("无法取到 MQ 通道");
             }
@@ -686,38 +607,29 @@ public class RabbitClient
     /**
      * 获取连接<br />
      * <i>如果被关闭或尚未创建，会尝试创建</i>
-     * 
+     *
      * @param queue 该连接所属队列
      * @return 该队列所属连接
      */
-    public Connection getConnection(String queue)
-    {
+    public Connection getConnection(String queue) {
         // 如果连接不存，创建连接
-        if(!ConnMap.containsKey(queue) || ConnMap.get(queue) == null)
-        {
-            try
-            {
+        if (!ConnMap.containsKey(queue) || ConnMap.get(queue) == null) {
+            try {
                 log.info("创建队列 {} 的连接", queue);
                 ConnMap.put(queue, connectionFactory.newConnection());
-            }
-            catch(IOException | TimeoutException e)
-            {
+            } catch (IOException | TimeoutException e) {
                 log.error("创建队列 {} 的连接出错: {}", queue, e.getMessage(), e);
             }
         }
 
         Connection conn = ConnMap.get(queue);
-        if(!conn.isOpen())
-        {
+        if (!conn.isOpen()) {
             log.debug("队列 {} 的连接已经被关闭, 原因: {}", queue, conn.getCloseReason().getMessage());
 
-            try
-            {
+            try {
                 log.debug("重新创建队列 {} 的连接", queue);
                 ConnMap.put(queue, connectionFactory.newConnection());
-            }
-            catch(IOException | TimeoutException e)
-            {
+            } catch (IOException | TimeoutException e) {
                 log.error("重新创建队列 {} 的连接出错: {}", queue, e.getMessage(), e);
                 throw new ResourceException("无法取到 MQ 连接");
             }

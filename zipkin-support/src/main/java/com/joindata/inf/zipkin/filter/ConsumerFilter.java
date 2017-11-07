@@ -7,7 +7,6 @@ import com.alibaba.dubbo.rpc.*;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
-import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.util.basic.JsonUtil;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.cst.TraceConstants;

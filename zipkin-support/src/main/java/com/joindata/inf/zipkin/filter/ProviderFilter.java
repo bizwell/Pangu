@@ -11,7 +11,6 @@ import com.joindata.inf.zipkin.cst.TraceConstants;
 import com.joindata.inf.zipkin.properties.ZipkinProperties;
 import org.slf4j.MDC;
 
-import javax.annotation.Resource;
 import java.util.Map;
 
 /**

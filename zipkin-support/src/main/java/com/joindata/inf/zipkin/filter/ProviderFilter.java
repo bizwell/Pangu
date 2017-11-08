@@ -5,6 +5,7 @@ import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.config.spring.ServiceBean;
 import com.alibaba.dubbo.rpc.*;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
+import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.agent.TraceAgent;
 import com.joindata.inf.zipkin.cst.TraceConstants;
@@ -29,6 +30,7 @@ public class ProviderFilter implements Filter {
         }
         startTrace(attaches);
         Result result = invoker.invoke(invocation);
+        result.getAttachments().put(TraceConstants.APP_ID, BootInfoHolder.getAppId());
         endTrace();
         return result;
     }

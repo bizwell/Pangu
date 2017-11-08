@@ -48,4 +48,6 @@ public interface TraceConstants {
 
     String ARGS = "参数";
 
+    String APP_ID = "appId";
+
 }

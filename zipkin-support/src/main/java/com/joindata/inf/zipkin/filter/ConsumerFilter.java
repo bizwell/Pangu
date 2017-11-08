@@ -34,25 +34,30 @@ public class ConsumerFilter implements Filter {
             return invoker.invoke(invocation);
         }
         Stopwatch stopwatch = Stopwatch.createStarted();
-        Span consumerSpan = startTrace(invoker, invocation);
+        long csTimestamp = Times.currentMicros();
+        Span consumerSpan = startTrace(invoker, invocation, csTimestamp);
+
         Result result = invoker.invoke(invocation);
+        String serviceName = new StringBuilder().append(result.getAttachment(TraceConstants.APP_ID)).append(".").append(invoker.getInterface().getSimpleName()).append(".").append(invocation.getMethodName()).toString();
+        consumerSpan.setName(serviceName);
+        consumerSpan.addToAnnotations(Annotation.create(csTimestamp, TraceConstants.ANNO_CS, Endpoint.create(serviceName, Networks.ip2Num(invoker.getUrl().getHost()), invoker.getUrl().getPort())));
+
         RpcResult rpcResult = (RpcResult) result;
+
         endTrace(invoker, rpcResult, consumerSpan, stopwatch);
         return rpcResult;
     }
 
-    private Span startTrace(Invoker<?> invoker, Invocation invocation) {
+
+    private Span startTrace(Invoker<?> invoker, Invocation invocation, long csTimestamp) {
         //consumer span data
         Span consumerSpan = new Span();
         consumerSpan.setId(Ids.get());
         consumerSpan.setTrace_id(TraceContext.getTraceId());
         consumerSpan.setParent_id(TraceContext.getSpanId());
-        String serviceName = invoker.getInterface().getSimpleName() + "." + invocation.getMethodName();
-        consumerSpan.setName(serviceName);
-        long timestamp = Times.currentMicros();
-        consumerSpan.setTimestamp(timestamp);
-        URL provider = invoker.getUrl();
-        consumerSpan.addToAnnotations(Annotation.create(timestamp, TraceConstants.ANNO_CS, Endpoint.create(serviceName, Networks.ip2Num(provider.getHost()), provider.getPort())));
+
+        consumerSpan.setTimestamp(csTimestamp);
+
         consumerSpan.addToBinary_annotations(BinaryAnnotation.create(TraceConstants.ARGS, JsonUtil.toJSON(invocation.getArguments()), null));
         Map<String, String> attches = invocation.getAttachments();
         attches.put(TraceConstants.TRACE_ID, String.valueOf(consumerSpan.getTrace_id()));

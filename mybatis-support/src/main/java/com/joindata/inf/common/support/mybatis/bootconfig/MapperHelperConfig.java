@@ -8,6 +8,7 @@ import com.joindata.inf.common.util.basic.ArrayUtil;
 import com.joindata.inf.common.util.log.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Repository;
 import tk.mybatis.spring.mapper.MapperScannerConfigurer;
 
 import java.util.Properties;
@@ -37,6 +38,7 @@ public class MapperHelperConfig {
         for (Class<?> clz : Util.getExternalMappers()) {
             scan.getMapperHelper().registerMapper(clz);
         }
+        scan.setAnnotationClass(Repository.class);
         scan.getMapperHelper().registerMapper(BaseMapper.class);
         scan.setProperties(properties);
 

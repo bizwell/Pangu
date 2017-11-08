@@ -79,15 +79,16 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
     @Override
     public ResponseEntity handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.warn(ex.toString(), ex);
-        return ResponseEntity.ok(new Message("S" + status.value()));
+        Message message = handleMessage("S" + status.value());
+        return ResponseEntity.ok(message);
     }
 
 
-    private Message handleMessage(String errorCode) throws IOException {
+    private Message handleMessage(String errorCode) {
         return handleMessage(errorCode, null);
     }
 
-    private Message handleMessage(String errorCode, Object... params) throws IOException {
+    private Message handleMessage(String errorCode, Object... params) {
         /**
          * 获取国际化参数
          */
@@ -110,7 +111,11 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
         boolean canRedirect = "GET".equalsIgnoreCase(method) || "POST".equalsIgnoreCase(method);
         boolean isAjaxRequest = "XMLHttpRequest".equalsIgnoreCase(httpServletRequest.getHeader("X-Requested-With"));
         if (!isAjaxRequest && canRedirect && StringUtils.isNotBlank(url)) {
-            httpServletResponse.sendRedirect(url.concat("?code=").concat(errorCode));
+            try {
+                httpServletResponse.sendRedirect(url.concat("?code=").concat(errorCode));
+            } catch (Exception ex) {
+                log.error("error:{}", ex.getMessage());
+            }
             return null;
         }
         return new Message(errorCode, errorMessage);

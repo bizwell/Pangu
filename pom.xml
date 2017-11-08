@@ -11,13 +11,13 @@
 	<groupId>com.joindata.inf.common</groupId>
 	<artifactId>root</artifactId>
 	<packaging>pom</packaging>
-	<version>1.2.7-SNAPSHOT</version>
+	<version>1.2.7</version>
 
 	<name>公共组件</name>
 	<url>http://www.joindata.com</url>
 
 	<properties>
-		<pangu.version>1.2.7-SNAPSHOT</pangu.version>
+		<pangu.version>1.2.7</pangu.version>
 		<java.version>1.8</java.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<spring-security.version>4.2.0.RELEASE</spring-security.version>
@@ -79,7 +79,7 @@
 		<zookeeper.version>3.4.9</zookeeper.version>
 		<zkclient.version>0.10</zkclient.version>
 		<curator.version>2.11.1</curator.version>
-		<dubbo.version>2.8.4.bwy</dubbo.version>
+		<dubbo.version>2.8.4.bwy.1</dubbo.version>
 		<elasticjob.version>2.0.3</elasticjob.version>
 		<gson.version>2.8.0</gson.version>
 		<kafka.version>0.10.1.1</kafka.version>

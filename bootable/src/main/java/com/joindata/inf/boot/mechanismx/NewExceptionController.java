@@ -167,8 +167,5 @@ public class NewExceptionController extends ResponseEntityExceptionHandler {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.print("".split(";")[0] + "+++++");
-    }
-}
+ }
 

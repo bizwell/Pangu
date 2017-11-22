@@ -40,6 +40,7 @@ public class MapperHelperConfig {
         for (Class<?> clz : Util.getExternalMappers()) {
             scan.getMapperHelper().registerMapper(clz);
         }
+        scan.setAnnotationClass(Repository.class);
         scan.getMapperHelper().registerMapper(BaseMapper.class);
         scan.setProperties(properties);
 

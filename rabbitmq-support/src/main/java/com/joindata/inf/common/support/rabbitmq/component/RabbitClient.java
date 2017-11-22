@@ -332,6 +332,7 @@ public class RabbitClient {
                 channel.queueDeclare(queue, durable, exclusive, autoDelete, null);
             }
 
+            channel.queueBind(queue, directExchange, routingKey);
             channel.basicPublish(directExchange, routingKey, null, BeanUtil.serializeObject(content));
         } catch (IOException e) {
             log.error("发送队列到 {} 的消息出错: {}", queue, e.getMessage(), e);

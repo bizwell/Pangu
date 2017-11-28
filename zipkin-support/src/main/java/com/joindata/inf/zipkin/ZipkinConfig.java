@@ -32,8 +32,8 @@ public class ZipkinConfig {
                 KafkaSpanCollector.Config.builder("10.10.110.48:9092,10.10.110.49:9092,10.10.110.50:9092")
                         .flushInterval(0)
                         .build();
-//        return new TraceAgent(HttpSpanCollector.create(zipkinProperties.getServer(), config, metrics));
-        return new TraceAgent(KafkaSpanCollector.create(kafkaConfig, metrics));
+        return new TraceAgent(HttpSpanCollector.create(zipkinProperties.getServer(), httpConfig, metrics));
+//        return new TraceAgent(KafkaSpanCollector.create(kafkaConfig, metrics));
     }
 
 }

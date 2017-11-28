@@ -1,9 +1,5 @@
 package com.joindata.inf.zipkin.cst;
 
-/**
- * Author: haolin
- * Email:  haolin.h0@gmail.com
- */
 public interface TraceConstants {
 
     /**

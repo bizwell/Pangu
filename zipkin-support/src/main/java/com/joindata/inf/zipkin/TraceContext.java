@@ -5,10 +5,6 @@ import com.twitter.zipkin.gen.Span;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Author: haolin
- * Email:  haolin.h0@gmail.com
- */
 public class TraceContext {
 
     /**

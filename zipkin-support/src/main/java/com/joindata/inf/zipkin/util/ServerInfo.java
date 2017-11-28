@@ -2,10 +2,6 @@ package com.joindata.inf.zipkin.util;
 
 import java.lang.management.ManagementFactory;
 
-/**
- * Author: haolin
- * Email:  haolin.h0@gmail.com
- */
 public class ServerInfo {
 
     public static final int IP4 = Networks.ip2Num(Networks.getSiteIp());

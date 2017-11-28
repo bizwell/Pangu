@@ -3,10 +3,6 @@ package com.joindata.inf.zipkin.util;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Author: haolin
- * Email:  haolin.h0@gmail.com
- */
 public class Ids {
 
     public static final int TOTAL_BITS_LENGTH = 63;

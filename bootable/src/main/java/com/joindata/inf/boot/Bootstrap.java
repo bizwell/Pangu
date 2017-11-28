@@ -13,6 +13,7 @@ import javax.servlet.Servlet;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
 
+import com.joindata.inf.zipkin.filter.TraceFilter;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -412,6 +413,7 @@ public class Bootstrap
                 {
                     Set<Class<?>> filterClasses = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), FilterComponent.class);
                     filterClasses.add(RequestLogFilter.class);
+                    filterClasses.add(TraceFilter.class);
                     {
                         for(Class<?> clz: filterClasses)
                         {

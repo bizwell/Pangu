@@ -38,11 +38,6 @@ public class TraceFilter implements Filter {
     @Resource
     private TraceAgent agent;
 
-//    public TraceFilter(DubboProperties dubboProperties, TraceAgent agent) {
-//        this.dubboProperties = dubboProperties;
-//        this.agent = agent;
-//    }
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
 

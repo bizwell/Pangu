@@ -1,6 +1,7 @@
 package com.joindata.inf.zipkin.filter;
 
 import com.google.common.base.Stopwatch;
+import com.joindata.inf.common.basic.annotation.FilterComponent;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
 import com.joindata.inf.common.support.dubbo.properties.DubboProperties;
@@ -15,7 +16,9 @@ import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -25,16 +28,20 @@ import java.util.concurrent.TimeUnit;
  * 过滤器，创建请求的唯一ID
  * Created by Rayee on 2017/10/23.
  */
+@Component
+@FilterComponent(path = "/*")
 public class TraceFilter implements Filter {
 
+    @Resource
     private DubboProperties dubboProperties;
 
+    @Resource
     private TraceAgent agent;
 
-    public TraceFilter(DubboProperties dubboProperties, TraceAgent agent) {
-        this.dubboProperties = dubboProperties;
-        this.agent = agent;
-    }
+//    public TraceFilter(DubboProperties dubboProperties, TraceAgent agent) {
+//        this.dubboProperties = dubboProperties;
+//        this.agent = agent;
+//    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}

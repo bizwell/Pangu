@@ -12,6 +12,7 @@ import com.joindata.inf.zipkin.cst.TraceConstants;
 import com.joindata.inf.zipkin.properties.ZipkinProperties;
 import org.slf4j.MDC;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -20,7 +21,8 @@ import java.util.Map;
 @Activate(group = {Constants.PROVIDER})
 public class ProviderFilter implements Filter {
 
-    private TraceAgent agent = new TraceAgent(ServiceBean.getSpringContext().getBean(ZipkinProperties.class).getServer());
+    @Resource
+    private TraceAgent agent;
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {

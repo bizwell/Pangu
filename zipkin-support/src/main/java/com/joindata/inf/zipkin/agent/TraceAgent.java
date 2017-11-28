@@ -1,11 +1,7 @@
 package com.joindata.inf.zipkin.agent;
 
 import com.github.kristofa.brave.AbstractSpanCollector;
-import com.github.kristofa.brave.SpanCollectorMetricsHandler;
-import com.joindata.inf.zipkin.SimpleMetricsHandler;
-import com.joindata.inf.zipkin.collector.HttpSpanCollector;
 import com.twitter.zipkin.gen.Span;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

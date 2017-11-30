@@ -1,10 +1,12 @@
-package com.joindata.inf.zipkin;
+package com.joindata.inf.zipkin.agent;
 
 import com.github.kristofa.brave.SpanCollectorMetricsHandler;
-import com.joindata.inf.zipkin.agent.TraceAgent;
+import com.google.common.collect.Lists;
+import com.joindata.inf.zipkin.SimpleMetricsHandler;
 import com.joindata.inf.zipkin.collector.HttpSpanCollector;
 import com.joindata.inf.zipkin.collector.KafkaSpanCollector;
 import com.joindata.inf.zipkin.properties.ZipkinProperties;
+import com.twitter.zipkin.gen.Span;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,7 +16,7 @@ import javax.annotation.Resource;
  * Created by Rayee on 2017/10/26.
  */
 @Configuration
-public class ZipkinConfig {
+public class AgentBeanFactory {
 
     @Resource
     private ZipkinProperties zipkinProperties;
@@ -29,11 +31,23 @@ public class ZipkinConfig {
                         .flushInterval(0)
                         .build();
         KafkaSpanCollector.Config kafkaConfig =
-                KafkaSpanCollector.Config.builder("10.10.110.48:9092,10.10.110.49:9092,10.10.110.50:9092")
+                KafkaSpanCollector.Config.builder("10.15.115.61:9092")
                         .flushInterval(0)
                         .build();
-        return new TraceAgent(HttpSpanCollector.create(zipkinProperties.getServer(), httpConfig, metrics));
-//        return new TraceAgent(KafkaSpanCollector.create(kafkaConfig, metrics));
+//        return new TraceAgent(HttpSpanCollector.create(zipkinProperties.getServer(), httpConfig, metrics));
+        return new TraceAgent(KafkaSpanCollector.create(kafkaConfig, metrics));
+    }
+
+    public static void main(String[] args) {
+        SpanCollectorMetricsHandler metrics = new SimpleMetricsHandler();
+        KafkaSpanCollector.Config kafkaConfig =
+            KafkaSpanCollector.Config.builder("10.15.115.61:9091")
+                    .flushInterval(0)
+                    .build();
+        TraceAgent agent = new TraceAgent(KafkaSpanCollector.create(kafkaConfig, metrics));
+        Span span = new Span();
+        span.setId(1000l);
+        agent.send(Lists.newArrayList(span));
     }
 
 }

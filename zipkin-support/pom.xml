@@ -42,6 +42,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
+            <version>0.8.2.2</version>
         </dependency>
 
         <dependency>

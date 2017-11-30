@@ -102,7 +102,8 @@
 		<reflections.version>1.9.11</reflections.version>
 		<tkmapper.version>3.4.2</tkmapper.version>
 		<jpa.version>1.0</jpa.version>
-		<brave.version>4.9.1</brave.version>
+		<brave.version>4.10.1</brave.version>
+		<!--<brave.version>3.11.1</brave.version>-->
 		<yml.version>1.11</yml.version>
 		<auto.value.version>1.1</auto.value.version>
 	</properties>

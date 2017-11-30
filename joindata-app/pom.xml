@@ -157,12 +157,6 @@
 				<version>${pangu.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>com.joindata.inf.common</groupId>
-				<artifactId>zipkin-support</artifactId>
-				<version>${pangu.version}</version>
-			</dependency>
-			
 		</dependencies>
 	</dependencyManagement>
 

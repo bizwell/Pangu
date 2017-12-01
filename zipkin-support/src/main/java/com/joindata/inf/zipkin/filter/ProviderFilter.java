@@ -2,15 +2,18 @@ package com.joindata.inf.zipkin.filter;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.config.spring.ServiceBean;
 import com.alibaba.dubbo.rpc.*;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
+import com.joindata.inf.zipkin.SimpleMetricsHandler;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.agent.TraceAgent;
+import com.joindata.inf.zipkin.collector.KafkaSpanCollector;
 import com.joindata.inf.zipkin.cst.TraceConstants;
+import com.joindata.inf.zipkin.properties.ZipkinProperties;
 import org.slf4j.MDC;
 
-import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -19,8 +22,11 @@ import java.util.Map;
 @Activate(group = {Constants.PROVIDER})
 public class ProviderFilter implements Filter {
 
-    @Resource
-    private TraceAgent agent;
+    private TraceAgent agent = new TraceAgent(
+            KafkaSpanCollector.create(
+                    KafkaSpanCollector.Config.builder(ServiceBean.getSpringContext().getBean(ZipkinProperties.class).getKafkaServer())
+                    .flushInterval(0)
+                    .build(), new SimpleMetricsHandler()));
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {

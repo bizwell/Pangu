@@ -5,9 +5,12 @@ import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.*;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
+import com.joindata.inf.common.util.basic.CodecUtil;
 import com.joindata.inf.common.util.basic.JsonUtil;
 import com.joindata.inf.zipkin.TraceContext;
+import com.joindata.inf.zipkin.anno.Hide;
 import com.joindata.inf.zipkin.cst.TraceConstants;
 import com.joindata.inf.zipkin.util.Ids;
 import com.joindata.inf.zipkin.util.Networks;
@@ -18,6 +21,10 @@ import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import org.slf4j.MDC;
 
+import java.lang.reflect.Method;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -57,7 +64,7 @@ public class ConsumerFilter implements Filter {
 
         consumerSpan.setTimestamp(csTimestamp);
 
-        consumerSpan.addToBinary_annotations(BinaryAnnotation.create(TraceConstants.ARGS, JsonUtil.toJSON(invocation.getArguments()), null));
+        consumerSpan.addToBinary_annotations(BinaryAnnotation.create(TraceConstants.ARGS, hide(invocation), null));
         Map<String, String> attches = invocation.getAttachments();
         attches.put(TraceConstants.TRACE_ID, String.valueOf(consumerSpan.getTrace_id()));
         attches.put(TraceConstants.SPAN_ID, String.valueOf(consumerSpan.getId()));
@@ -78,5 +85,32 @@ public class ConsumerFilter implements Filter {
         }
         // collect the span
         TraceContext.addSpan(consumerSpan);
+    }
+
+    static String hide(Invocation invocation) {
+        List<String> args = Lists.newArrayList();
+        List<Class<?>> classes = Lists.newArrayList(invocation.getParameterTypes());
+        Object[] arguments = invocation.getArguments();
+        Method method;
+        try {
+            method = invocation.getInvoker().getInterface().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+        if (classes.size() != 0) {
+            for (int i = 0; i < classes.size(); i++) {
+                Hide hide = method.getParameters()[i].getAnnotation(Hide.class);
+                if (hide == null) {
+                    args.add(JsonUtil.toJSON(arguments[i]));
+                } else {
+                    try {
+                        args.add(CodecUtil.decryptDES(JsonUtil.toJSON(arguments[i]), TraceConstants.DES_KEY));
+                    } catch (GeneralSecurityException e) {
+                        args.add(TraceConstants.DEFAULT_ENCODE_PARAM);
+                    }
+                }
+            }
+        }
+        return JsonUtil.toJSON(args);
     }
 }

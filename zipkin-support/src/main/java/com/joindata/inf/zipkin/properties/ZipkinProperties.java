@@ -14,16 +14,17 @@ import org.springframework.stereotype.Service;
 public class ZipkinProperties {
 
     /**
-     * zipkin host
+     * kafka host
      */
-    private String server;
+    private String kafkaServer;
 
-    @DisconfFileItem(name = "server", associateField = "server")
-    public String getServer() {
-        return server;
+    @DisconfFileItem(name = "kafkaServer", associateField = "kafkaServer")
+
+    public String getKafkaServer() {
+        return kafkaServer;
     }
 
-    public void setServer(String server) {
-        this.server = server;
+    public void setKafkaServer(String kafkaServer) {
+        this.kafkaServer = kafkaServer;
     }
 }

@@ -16,6 +16,7 @@ import java.util.zip.GZIPOutputStream;
 /**
  * SpanCollector which submits spans to Zipkin, using its {@code POST /spans} endpoint.
  */
+@SuppressWarnings(value = "deprecation")
 public final class HttpSpanCollector extends AbstractSpanCollector {
 
   @AutoValue

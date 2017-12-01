@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@SuppressWarnings(value = "deprecation")
 public class TraceAgent {
 
     private AbstractSpanCollector collector;

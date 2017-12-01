@@ -21,6 +21,7 @@ public class AgentBeanFactory {
     @Resource
     private ZipkinProperties zipkinProperties;
 
+    @SuppressWarnings(value = "deprecation")
     @Bean(name = "traceAgent")
     public TraceAgent initTraceAgent() {
         SpanCollectorMetricsHandler metrics = new SimpleMetricsHandler();
@@ -31,23 +32,11 @@ public class AgentBeanFactory {
                         .flushInterval(0)
                         .build();
         KafkaSpanCollector.Config kafkaConfig =
-                KafkaSpanCollector.Config.builder("10.15.115.61:9092")
+                KafkaSpanCollector.Config.builder(zipkinProperties.getKafkaServer())
                         .flushInterval(0)
                         .build();
 //        return new TraceAgent(HttpSpanCollector.create(zipkinProperties.getServer(), httpConfig, metrics));
         return new TraceAgent(KafkaSpanCollector.create(kafkaConfig, metrics));
-    }
-
-    public static void main(String[] args) {
-        SpanCollectorMetricsHandler metrics = new SimpleMetricsHandler();
-        KafkaSpanCollector.Config kafkaConfig =
-            KafkaSpanCollector.Config.builder("10.15.115.61:9091")
-                    .flushInterval(0)
-                    .build();
-        TraceAgent agent = new TraceAgent(KafkaSpanCollector.create(kafkaConfig, metrics));
-        Span span = new Span();
-        span.setId(1000l);
-        agent.send(Lists.newArrayList(span));
     }
 
 }

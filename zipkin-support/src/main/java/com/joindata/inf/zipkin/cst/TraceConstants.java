@@ -46,7 +46,7 @@ public interface TraceConstants {
 
     String APP_ID = "appId";
 
-    String DES_KEY = "1qaz@WSX";
+    String DES_KEY = "imfather";
 
     String DEFAULT_ENCODE_PARAM = "******";
 }

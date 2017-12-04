@@ -4,7 +4,6 @@ import com.google.common.base.Stopwatch;
 import com.joindata.inf.common.basic.annotation.FilterComponent;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
-import com.joindata.inf.common.support.dubbo.properties.DubboProperties;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.agent.TraceAgent;
 import com.joindata.inf.zipkin.cst.TraceConstants;
@@ -31,9 +30,6 @@ import java.util.concurrent.TimeUnit;
 @Component
 @FilterComponent(path = "/*")
 public class TraceFilter implements Filter {
-
-    @Resource
-    private DubboProperties dubboProperties;
 
     @Resource
     private TraceAgent agent;
@@ -70,7 +66,6 @@ public class TraceFilter implements Filter {
         apiSpan.setTimestamp(timestamp);
         apiSpan.addToAnnotations(Annotation.create(timestamp, TraceConstants.ANNO_SR, Endpoint.create(apiName, ServerInfo.IP4, request.getLocalPort())));
         apiSpan.addToBinary_annotations(BinaryAnnotation.create("name", BootInfoHolder.getAppId(), null));
-        apiSpan.addToBinary_annotations(BinaryAnnotation.create("owner", dubboProperties.getAppOwner(), null));
         //日志显示traceId信息
         MDC.clear();
         MDC.put(RequestLogCst.REQUEST_ID, Long.toHexString(id));

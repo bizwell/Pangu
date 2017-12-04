@@ -13,6 +13,7 @@ import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.anno.Hide;
 import com.joindata.inf.zipkin.cst.TraceConstants;
 import com.joindata.inf.zipkin.util.Ids;
+import com.joindata.inf.zipkin.util.JsonUtils;
 import com.joindata.inf.zipkin.util.Networks;
 import com.joindata.inf.zipkin.util.Times;
 import com.twitter.zipkin.gen.Annotation;
@@ -104,7 +105,7 @@ public class ConsumerFilter implements Filter {
                     args.add(JsonUtil.toJSON(arguments[i]));
                 } else {
                     try {
-                        args.add(CodecUtil.decryptDES(JsonUtil.toJSON(arguments[i]), TraceConstants.DES_KEY));
+                        args.add(CodecUtil.encryptDES(JsonUtils.toJson(arguments[i]), TraceConstants.DES_KEY) + "（加密）");
                     } catch (GeneralSecurityException e) {
                         args.add(TraceConstants.DEFAULT_ENCODE_PARAM);
                     }

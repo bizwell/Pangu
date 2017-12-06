@@ -29,9 +29,9 @@ public class TopicMessageListenerHandler extends AbstractMessageListenerHandler
 {
     private static final Logger log = Logger.get();
 
-    public TopicMessageListenerHandler(ConnectionFactory connectionFactory, Map<String, MessageListener<Serializable>> listenerMap)
+    public TopicMessageListenerHandler(ConnectionFactory connectionFactory, Map<String, MessageListener<Serializable>> listenerMap, String kafkaServer)
     {
-        super(connectionFactory, listenerMap);
+        super(connectionFactory, listenerMap, kafkaServer);
     }
 
     @Override

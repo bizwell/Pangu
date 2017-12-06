@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * ------------------------------------------------------------
  * 最后生成结果，eg: 5862810367993839695  5862810367993839699 ......
  **/
-@Deprecated
 public class OldIds {
 
     public static final int TOTAL_BITS_LENGTH = 63;

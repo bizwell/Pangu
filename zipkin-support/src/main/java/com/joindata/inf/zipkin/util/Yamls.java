@@ -4,10 +4,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 
-/**
- * Author: haolin
- * Email:  haolin.h0@gmail.com
- */
 public final class Yamls {
 
     private static final Yaml yaml = new Yaml();

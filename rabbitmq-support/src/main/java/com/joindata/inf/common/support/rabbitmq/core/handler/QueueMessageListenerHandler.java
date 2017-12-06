@@ -29,9 +29,9 @@ public class QueueMessageListenerHandler extends AbstractMessageListenerHandler
 {
     private static final Logger log = Logger.get();
 
-    public QueueMessageListenerHandler(ConnectionFactory connectionFactory, Map<String, MessageListener<Serializable>> listenerMap)
+    public QueueMessageListenerHandler(ConnectionFactory connectionFactory, Map<String, MessageListener<Serializable>> listenerMap, String kafkaServer)
     {
-        super(connectionFactory, listenerMap);
+        super(connectionFactory, listenerMap, kafkaServer);
     }
 
     @Override

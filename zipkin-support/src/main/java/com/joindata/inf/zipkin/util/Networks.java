@@ -5,11 +5,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-/**
- * Author: haolin
- * Email: haolin.h0@gmail.com
- * Date: 29/9/15
- */
 public class Networks {
 
     /**

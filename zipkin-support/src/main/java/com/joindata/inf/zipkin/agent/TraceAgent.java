@@ -1,22 +1,16 @@
 package com.joindata.inf.zipkin.agent;
 
 import com.github.kristofa.brave.AbstractSpanCollector;
-import com.github.kristofa.brave.SpanCollectorMetricsHandler;
-import com.joindata.inf.zipkin.SimpleMetricsHandler;
-import com.joindata.inf.zipkin.collector.HttpSpanCollector;
 import com.twitter.zipkin.gen.Span;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Author: haolin
- * Email:  haolin.h0@gmail.com
- */
+@SuppressWarnings(value = "deprecation")
 public class TraceAgent {
 
-    private final AbstractSpanCollector collector;
+    private AbstractSpanCollector collector;
 
     private final ExecutorService executor =
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1, r -> {
@@ -26,18 +20,8 @@ public class TraceAgent {
                 return worker;
             });
 
-    public TraceAgent(String server) {
-
-        SpanCollectorMetricsHandler metrics = new SimpleMetricsHandler();
-
-        // set flush interval to 0 so that tests can drive flushing explicitly
-        HttpSpanCollector.Config config =
-                HttpSpanCollector.Config.builder()
-                        .compressionEnabled(true)
-                        .flushInterval(0)
-                        .build();
-
-        collector = HttpSpanCollector.create(server, config, metrics);
+    public TraceAgent(AbstractSpanCollector collector) {
+        this.collector = collector;
     }
 
     public void send(final List<Span> spans) {

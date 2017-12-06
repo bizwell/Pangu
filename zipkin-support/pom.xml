@@ -29,6 +29,13 @@
             <version>${pangu.version}</version>
         </dependency>
 
+        <!-- MQ 公共模板 -->
+        <dependency>
+            <groupId>com.joindata.inf.common</groupId>
+            <artifactId>mq-sterotype</artifactId>
+            <version>${pangu.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-core</artifactId>
@@ -42,6 +49,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
+            <version>0.8.2.2</version>
         </dependency>
 
         <dependency>

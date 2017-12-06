@@ -1,21 +1,24 @@
 package com.joindata.inf.zipkin.filter;
 
 import com.google.common.base.Stopwatch;
+import com.joindata.inf.common.basic.annotation.FilterComponent;
 import com.joindata.inf.common.basic.cst.RequestLogCst;
 import com.joindata.inf.common.basic.support.BootInfoHolder;
-import com.joindata.inf.common.support.dubbo.properties.DubboProperties;
 import com.joindata.inf.zipkin.TraceContext;
 import com.joindata.inf.zipkin.agent.TraceAgent;
 import com.joindata.inf.zipkin.cst.TraceConstants;
 import com.joindata.inf.zipkin.util.Ids;
 import com.joindata.inf.zipkin.util.ServerInfo;
 import com.joindata.inf.zipkin.util.Times;
+import com.joindata.inf.zipkin.util.TraceUtils;
 import com.twitter.zipkin.gen.Annotation;
 import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -25,16 +28,12 @@ import java.util.concurrent.TimeUnit;
  * 过滤器，创建请求的唯一ID
  * Created by Rayee on 2017/10/23.
  */
+@Component
+@FilterComponent(path = "/*")
 public class TraceFilter implements Filter {
 
-    private DubboProperties dubboProperties;
-
+    @Resource
     private TraceAgent agent;
-
-    public TraceFilter(DubboProperties dubboProperties, TraceAgent agent) {
-        this.dubboProperties = dubboProperties;
-        this.agent = agent;
-    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
@@ -46,14 +45,9 @@ public class TraceFilter implements Filter {
         //do trace
         Stopwatch stopwatch = Stopwatch.createStarted();
         //root span
-        Span rootSpan = startTrace(request);
-        //trace context
-        TraceContext.start();
-        TraceContext.setTraceId(rootSpan.getTrace_id());
-        TraceContext.setSpanId(rootSpan.getId());
-        TraceContext.addSpan(rootSpan);
+        Span rootSpan = TraceUtils.startTrace(request.getLocalPort());
         filterChain.doFilter(servletRequest, servletResponse);
-        endTrace(request, rootSpan, stopwatch);
+        TraceUtils.endTrace(request.getLocalPort(), rootSpan, stopwatch, agent);
     }
 
     private Span startTrace(HttpServletRequest request) {
@@ -68,7 +62,6 @@ public class TraceFilter implements Filter {
         apiSpan.setTimestamp(timestamp);
         apiSpan.addToAnnotations(Annotation.create(timestamp, TraceConstants.ANNO_SR, Endpoint.create(apiName, ServerInfo.IP4, request.getLocalPort())));
         apiSpan.addToBinary_annotations(BinaryAnnotation.create("name", BootInfoHolder.getAppId(), null));
-        apiSpan.addToBinary_annotations(BinaryAnnotation.create("owner", dubboProperties.getAppOwner(), null));
         //日志显示traceId信息
         MDC.clear();
         MDC.put(RequestLogCst.REQUEST_ID, Long.toHexString(id));

@@ -13,6 +13,7 @@ import javax.servlet.Servlet;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
 
+import com.joindata.inf.zipkin.filter.TraceFilter;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -222,6 +223,7 @@ public class Bootstrap
 
         log.info("注册公共扫描包...");
         context.scan("com.joindata.inf.common.basic.support");
+        context.scan("com.joindata.inf.zipkin");
 
         // 注册启动类，这样就可以在启动类中使用其他 Spring 注解
         log.info("注册启动类: {}", bootClz.getName());
@@ -411,6 +413,7 @@ public class Bootstrap
                 {
                     Set<Class<?>> filterClasses = ClassUtil.scanTypeAnnotations(BootInfoHolder.getAppPackage(), FilterComponent.class);
                     filterClasses.add(RequestLogFilter.class);
+                    filterClasses.add(TraceFilter.class);
                     {
                         for(Class<?> clz: filterClasses)
                         {
@@ -511,6 +514,7 @@ public class Bootstrap
         context.scan("com.joindata.inf.boot.mechanism");
         context.scan("com.joindata.inf.common.util.log");
         context.scan("com.joindata.inf.boot.webserver.filter");
+        context.scan("com.joindata.inf.zipkin");
 
         // 注册启动类
         log.info("注册启动类: {}", bootClz.getName());

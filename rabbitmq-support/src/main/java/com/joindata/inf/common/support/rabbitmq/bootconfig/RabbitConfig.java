@@ -2,6 +2,7 @@ package com.joindata.inf.common.support.rabbitmq.bootconfig;
 
 import java.security.GeneralSecurityException;
 
+import com.joindata.inf.zipkin.properties.ZipkinProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,9 @@ public class RabbitConfig
 
     @Autowired
     private RabbitMqProperties properties;
+
+    @Autowired
+    private ZipkinProperties zipkinProperties;
 
     @Bean
     public ConnectionFactory connectionFactory() throws GeneralSecurityException
@@ -69,7 +73,7 @@ public class RabbitConfig
     public TopicMessageListenerHandler topicMessageListenerHandler() throws GeneralSecurityException
     {
         log.info("注册 RabbitMQ 主题消息监听器");
-        return new TopicMessageListenerHandler(connectionFactory(), messageListenerScanner().scanTopicListener());
+        return new TopicMessageListenerHandler(connectionFactory(), messageListenerScanner().scanTopicListener(), zipkinProperties.getKafkaServer());
     }
 
     /**
@@ -81,7 +85,7 @@ public class RabbitConfig
     public QueueMessageListenerHandler queueMessageListenerHandler() throws GeneralSecurityException
     {
         log.info("注册 RabbitMQ 直连消息监听器");
-        return new QueueMessageListenerHandler(connectionFactory(), messageListenerScanner().scanQueueListener());
+        return new QueueMessageListenerHandler(connectionFactory(), messageListenerScanner().scanQueueListener(), zipkinProperties.getKafkaServer());
     }
 
     /**
@@ -93,6 +97,6 @@ public class RabbitConfig
     public BroadcastMessageListenerHandler broadcastMessageListenerHandler() throws GeneralSecurityException
     {
         log.info("注册 RabbitMQ 广播消息监听器");
-        return new BroadcastMessageListenerHandler(connectionFactory(), messageListenerScanner().scanBroadcastListener());
+        return new BroadcastMessageListenerHandler(connectionFactory(), messageListenerScanner().scanBroadcastListener(), zipkinProperties.getKafkaServer());
     }
 }

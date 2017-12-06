@@ -1,9 +1,5 @@
 package com.joindata.inf.zipkin.cst;
 
-/**
- * Author: haolin
- * Email:  haolin.h0@gmail.com
- */
 public interface TraceConstants {
 
     /**
@@ -50,4 +46,7 @@ public interface TraceConstants {
 
     String APP_ID = "appId";
 
+    String DES_KEY = "imfather";
+
+    String DEFAULT_ENCODE_PARAM = "******";
 }

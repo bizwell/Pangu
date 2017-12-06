@@ -29,9 +29,9 @@ public class BroadcastMessageListenerHandler extends AbstractMessageListenerHand
 {
     private static final Logger log = Logger.get();
 
-    public BroadcastMessageListenerHandler(ConnectionFactory connectionFactory, Map<String, MessageListener<Serializable>> listenerMap)
+    public BroadcastMessageListenerHandler(ConnectionFactory connectionFactory, Map<String, MessageListener<Serializable>> listenerMap, String kafkaServer)
     {
-        super(connectionFactory, listenerMap);
+        super(connectionFactory, listenerMap, kafkaServer);
     }
 
     @Override

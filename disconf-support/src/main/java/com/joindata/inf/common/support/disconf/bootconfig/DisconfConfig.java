@@ -102,6 +102,8 @@ public class DisconfConfig
                         scanPackages.add(anno.value());
                     }
                 }
+                //额外添加zipkin的disconf
+                scanPackages.add("com.joindata.inf.zipkin");
             }
 
             // 获取启动类的扫描包

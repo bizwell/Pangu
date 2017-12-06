@@ -25,6 +25,7 @@ import com.joindata.inf.zipkin.properties.ZipkinProperties;
 import com.joindata.inf.zipkin.util.Ids;
 import com.joindata.inf.zipkin.util.ServerInfo;
 import com.joindata.inf.zipkin.util.Times;
+import com.joindata.inf.zipkin.util.TraceUtils;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.Envelope;
@@ -55,10 +56,13 @@ public class RabbitConsumer<T extends Serializable> implements Consumer {
 
     private SerializationType deserialization;
 
-    public RabbitConsumer(String queue, boolean isJson, MessageListener<T> listener) {
+    private String kafkaServer;
+
+    public RabbitConsumer(String queue, boolean isJson, MessageListener<T> listener, String kafkaServer) {
         this.queue = queue;
         this.listener = listener;
         this.dataClz = ClassUtil.getNestedGenericType(listener.getClass());
+        this.kafkaServer = kafkaServer;
 
         if (isJson) {
             deserialization = SerializationType.JSON;
@@ -94,12 +98,7 @@ public class RabbitConsumer<T extends Serializable> implements Consumer {
         //do trace
         Stopwatch stopwatch = Stopwatch.createStarted();
         //root span
-        Span rootSpan = startTrace(listener);
-        //trace context
-        TraceContext.start();
-        TraceContext.setTraceId(rootSpan.getTrace_id());
-        TraceContext.setSpanId(rootSpan.getId());
-        TraceContext.addSpan(rootSpan);
+        Span rootSpan = TraceUtils.startTrace();
 
         T msg = null;
         try {
@@ -123,7 +122,7 @@ public class RabbitConsumer<T extends Serializable> implements Consumer {
         } catch (Exception e) {
             log.error("接收消息时出错: {}", e.getMessage(), e);
         }
-        endTrace(rootSpan, stopwatch);
+        TraceUtils.endTrace(0, rootSpan, stopwatch, new TraceAgent(KafkaSpanCollector.create(KafkaSpanCollector.Config.builder(kafkaServer).build(), new SimpleMetricsHandler())));
     }
 
     @Override

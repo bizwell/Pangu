@@ -10,6 +10,7 @@ import com.joindata.inf.zipkin.cst.TraceConstants;
 import com.joindata.inf.zipkin.util.Ids;
 import com.joindata.inf.zipkin.util.ServerInfo;
 import com.joindata.inf.zipkin.util.Times;
+import com.joindata.inf.zipkin.util.TraceUtils;
 import com.twitter.zipkin.gen.Annotation;
 import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
@@ -44,14 +45,9 @@ public class TraceFilter implements Filter {
         //do trace
         Stopwatch stopwatch = Stopwatch.createStarted();
         //root span
-        Span rootSpan = startTrace(request);
-        //trace context
-        TraceContext.start();
-        TraceContext.setTraceId(rootSpan.getTrace_id());
-        TraceContext.setSpanId(rootSpan.getId());
-        TraceContext.addSpan(rootSpan);
+        Span rootSpan = TraceUtils.startTrace(request.getLocalPort());
         filterChain.doFilter(servletRequest, servletResponse);
-        endTrace(request, rootSpan, stopwatch);
+        TraceUtils.endTrace(request.getLocalPort(), rootSpan, stopwatch, agent);
     }
 
     private Span startTrace(HttpServletRequest request) {

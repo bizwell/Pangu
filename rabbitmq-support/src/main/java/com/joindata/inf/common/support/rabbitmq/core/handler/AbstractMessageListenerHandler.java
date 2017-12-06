@@ -50,10 +50,13 @@ public abstract class AbstractMessageListenerHandler
     /** queue - 事务设置 */
     private Map<String, RollbackFor> txMap;
 
+    /** kafka - 服务地址（zipkin使用） **/
+    private String kafkaServer;
+
     /**
      * 构造二进制消息监听处理器
      */
-    public AbstractMessageListenerHandler(ConnectionFactory connectionFactory, Map<String, MessageListener<Serializable>> listenerMap)
+    public AbstractMessageListenerHandler(ConnectionFactory connectionFactory, Map<String, MessageListener<Serializable>> listenerMap, String kafkaServer)
     {
         if(CollectionUtil.isNullOrEmpty(listenerMap))
         {
@@ -62,6 +65,7 @@ public abstract class AbstractMessageListenerHandler
 
         this.listenerMap = listenerMap;
         this.connectionFactory = connectionFactory;
+        this.kafkaServer = kafkaServer;
         this.initConfigMap();
         this.initTxMap();
         this.initConsumerMap();
@@ -93,7 +97,7 @@ public abstract class AbstractMessageListenerHandler
 
         this.listenerMap.keySet().forEach(queue -> {
             boolean isJson = EnumUtil.hasItem(this.getQueueConfig(queue).features(), RabbitFeature.JsonSerialization);
-            consumerMap.put(queue, new RabbitConsumer<Serializable>(queue, isJson, this.getListener(queue)));
+            consumerMap.put(queue, new RabbitConsumer<Serializable>(queue, isJson, this.getListener(queue), kafkaServer));
         });
     }
 

@@ -1,3 +1,20 @@
+# 重要说明
+
+**该项目孵化于百味云公司(bizwell.cn)企业内部环境，项目的通用性和可用性存在问题，目前提交的代码仅供参考，故推送至本仓库的 Preview 分支**
+
+现有如下已知问题，请各位看客注意：
+- 绝大部分组件启动依赖 Disconf 作为配置管理工具，需在团队内部搭建该软件
+- 框架自 2016 年 11 月诞生，直至 2017 年 3 月份之后初创作者基本未参与维护，距今经多人维护，可能存在偏离作者初衷的代码，如规范的不一致等现象
+- 存在已知的诸多 BUG 尚未修复
+- 某些依赖项目可能在公司的内部 Maven 库中，如 dubbox 是经过魔改后放到私有库供内部使用的
+- 有一些代码和思想已经过时
+- 文档不甚完善
+
+随后，作者 [Muyv](https://github.com/Muyv) 计划对该项目 fork 后进行持续维护，将项目改造成更通用、更先进和易用的开发框架，地址是：[https://github.com/Muyv/Pangu](https://github.com/Muyv/Pangu)，感兴趣的同仁可 watch 该项目来关注进展。
+
+-------
+-------
+
 # Pangu 是什么
 为方便应用开发团队快速构建服务端应用程序而提供的开发框架。
 
@@ -9,14 +26,14 @@
 - 不断完善的组件、更多的功能加入和技术支持，让你更专注于业务开发
 
 # 环境要求
-- JDK 1.8
+- Java 8
 - Maven 3
 
 # 主要思路
 - 基于 Spring，为了更好地解耦和管理组件
 - 注解驱动，脱离繁琐的 XML 配置
 - 封装常用组件，同样使用注解声明
-- 程序代码是一等公民，配置文件只提供参数，不要干涉程序结构，配置文件能做到的程序都能做到而且更好更符合程序员思维（配置文件有其适用场景，一切把程序配置化的思路都是耍流氓）
+- 程序代码是一等公民，配置文件只提供参数，不要干涉程序结构，配置文件能做到的程序都能做到而且更好更符合程序员思维，代码的变更应当通过合理的 DevOps 机制来应对，而非在线上编辑依赖注入关系（配置文件有其适用场景，一切把程序配置化的思路都是耍流氓）
 - 职责细分，技术研发团队更关注技术细节，产品开发团队更关注业务逻辑
 - 统一规范，用约定的规则来减少团队合作成本，相对于灵活性来说，高效产出才能造就商业价值
 - 框架提供一定的灵活性，支持用 Spring 的 XML 和 JavaConfig 来声明额外的组件和配置，灵活性存在的目的是解决框架暂时未覆盖到的需求
@@ -28,15 +45,15 @@
 ## 构建工程
 1. 创建一个 Maven 工程
 2. 在 pom.xml 中添加如下内容：
-	```xml
-	<parent>
-			<groupId>com.joindata.inf</groupId>
-			<artifactId>joindata-app</artifactId>
-			<version>${pangu.version}</version>
-			<relativePath />
-	</parent>
-	```
-	这样就可以使用 Pangu 中预定义好的依赖和其他配置
+```xml
+<parent>
+	<groupId>com.joindata.inf</groupId>
+	<artifactId>joindata-app</artifactId>
+	<version>${pangu.version}</version>
+	<relativePath />
+</parent>
+```
+这样就可以使用 Pangu 中预定义好的依赖和其他配置
 3. 创建 Java 代码目录和资源目录，并加入到 Build Path 中
 
 ## 编写代码
@@ -60,10 +77,10 @@ import com.joindata.inf.common.support.disconf.EnableDisconf;
 @JoindataWebApp("NEWPRODUCT.FOOBAR")    // 这个标记了当前应用是个 Web 应用，并且指定应用 ID
 public class App
 {
-		public static void main(String[] args)
-		{
-				Bootstrap.boot();               // 有这一句就可以启动应用了
-		}
+	public static void main(String[] args)
+	{
+		Bootstrap.boot();               // 有这一句就可以启动应用了
+	}
 }
 ```
 
@@ -82,11 +99,12 @@ main 方法中通过调用 `Bootstrap.boot()` 来启动框架。`Bootstrap` 是�
 - 定义注解，用于标注应用信息
 - 启动器 `Bootstrap` 类，用于根据实际环境来配置容器并启动 Spring 或 Web 容器
 
-有必要说一下 `com.joindata.inf.boot.annotation` 中提供的两个注解
-**名称**|**位置**|**作用**|**备注**
-:-----:|:-----:|:-----:|:-----:
-@JoindataApp		| 启动类	| 标注这个注解会启动 Spring 容器，如果不写 Web 服务可以用它 |
-@JoindataWebApp	| 启动类	| 标注这个注解会启动 Spring+SpringWebMVC+Web 容器						|
+有必要说一下 `com.joindata.inf.boot.annotation` 中提供的两个注解：
+
+|**名称**|**位置**|**作用**|**备注**|
+|-----|-----|-----|-----|
+|@JoindataApp		| 启动类	| 标注这个注解会启动 Spring 容器，如果不写 Web 服务可以用它 ||
+|@JoindataWebApp	| 启动类	| 标注这个注解会启动 Spring+SpringWebMVC+Web 容器						||
 
 ### 业务代码	
 请参阅 Demo 项目
@@ -100,21 +118,22 @@ main 方法中通过调用 `Bootstrap.boot()` 来启动框架。`Bootstrap` 是�
 
 #### 基本注解介绍
 框架默认启动了注解驱动，这也是提倡的开发方式，几个重要的注解：
-**名称**|**位置**|**作用**|**包名**
-:-----:|:-----:|:-----:|:-----:
-@Autowired|成员变量|声明要使用这个组件，Spring 会将组件实例注入到该变量|org.springframework.beans.factory.annotation
-@RestController|类|声明这是个 REST 风格的控制器组件，框架会做关于 REST 服务的特殊处理|org.springframework.web.bind.annotation
-@Repository|接口或类|声明这是个持久层组件|org.springframework.stereotype
-@Controller|类|声明这是个控制器组件|org.springframework.stereotype
-@Service|类|声明这是个服务层组件的实现|org.springframework.stereotype
-@Component|类|声明这类是个组件，该归 Spring 管理|org.springframework.stereotype
-@PathVariable|RequestMapping 方法的参数|标注这个参数是绑定 @RequestMapping 中的 {param} 占位符的值，也就是请求的 URL 中这个段的内容|org.springframework.web.bind.annotation
-@RequestParam|RequestMapping 方法的参数|标注这个的参数是绑定 Web 参数的，改参数的值就是请求的参数值|org.springframework.web.bind.annotation
-@RequestMapping|Controller 的类或方法|标注这个类或者方法可以处理 Web 请求，其默认参数用来设置 Web 路径|org.springframework.web.bind.annotation
-@DeleteMapping|Controller 的类或方法|相当于 @RequestMapping(method=DELETE)|org.springframework.web.bind.annotation
-@GetMapping|Controller 的类或方法|相当于 @RequestMapping(method=GET)|org.springframework.web.bind.annotation
-@PostMapping|Controller 的类或方法|相当于 @RequestMapping(method=POST)|org.springframework.web.bind.annotation
-@PutMapping|Controller 的类或方法|相当于 @RequestMapping(method=PUT)|org.springframework.web.bind.annotation
+
+|名称|位置|作用|包名|
+|--- |--- |--- |--- |
+|@Autowired|成员变量|声明要使用这个组件，Spring 会将组件实例注入到该变量|org.springframework.beans.factory.annotation|
+|@RestController|类|声明这是个 REST 风格的控制器组件，框架会做关于 REST 服务的特殊处理|org.springframework.web.bind.annotation|
+|@Repository|接口或类|声明这是个持久层组件|org.springframework.stereotype|
+|@Controller|类|声明这是个控制器组件|org.springframework.stereotype|
+|@Service|类|声明这是个服务层组件的实现|org.springframework.stereotype|
+|@Component|类|声明这类是个组件，该归 Spring 管理|org.springframework.stereotype|
+|@PathVariable|RequestMapping 方法的参数|标注这个参数是绑定 @RequestMapping 中的 {param} 占位符的值，也就是请求的 URL 中这个段的内容|org.springframework.web.bind.annotation|
+|@RequestParam|RequestMapping 方法的参数|标注这个的参数是绑定 Web 参数的，改参数的值就是请求的参数值|org.springframework.web.bind.annotation|
+|@RequestMapping|Controller 的类或方法|标注这个类或者方法可以处理 Web 请求，其默认参数用来设置 Web 路径|org.springframework.web.bind.annotation|
+|@DeleteMapping|Controller 的类或方法|相当于 @RequestMapping(method=DELETE)|org.springframework.web.bind.annotation|
+|@GetMapping|Controller 的类或方法|相当于 @RequestMapping(method=GET)|org.springframework.web.bind.annotation|
+|@PostMapping|Controller 的类或方法|相当于 @RequestMapping(method=POST)|org.springframework.web.bind.annotation|
+|@PutMapping|Controller 的类或方法|相当于 @RequestMapping(method=PUT)|org.springframework.web.bind.annotation|
 
 ### 其他细节
 #### 日志
@@ -144,17 +163,17 @@ import com.joindata.newproduct.foobar.orm.ProductMapper;
 @Service // 该注解告诉 Spring 当前实现是 ProductService 的唯一实现
 public class ProductServiceImpl implements ProductService
 {
-		private static final Logger log = Logger.get();
- 
-		@Autowired
-		private ProductMapper productMapper;
- 
-		@Override
-		public Product getProduct(String id)
-		{
-				log.debug("获取产品，ID: {}", id);
-				return productMapper.getProduct(id);
-		}
+	private static final Logger log = Logger.get();
+
+	@Autowired
+	private ProductMapper productMapper;
+
+	@Override
+	public Product getProduct(String id)
+	{
+		log.debug("获取产品，ID: {}", id);
+		return productMapper.getProduct(id);
+	}
 }
 ```
 > Pangu 中使用的的日志框架是 log4j2，并对各种主流框架都做了适配，基本上覆盖了所有依赖库使用的日志框架。对于我们的应用开发来说，只需要使用 Pangu 封装的这个记录器来打印日志即可。
@@ -165,17 +184,16 @@ public class ProductServiceImpl implements ProductService
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="OFF">
-		<appenders>
-				<Console name="DefaultConsole" target="SYSTEM_OUT">
-						<PatternLayout
-								pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} - %msg%n" />
-				</Console>
-		</appenders>
-		<loggers>
-				<root level="INFO">
-						<appender-ref ref="DefaultConsole" />
-				</root>
-		</loggers>
+	<appenders>
+		<Console name="DefaultConsole" target="SYSTEM_OUT">
+			<PatternLayout pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} - %msg%n" />
+		</Console>
+	</appenders>
+	<loggers>
+		<root level="INFO">
+			<appender-ref ref="DefaultConsole" />
+		</root>
+	</loggers>
 </configuration>
 ```
 
@@ -204,7 +222,7 @@ public class ProductServiceImpl implements ProductService
 
 ## 用法
 1. 添加依赖
->	groupId 为 com.joindata.inf.common
+> groupId 为 com.joindata.inf.common
 > artifactId 一般是 xxx-support
 2. 在启动类上加注解声明启用该组件，可在注解参数中做少量设置
 > 注解一般是 `@EnableXXX` 这种格式

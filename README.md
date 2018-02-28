@@ -8,7 +8,7 @@
 - 存在已知的诸多 BUG 尚未修复
 - 某些依赖项目可能在公司的内部 Maven 库中，如 dubbox 是经过魔改后放到私有库供内部使用的
 - 有一些代码和思想已经过时
-- 文档不甚完善
+- 存在过时和不完整的文档
 
 > 随后，作者 [Muyv](https://github.com/Muyv) 计划对该项目 fork 后进行持续维护，将项目改造成更通用、更先进和易用的开发框架，地址是：[https://github.com/Muyv/Pangu](https://github.com/Muyv/Pangu)，感兴趣的同仁可 watch 该项目来关注进展。
 

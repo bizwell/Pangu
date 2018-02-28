@@ -46,7 +46,7 @@ public class DisconfConfig
     }
 
     /**
-     * 傻逼玩意
+     * 额。。。。。
      */
     @Bean(initMethod = "init", destroyMethod = "destroy")
     @Order(Ordered.HIGHEST_PRECEDENCE)

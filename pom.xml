@@ -2,21 +2,74 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.joindata</groupId>
-		<artifactId>joindata-parent</artifactId>
-		<version>1.0.0</version>
-	</parent>
+	<organization>
+		<name>JoinData</name>
+		<url>http://www.joindata.com/</url>
+	</organization>
 
 	<groupId>com.joindata.inf.common</groupId>
 	<artifactId>root</artifactId>
 	<packaging>pom</packaging>
 	<version>1.2.7-SNAPSHOT</version>
 
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>songxiang</id>
+			<name>SongXiang</name>
+			<email>songxiang@bizwell.cn</email>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git://github.com/spring-projects/spring-framework</connection>
+		<developerConnection>scm:git:git://github.com/spring-projects/spring-framework</developerConnection>
+		<url>https://github.com/spring-projects/spring-framework</url>
+	</scm>
+	<issueManagement>
+		<system>Jira</system>
+		<url>https://jira.springsource.org/browse/SPR</url>
+	</issueManagement>
+
 	<name>公共组件</name>
 	<url>http://www.joindata.com</url>
 
 	<properties>
+		<!-- 以下从公共父 POM 粘贴而来 -->
+		<!-- for maven compiler plugin -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.source.version>1.7</java.source.version>
+		<java.target.version>1.7</java.target.version>
+		<!-- Common libs -->
+		<springversion>4.1.6.RELEASE</springversion>
+		<spring.version>${springversion}</spring.version>
+		<mybatis.version>3.2.6</mybatis.version>
+		<netty.version>3.2.5.Final</netty.version>
+		<mina.version>1.1.7</mina.version>
+		<httpclient.version>4.5.2</httpclient.version>
+		<xstream.version>1.4.1</xstream.version>
+		<fastjson.version>1.1.39</fastjson.version>
+		<druid.version>1.0.20</druid.version>
+		<com.aliyun.openservices.version>1.1.8</com.aliyun.openservices.version>
+		<if-notification-client.version>0.0.1A</if-notification-client.version>
+		<inf-util.version>1.1.8</inf-util.version>
+		<activemq.version>5.10.0</activemq.version>
+		<!-- Log Libs -->
+		<slf4j.version>1.6.2</slf4j.version>
+		<jcl.version>1.1</jcl.version>
+		<log4j.version>1.2.16</log4j.version>
+		<logback.version>1.0.6</logback.version>
+		<!-- Test Libs -->
+		<junit.version>4.10</junit.version>
+		<easymock.version>3.0</easymock.version>
+		<jmockit.version>0.999.8</jmockit.version>
+		<!-- 以上从公共父 POM 粘贴而来 -->
+
 		<pangu.version>1.2.7-SNAPSHOT</pangu.version>
 		<java.version>1.8</java.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
@@ -103,7 +156,7 @@
 		<tkmapper.version>3.4.2</tkmapper.version>
 		<jpa.version>1.0</jpa.version>
 		<brave.version>4.10.1</brave.version>
-		<!--<brave.version>3.11.1</brave.version>-->
+		<!--<brave.version>3.11.1</brave.version> -->
 		<yml.version>1.11</yml.version>
 		<auto.value.version>1.1</auto.value.version>
 	</properties>
@@ -111,6 +164,112 @@
 	<dependencyManagement>
 
 		<dependencies>
+
+			<!-- 以下从公共父 POM 粘贴而来 -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.netty</groupId>
+				<artifactId>netty</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>${fastjson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid</artifactId>
+				<version>${druid.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.thoughtworks.xstream</groupId>
+				<artifactId>xstream</artifactId>
+				<version>${xstream.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-all</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+
+			<!-- niwodai inf libs -->
+			<dependency>
+				<groupId>com.niwodai.tech.inf.jms</groupId>
+				<artifactId>if-notification-client</artifactId>
+				<version>${if-notification-client.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.niwodai.tech.inf</groupId>
+				<artifactId>if-util</artifactId>
+				<version>${inf-util.version}</version>
+			</dependency>
+
+			<!-- Log libs -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging-api</artifactId>
+				<version>${jcl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<!-- Test libs -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>${easymock.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.googlecode.jmockit</groupId>
+				<artifactId>jmockit</artifactId>
+				<version>${jmockit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymockclassextension</artifactId>
+				<version>${easymock.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- 以上从公共父 POM 粘贴而来 -->
 
 			<!-- 基础包定义 -->
 			<dependency>
@@ -893,10 +1052,10 @@
 			</dependency>
 			<!-- JPA -->
 			<dependency>
-	            <groupId>javax.persistence</groupId>
-	            <artifactId>persistence-api</artifactId>
-	            <version>${jpa.version}</version>
-	        </dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>persistence-api</artifactId>
+				<version>${jpa.version}</version>
+			</dependency>
 
 			<!-- brave -->
 			<dependency>
@@ -922,6 +1081,25 @@
 	</dependencyManagement>
 
 	<dependencies>
+
+		<!-- 以下从公共父 POM 粘贴而来 -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymockclassextension</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.jmockit</groupId>
+			<artifactId>jmockit</artifactId>
+		</dependency>
+		<!-- 以上从公共父 POM 粘贴而来 -->
 
 		<!-- Lombok 可以有 -->
 		<dependency>
@@ -971,6 +1149,34 @@
 
 	<build>
 		<plugins>
+			<!-- 以下从公共父 POM 粘贴而来 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<inherited>true</inherited>
+				<configuration>
+					<source>${java.source.version}</source>
+					<target>${java.target.version}</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<addMavenDescriptor>true</addMavenDescriptor>
+						<index>true</index>
+						<manifest>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<!-- 以上从公共父 POM 粘贴而来 -->
+
 			<!-- 编译器设置 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -1033,7 +1239,6 @@
 		</plugins>
 
 		<resources>
-
 			<!-- 各种夹杂在其中 XML 文件也要在编译时加入（如 MyBatis 的 Mapper） -->
 			<resource>
 				<directory>src/main/java</directory>
@@ -1055,10 +1260,25 @@
 					<include>**/*</include>
 				</includes>
 			</resource>
-
 		</resources>
-
 	</build>
+
+	<!-- 以下从公共父 POM 粘贴而来 -->
+	<profiles>
+		<profile>
+			<id>jenkins</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>findbugs-maven-plugin</artifactId>
+						<version>3.0.4</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<!-- 以上从公共父 POM 粘贴而来 -->
 
 	<modules>
 		<module>basic</module>
@@ -1066,7 +1286,7 @@
 		<module>registry</module>
 		<module>disconf-support</module>
 		<module>mybatis-support</module>
- 		<module>fastdfs-support</module>
+		<module>fastdfs-support</module>
 		<module>swagger-support</module>
 		<module>elasticsearch-support</module>
 		<module>redis-support</module>
@@ -1091,5 +1311,20 @@
 		<module>zipkin-support</module>
 		<!-- <module>joindata-app-template</module> -->
 	</modules>
+
+	<!-- 以下从公共父 POM 粘贴而来 -->
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>Internal Release</name>
+			<url>http://10.15.38.146:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Internal Snapshots</name>
+			<url>http://10.15.38.146:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<!-- 以上从公共父 POM 粘贴而来 -->
 
 </project>

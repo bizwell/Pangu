@@ -1,15 +1,16 @@
 package com.joindata.inf.boot.annotation;
 
-import com.joindata.inf.boot.mechanism.newrest.WrapperReturnValueMethod;
-import com.joindata.inf.boot.sterotype.RestResponse;
-import org.springframework.context.annotation.Import;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.springframework.context.annotation.Import;
+
+import com.joindata.inf.boot.mechanism.newrest.WrapperReturnValueMethod;
+import com.joindata.inf.boot.sterotype.RestResponse;
 
 /**
  * 启用新的 REST 风格<br />
@@ -22,8 +23,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(ElementType.TYPE)
 @Documented
 @Import(value = WrapperReturnValueMethod.class)
-public @interface NewRestStyle {
+public @interface NewRestStyle
+{
     String value() default "0";
 
-    Class[] exclude() default {RestResponse.class};
+    Class<?>[] exclude() default {RestResponse.class};
 }

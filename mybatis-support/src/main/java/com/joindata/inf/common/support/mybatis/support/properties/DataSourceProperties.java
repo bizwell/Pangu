@@ -12,7 +12,6 @@ import com.joindata.inf.common.sterotype.jdbc.sterotype.BaseDataSourceProperties
 
 /**
  * 数据源配置变量类<br />
- * <i>Disconf 我草你妈！</i>
  * 
  * @author <a href="mailto:songxiang@joindata.com">宋翔</a>
  * @date 2016年12月1日 上午11:40:23

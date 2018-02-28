@@ -10,9 +10,8 @@
 - 有一些代码和思想已经过时
 - 文档不甚完善
 
-随后，作者 [Muyv](https://github.com/Muyv) 计划对该项目 fork 后进行持续维护，将项目改造成更通用、更先进和易用的开发框架，地址是：[https://github.com/Muyv/Pangu](https://github.com/Muyv/Pangu)，感兴趣的同仁可 watch 该项目来关注进展。
+> 随后，作者 [Muyv](https://github.com/Muyv) 计划对该项目 fork 后进行持续维护，将项目改造成更通用、更先进和易用的开发框架，地址是：[https://github.com/Muyv/Pangu](https://github.com/Muyv/Pangu)，感兴趣的同仁可 watch 该项目来关注进展。
 
--------
 -------
 
 # Pangu 是什么

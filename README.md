@@ -28,6 +28,9 @@
 - Java 8
 - Maven 3
 
+# 开源协议
+Apache 2.0
+
 # 主要思路
 - 基于 Spring，为了更好地解耦和管理组件
 - 注解驱动，脱离繁琐的 XML 配置
@@ -106,7 +109,7 @@ main 方法中通过调用 `Bootstrap.boot()` 来启动框架。`Bootstrap` 是�
 |@JoindataWebApp	| 启动类	| 标注这个注解会启动 Spring+SpringWebMVC+Web 容器						||
 
 ### 业务代码	
-请参阅 Demo 项目
+请参阅  [PanguDemo](https://github.com/Muyv/PanguDemo) 项目
 
 #### 要点
 根据规范创建好各个包，就可以进行业务代码编写了，编写时注意如下几个重点即可：
@@ -228,4 +231,4 @@ public class ProductServiceImpl implements ProductService
 3. 调用方式各不相同，具体用法这里会提供组件使用文档
 
 # 案例
-请参阅 Demo 项目
+请参阅 [PanguDemo](https://github.com/Muyv/PanguDemo) 项目

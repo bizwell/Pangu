@@ -187,16 +187,48 @@ public class ProductServiceImpl implements ProductService
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="OFF">
-	<appenders>
-		<Console name="DefaultConsole" target="SYSTEM_OUT">
-			<PatternLayout pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} - %msg%n" />
-		</Console>
-	</appenders>
-	<loggers>
-		<root level="INFO">
-			<appender-ref ref="DefaultConsole" />
-		</root>
-	</loggers>
+  <properties>
+
+    <!-- 应用 ID -->
+    <property name="APP_ID">pangu.workbench</property>
+    <!-- 应用日志根目录 -->
+    <property name="LOG_HOME">/data/log/${APP_ID}</property>
+    <!-- 日志内容格式 -->
+    <property name="LOG_PATTERN">%-5level * %d{yyyy-MM-dd HH:mm:ss.SSS} > [%t] %logger : [%X{requestId}]%msg%n</property>
+
+    <!-- 默认日志配置 -->
+    <property name="ROLLING_FILE">${LOG_HOME}/DEFAULT/ROLLING.log</property>
+    <property name="ARCHIVE_FILE">${LOG_HOME}/DEFAULT/%d{yyyy-MM-dd}.log</property>
+
+  </properties>
+
+  <appenders>
+    <!-- Console 输出 -->
+    <Console name="DefaultInfoConsole" target="SYSTEM_OUT">
+      <PatternLayout pattern="${LOG_PATTERN}" />
+      <ThresholdFilter level="INFO" onMatch="NEUTRAL" onMismatch="DENY" />
+    </Console>
+    <Console name="DefaultDebugConsole" target="SYSTEM_ERR">
+      <PatternLayout pattern="${LOG_PATTERN}" />
+    </Console>
+
+    <!-- 默认生产文件日志输出 -->
+    <RollingFile name="PRODUCT_LOG" fileName="${ROLLING_FILE}" filePattern="${ARCHIVE_FILE}" append="true">
+      <PatternLayout pattern="${LOG_PATTERN}" />
+      <Policies>
+        <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+      </Policies>
+    </RollingFile>
+
+  </appenders>
+
+  <loggers>
+    <!-- 默认日志 -->
+    <root level="INFO">
+      <appender-ref ref="PRODUCT_LOG" />
+    </root>
+  </loggers>
+
 </configuration>
 ```
 
